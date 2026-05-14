@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Kalakosh Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="pages.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="header-inner">
+            <div class="logo">
+                <div class="logo-circle">क</div>
+                <div><h2>KALAKOSH</h2><span>कला कोष</span></div>
+            </div>
+            <nav><a href="#">Home</a><a href="#">Shop</a><a href="#">Categories</a><a href="#">About</a><a href="#">Contact</a></nav>
+            <div class="header-icons">
+                <i class="fa-regular fa-heart"></i>
+                <i class="fa-solid fa-bag-shopping"></i>
+                <i class="fa-regular fa-user"></i>
+            </div>
+        </div>
+    </header>
+    <main class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-title"><span>CONTROL CENTER</span><h2>Admin</h2></div>
+            <ul>
+                <li><a href="admin-dashboard.html"><i class="fa-solid fa-border-all"></i> Dashboard</a></li>
+                <li><a href="user.html"><i class="fa-regular fa-user"></i> Users</a></li>
+                <li><a href="vendor.html"><i class="fa-solid fa-store"></i> Vendors</a></li>
+                <li><a href="product.html"><i class="fa-solid fa-cube"></i> Products</a></li>
+                <li><a href="categories.html"><i class="fa-solid fa-tags"></i> Categories</a></li>
+                <li><a href="order.html"><i class="fa-regular fa-clipboard"></i> Orders</a></li>
+                <li><a href="coupon.html"><i class="fa-solid fa-ticket"></i> Coupons</a></li>
+                <li><a href="review.html"><i class="fa-regular fa-star"></i> Reviews</a></li>
+                <li class="active"><a href="report.html"><i class="fa-regular fa-file-lines"></i> Reports</a></li>
+                <li><a href="setting.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
+            </ul>
+        </aside>
+        <section class="page-content">
+            <div class="page-heading"><span>ANALYTICS</span><h1>Reports</h1></div>
+
+            <!-- KPI ROW -->
+            <div class="mini-stats">
+                <div class="mini-stat"><i class="fa-solid fa-dollar-sign"></i><div><span>TOTAL REVENUE</span><strong>$184k</strong></div></div>
+                <div class="mini-stat"><i class="fa-solid fa-arrow-trend-up"></i><div><span>GROWTH</span><strong>+18%</strong></div></div>
+                <div class="mini-stat"><i class="fa-solid fa-cart-shopping"></i><div><span>AVG ORDER</span><strong>$143</strong></div></div>
+                <div class="mini-stat"><i class="fa-solid fa-percent"></i><div><span>CONVERSION</span><strong>3.2%</strong></div></div>
+            </div>
+
+            <!-- DATE FILTER -->
+            <div class="table-toolbar" style="margin-top:24px;">
+                <div style="display:flex;gap:12px;align-items:center;">
+                    <select class="filter-select"><option>This Month</option><option>Last Month</option><option>Last 3 Months</option><option>This Year</option></select>
+                    <select class="filter-select"><option>All Categories</option><option>Thangka</option><option>Textiles</option><option>Pottery</option></select>
+                </div>
+                <div class="toolbar-right">
+                    <button class="add-btn"><i class="fa-solid fa-download"></i> Export CSV</button>
+                </div>
+            </div>
+
+            <!-- CHARTS ROW -->
+            <div class="report-charts">
+                <!-- REVENUE CHART -->
+                <div class="report-chart-card">
+                    <h3>Revenue Trend</h3>
+                    <div class="bar-chart">
+                        <div class="bar-group"><div class="bar" style="height:55%;"><span>$22k</span></div><label>Jan</label></div>
+                        <div class="bar-group"><div class="bar" style="height:40%;"><span>$16k</span></div><label>Feb</label></div>
+                        <div class="bar-group"><div class="bar" style="height:70%;"><span>$28k</span></div><label>Mar</label></div>
+                        <div class="bar-group"><div class="bar" style="height:62%;"><span>$25k</span></div><label>Apr</label></div>
+                        <div class="bar-group"><div class="bar bar-active" style="height:90%;"><span>$36k</span></div><label>May</label></div>
+                        <div class="bar-group"><div class="bar" style="height:75%;"><span>$30k</span></div><label>Jun</label></div>
+                    </div>
+                </div>
+
+                <!-- TOP CATEGORIES -->
+                <div class="report-chart-card">
+                    <h3>Sales by Category</h3>
+                    <div class="donut-legend">
+                        <div class="legend-row"><span class="legend-dot" style="background:#7B1F1F;"></span><span>Thangka Paintings</span><strong>38%</strong></div>
+                        <div class="legend-row"><span class="legend-dot" style="background:#C9973A;"></span><span>Pashmina Textiles</span><strong>24%</strong></div>
+                        <div class="legend-row"><span class="legend-dot" style="background:#5C3D2E;"></span><span>Silver Jewelry</span><strong>18%</strong></div>
+                        <div class="legend-row"><span class="legend-dot" style="background:#A63030;"></span><span>Pottery</span><strong>12%</strong></div>
+                        <div class="legend-row"><span class="legend-dot" style="background:#8B6552;"></span><span>Other</span><strong>8%</strong></div>
+                    </div>
+                    <div class="donut-chart">
+                        <svg viewBox="0 0 36 36">
+                            <circle cx="18" cy="18" r="15.91" fill="none" stroke="#F7F2EA" stroke-width="3"/>
+                            <circle cx="18" cy="18" r="15.91" fill="none" stroke="#7B1F1F" stroke-width="3" stroke-dasharray="38 62" stroke-dashoffset="25"/>
+                            <circle cx="18" cy="18" r="15.91" fill="none" stroke="#C9973A" stroke-width="3" stroke-dasharray="24 76" stroke-dashoffset="-13"/>
+                            <circle cx="18" cy="18" r="15.91" fill="none" stroke="#5C3D2E" stroke-width="3" stroke-dasharray="18 82" stroke-dashoffset="-37"/>
+                            <circle cx="18" cy="18" r="15.91" fill="none" stroke="#A63030" stroke-width="3" stroke-dasharray="12 88" stroke-dashoffset="-55"/>
+                            <circle cx="18" cy="18" r="15.91" fill="none" stroke="#8B6552" stroke-width="3" stroke-dasharray="8 92" stroke-dashoffset="-67"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOP VENDORS TABLE -->
+            <div class="table-card" style="margin-top:28px;">
+                <div style="padding:24px 24px 0;"><h3 style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--crimson);">Top Performing Vendors</h3></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>VENDOR</th>
+                            <th>PRODUCTS</th>
+                            <th>ORDERS</th>
+                            <th>REVENUE</th>
+                            <th>RATING</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><div class="number">1</div></td>
+                            <td><div class="user-cell"><div class="avatar" style="background:#D4A574;">S</div><div><h4>Sita Tamang</h4><span>Tamang Thangka House</span></div></div></td>
+                            <td>48</td><td>1,248</td><td>$19,840</td>
+                            <td><span class="stars-sm">★★★★★</span> 4.9</td>
+                        </tr>
+                        <tr>
+                            <td><div class="number">2</div></td>
+                            <td><div class="user-cell"><div class="avatar" style="background:#A8C8D8;">R</div><div><h4>Ratna Shakya</h4><span>Silver Heritage Nepal</span></div></div></td>
+                            <td>62</td><td>984</td><td>$16,340</td>
+                            <td><span class="stars-sm">★★★★★</span> 4.8</td>
+                        </tr>
+                        <tr>
+                            <td><div class="number">3</div></td>
+                            <td><div class="user-cell"><div class="avatar" style="background:#B5C4B1;">K</div><div><h4>Krishna Shilpakar</h4><span>Newari Craft Studio</span></div></div></td>
+                            <td>36</td><td>742</td><td>$11,920</td>
+                            <td><span class="stars-sm">★★★★☆</span> 4.6</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-logo"><div class="logo-circle">क</div><div><h3>KALAKOSH</h3><span>कला कोष</span></div></div>
+                <p>A platform dedicated to preserving and promoting authentic Nepali handicrafts worldwide.</p>
+            </div>
+            <div><h4>Categories</h4><ul><li>Paintings</li><li>Textiles</li><li>Pottery</li><li>Jewelry</li></ul></div>
+            <div><h4>Customer Service</h4><ul><li>About Us</li><li>Track Order</li><li>Shipping</li><li>Returns</li></ul></div>
+            <div><h4>Quick Links</h4><ul><li>Wishlist</li><li>Cart</li><li>Privacy Policy</li></ul></div>
+            <div><h4>Contact Us</h4><ul><li>+977 1 1234567</li><li>info@kalakosh.com</li><li>Kathmandu, Nepal</li></ul></div>
+        </div>
+        <div class="copyright">© 2026 KALAKOSH (कलाकोष). All Rights Reserved.</div>
+    </footer>
+    <script src="pages.js"></script>
+</body>
+</html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendors - Kalakosh Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="pages.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="admin-header">
+        <div class="header-inner">
+            <div class="logo">
+                <div class="logo-circle">क</div>
+                <div>
+                    <h2>KALAKOSH</h2>
+                    <span>कला कोष</span>
+                </div>
+            </div>
+            <nav>
+                <a href="#">Home</a>
+                <a href="#">Shop</a>
+                <a href="#">Categories</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+            </nav>
+            <div class="header-icons">
+                <i class="fa-regular fa-heart"></i>
+                <i class="fa-solid fa-bag-shopping"></i>
+                <i class="fa-regular fa-user"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <main class="dashboard-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-title">
+                <span>CONTROL CENTER</span>
+                <h2>Admin</h2>
+            </div>
+            <ul>
+                <li><a href="admin-dashboard.html"><i class="fa-solid fa-border-all"></i> Dashboard</a></li>
+                <li><a href="user.html"><i class="fa-regular fa-user"></i> Users</a></li>
+                <li class="active"><a href="vendor.html"><i class="fa-solid fa-store"></i> Vendors</a></li>
+                <li><a href="product.html"><i class="fa-solid fa-cube"></i> Products</a></li>
+                <li><a href="categories.html"><i class="fa-solid fa-tags"></i> Categories</a></li>
+                <li><a href="order.html"><i class="fa-regular fa-clipboard"></i> Orders</a></li>
+                <li><a href="coupon.html"><i class="fa-solid fa-ticket"></i> Coupons</a></li>
+                <li><a href="review.html"><i class="fa-regular fa-star"></i> Reviews</a></li>
+                <li><a href="report.html"><i class="fa-regular fa-file-lines"></i> Reports</a></li>
+                <li><a href="setting.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
+                <li class="logout-item"><a href="admin-login.html"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- CONTENT -->
+        <section class="page-content">
+
+            <div class="page-heading">
+                <span>MARKETPLACE</span>
+                <h1>Vendors</h1>
+            </div>
+
+            <!-- STATS ROW -->
+            <div class="mini-stats">
+                <div class="mini-stat">
+                    <i class="fa-solid fa-store"></i>
+                    <div>
+                        <span>TOTAL VENDORS</span>
+                        <strong>86</strong>
+                    </div>
+                </div>
+                <div class="mini-stat">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div>
+                        <span>APPROVED</span>
+                        <strong>72</strong>
+                    </div>
+                </div>
+                <div class="mini-stat">
+                    <i class="fa-solid fa-clock"></i>
+                    <div>
+                        <span>PENDING</span>
+                        <strong>14</strong>
+                    </div>
+                </div>
+                <div class="mini-stat">
+                    <i class="fa-solid fa-ban"></i>
+                    <div>
+                        <span>SUSPENDED</span>
+                        <strong>3</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOOLBAR -->
+            <div class="table-toolbar">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search vendors by name or shop...">
+                </div>
+                <div class="toolbar-right">
+                    <select class="filter-select">
+                        <option>All Status</option>
+                        <option>Approved</option>
+                        <option>Pending</option>
+                        <option>Suspended</option>
+                    </select>
+                    <button class="add-btn"><i class="fa-solid fa-plus"></i> Add Vendor</button>
+                </div>
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>VENDOR</th>
+                            <th>SHOP NAME</th>
+                            <th>EMAIL</th>
+                            <th>PRODUCTS</th>
+                            <th>SALES</th>
+                            <th>JOINED</th>
+                            <th>STATUS</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="avatar" style="background:#D4A574;">S</div>
+                                    <div>
+                                        <h4>Sita Tamang</h4>
+                                        <span>V-0021</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Tamang Thangka House</td>
+                            <td>sita@thangka.np</td>
+                            <td>48</td>
+                            <td>$12,480</td>
+                            <td>2024-03-10</td>
+                            <td><span class="status active-status">Approved</span></td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="action-btn icon-btn" title="View"><i class="fa-solid fa-eye"></i></button>
+                                    <button class="action-btn icon-btn danger-btn" title="Suspend"><i class="fa-solid fa-ban"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="avatar" style="background:#B5C4B1;">K</div>
+                                    <div>
+                                        <h4>Krishna Shilpakar</h4>
+                                        <span>V-0020</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Newari Craft Studio</td>
+                            <td>krishna@newari.np</td>
+                            <td>36</td>
+                            <td>$8,920</td>
+                            <td>2024-05-22</td>
+                            <td><span class="status active-status">Approved</span></td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="action-btn icon-btn" title="View"><i class="fa-solid fa-eye"></i></button>
+                                    <button class="action-btn icon-btn danger-btn" title="Suspend"><i class="fa-solid fa-ban"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="avatar" style="background:#A8C8D8;">R</div>
+                                    <div>
+                                        <h4>Ratna Shakya</h4>
+                                        <span>V-0019</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Silver Heritage Nepal</td>
+                            <td>ratna@silver.np</td>
+                            <td>62</td>
+                            <td>$19,340</td>
+                            <td>2024-01-08</td>
+                            <td><span class="status active-status">Approved</span></td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="action-btn icon-btn" title="View"><i class="fa-solid fa-eye"></i></button>
+                                    <button class="action-btn icon-btn danger-btn" title="Suspend"><i class="fa-solid fa-ban"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="avatar" style="background:#E8C4A0;">T</div>
+                                    <div>
+                                        <h4>Tenzin Lama</h4>
+                                        <span>V-0018</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Himalayan Textile Co.</td>
+                            <td>tenzin@himtex.np</td>
+                            <td>27</td>
+                            <td>$6,180</td>
+                            <td>2024-07-15</td>
+                            <td><span class="status pending-status">Pending</span></td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="action-btn icon-btn approve-btn" title="Approve"><i class="fa-solid fa-check"></i></button>
+                                    <button class="action-btn icon-btn danger-btn" title="Reject"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="avatar" style="background:#C8B4D8;">P</div>
+                                    <div>
+                                        <h4>Pemba Sherpa</h4>
+                                        <span>V-0017</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Sherpa Woolen Arts</td>
+                            <td>pemba@sherpa.np</td>
+                            <td>19</td>
+                            <td>$3,420</td>
+                            <td>2025-01-20</td>
+                            <td><span class="status pending-status">Pending</span></td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="action-btn icon-btn approve-btn" title="Approve"><i class="fa-solid fa-check"></i></button>
+                                    <button class="action-btn icon-btn danger-btn" title="Reject"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="avatar" style="background:#F4D6D6;">B</div>
+                                    <div>
+                                        <h4>Binod Maharjan</h4>
+                                        <span>V-0016</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Patan Pottery Works</td>
+                            <td>binod@pottery.np</td>
+                            <td>0</td>
+                            <td>$0</td>
+                            <td>2023-11-04</td>
+                            <td><span class="status block-status">Suspended</span></td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="action-btn icon-btn" title="View"><i class="fa-solid fa-eye"></i></button>
+                                    <button class="action-btn icon-btn approve-btn" title="Reinstate"><i class="fa-solid fa-rotate-left"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-logo">
+                    <div class="logo-circle">क</div>
+                    <div><h3>KALAKOSH</h3><span>कला कोष</span></div>
+                </div>
+                <p>A platform dedicated to preserving and promoting authentic Nepali handicrafts worldwide.</p>
+            </div>
+            <div><h4>Categories</h4><ul><li>Paintings</li><li>Textiles</li><li>Pottery</li><li>Jewelry</li></ul></div>
+            <div><h4>Customer Service</h4><ul><li>About Us</li><li>Track Order</li><li>Shipping</li><li>Returns</li></ul></div>
+            <div><h4>Quick Links</h4><ul><li>Wishlist</li><li>Cart</li><li>Privacy Policy</li></ul></div>
+            <div><h4>Contact Us</h4><ul><li>+977 1 1234567</li><li>info@kalakosh.com</li><li>Kathmandu, Nepal</li></ul></div>
+        </div>
+        <div class="copyright">© 2026 KALAKOSH (कलाकोष). All Rights Reserved.</div>
+    </footer>
+
+    <script src="pages.js"></script>
+
+</body>
+</html>

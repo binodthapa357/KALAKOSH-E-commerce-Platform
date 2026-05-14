@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Contact | KALAKOSH</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --crimson:#7B1F1F;
+    --crimson-deep:#5C1515;
+    --gold:#C9973A;
+    --gold-light:#E8BE6A;
+
+    --cream:#F5EFE6;
+    --cream-dark:#EEE6D8;
+    --warm:#FBF8F2;
+
+    --text-dark:#2C1A0E;
+    --text-mid:#6A4A3A;
+    --border:#DDD0BE;
+
+    --shadow:rgba(44,26,14,0.08);
+}
+
+body{
+    font-family:Arial, sans-serif;
+    background:var(--warm);
+    color:var(--text-dark);
+}
+
+/* TOP BAR */
+
+.topbar{
+    background:var(--crimson);
+    color:white;
+    font-size:13px;
+    padding:10px 0;
+}
+
+.container{
+    width:90%;
+    max-width:1200px;
+    margin:auto;
+}
+
+.topbar-flex{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.top-links{
+    display:flex;
+    gap:24px;
+}
+
+.top-links a{
+    color:white;
+    text-decoration:none;
+}
+
+/* HEADER */
+
+  /* Header */
+
+        header{
+            background:var(--warm-white);
+            position:sticky;
+            top:0;
+            z-index:1000;
+            box-shadow:0 2px 12px var(--shadow);
+        }
+
+        .container{
+            max-width:1200px;
+            margin:auto;
+            padding:0 36px;
+        }
+
+        .header-item{
+            height:70px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+        }
+
+        .logo{
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+
+        .logo h1{
+            font-size:20px;
+            color:var(--crimson);
+        }
+
+        .nav-link{
+            display:flex;
+            gap:34px;
+            list-style:none;
+        }
+
+        .nav-link a{
+            text-decoration:none;
+            color:var(--text-mid);
+            font-weight:500;
+            transition:0.3s;
+        }
+
+        .nav-link a:hover,
+        .nav-link .active{
+            color:var(--gold);
+        }
+
+        .actions button{
+            background:none;
+            border:none;
+            font-size:18px;
+            cursor:pointer;
+            margin-left:14px;
+            position:relative;
+        }
+
+        .cart span{
+            position:absolute;
+            top:-6px;
+            right:-10px;
+            background:var(--crimson);
+            color:white;
+            font-size:10px;
+            padding:2px 6px;
+            border-radius:50%;
+        }
+
+/* HERO */
+
+.contact-hero{
+    background:#F5EEE4;
+    text-align:center;
+    padding:80px 20px;
+}
+
+.contact-hero p{
+    letter-spacing:6px;
+    color:#8E6A54;
+    font-size:13px;
+    margin-bottom:16px;
+}
+
+.contact-hero h1{
+    font-size:64px;
+    color:var(--crimson);
+    font-family:Georgia, serif;
+    margin-bottom:18px;
+}
+
+.contact-hero span{
+    color:var(--text-mid);
+    font-size:19px;
+}
+
+/* CONTACT SECTION */
+
+.contact-section{
+    padding:70px 0;
+    background:
+    radial-gradient(#E8DED1 1px, transparent 1px);
+
+    background-size:22px 22px;
+}
+
+.contact-grid{
+    display:grid;
+    grid-template-columns:2fr 0.9fr;
+    gap:34px;
+}
+
+/* FORM CARD */
+
+.form-card{
+    background:#F9F6F1;
+    border:1px solid var(--border);
+    border-radius:28px;
+    padding:36px;
+    box-shadow:0 4px 14px var(--shadow);
+}
+
+.form-card h2{
+    color:var(--crimson);
+    font-size:42px;
+    margin-bottom:34px;
+    font-family:Georgia, serif;
+}
+
+.form-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.input-group{
+    margin-bottom:24px;
+}
+
+.input-group label{
+    display:block;
+    margin-bottom:10px;
+    color:var(--text-mid);
+    font-size:15px;
+}
+
+.input-group input,
+.input-group textarea{
+    width:100%;
+    border:1px solid #D7CCBD;
+    background:#F7F2EB;
+    border-radius:18px;
+    padding:16px;
+    font-size:15px;
+    outline:none;
+}
+
+.input-group textarea{
+    resize:none;
+    height:180px;
+}
+
+.send-btn{
+    background:var(--crimson);
+    color:white;
+    border:none;
+    padding:16px 34px;
+    border-radius:999px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.send-btn:hover{
+    background:#922727;
+}
+
+/* SIDE CARD */
+
+.side-column{
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+}
+
+.contact-card,
+.map-card{
+    background:#F9F6F1;
+    border:1px solid var(--border);
+    border-radius:26px;
+    padding:28px;
+    box-shadow:0 4px 14px var(--shadow);
+}
+
+.contact-card h3{
+    color:var(--crimson);
+    font-size:34px;
+    margin-bottom:28px;
+    font-family:Georgia, serif;
+}
+
+.contact-info{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    margin-bottom:24px;
+    color:var(--text-mid);
+}
+
+.contact-info i{
+    color:var(--crimson);
+    margin-top:4px;
+}
+
+.socials{
+    display:flex;
+    gap:14px;
+    margin-top:20px;
+}
+
+.socials div{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#EFE5D8;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:var(--crimson);
+    cursor:pointer;
+}
+
+.map-card iframe{
+    width:100%;
+    height:260px;
+    border:none;
+    border-radius:18px;
+}
+
+.map-card p{
+    margin-top:14px;
+    color:var(--text-mid);
+    font-size:15px;
+}
+
+/* FOOTER */
+
+footer{
+    background:var(--crimson);
+    color:white;
+    padding:80px 0 30px;
+}
+
+.footer-grid{
+    display:grid;
+    grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;
+    gap:40px;
+}
+
+.footer-logo{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:20px;
+}
+
+.footer-logo-circle{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#E5A742;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:var(--crimson);
+    font-weight:bold;
+}
+
+footer h3{
+    color:#F4C56A;
+    margin-bottom:18px;
+}
+
+footer ul{
+    list-style:none;
+}
+
+footer li{
+    margin-bottom:12px;
+    color:#F3E8DA;
+}
+
+footer p{
+    color:#F3E8DA;
+    line-height:1.8;
+}
+
+.footer-socials{
+    display:flex;
+    gap:12px;
+    margin-top:22px;
+}
+
+.footer-socials div{
+    width:38px;
+    height:38px;
+    border:1px solid rgba(255,255,255,0.4);
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.payments{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:18px;
+}
+
+.payments span{
+    background:#FFF1D6;
+    color:#7B1F1F;
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:992px){
+
+    .contact-grid,
+    .footer-grid,
+    .form-row{
+        grid-template-columns:1fr;
+    }
+
+    .nav-links{
+        display:none;
+    }
+
+    .contact-hero h1{
+        font-size:42px;
+    }
+
+    .form-card h2,
+    .contact-card h3{
+        font-size:32px;
+    }
+
+    .top-links{
+        display:none;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- TOPBAR -->
+
+<div class="topbar">
+
+    <div class="container topbar-flex">
+
+        <div>
+            🚚 FREE SHIPPING on orders above Rs. 5000 within Nepal
+        </div>
+
+        <div class="top-links">
+            <a href="#">Track Order</a>
+            <a href="#">Help & Support</a>
+            <a href="#">Vendor</a>
+            <a href="#">Admin</a>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- HEADER -->
+
+<header>
+
+    <div class="container">
+
+            <div class="header-item">
+
+                <div class="logo">
+                    <img src="assets/logo.png" alt="KALAKOSH" height="40">
+                    <h1>KALAKOSH</h1>
+                </div>
+
+                <nav>
+                    <ul class="nav-link">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Shop</a></li>
+                        <li><a href="#">Categories</a></li>
+                        <li><a href="#" class="active">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </nav>
+
+                <div class="actions">
+                    <button>♡</button>
+
+                    <button class="cart">
+                        🛒
+                        <span>5</span>
+                    </button>
+
+                    <button>👤</button>
+                </div>
+
+            </div>
+
+        </div>
+</header>
+
+<!-- HERO -->
+
+<section class="contact-hero">
+
+    <p>GET IN TOUCH</p>
+
+    <h1>Contact Us</h1>
+
+    <span>
+        We'd love to hear from you — about products,
+        partnerships, or just to say नमस्ते.
+    </span>
+
+</section>
+
+<!-- CONTACT -->
+
+<section class="contact-section">
+
+    <div class="container">
+
+        <div class="contact-grid">
+
+            <!-- FORM -->
+
+            <div class="form-card">
+
+                <h2>Send a message</h2>
+
+                <div class="form-row">
+
+                    <div class="input-group">
+                        <label>Name</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Email</label>
+                        <input type="email">
+                    </div>
+
+                </div>
+
+                <div class="input-group">
+                    <label>Subject</label>
+                    <input type="text">
+                </div>
+
+                <div class="input-group">
+                    <label>Message</label>
+                    <textarea></textarea>
+                </div>
+
+                <button class="send-btn">
+                    Send Message
+                </button>
+
+            </div>
+
+            <!-- RIGHT -->
+
+            <div class="side-column">
+
+                <div class="contact-card">
+
+                    <h3>Reach us</h3>
+
+                    <div class="contact-info">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>Thamel, Kathmandu, Nepal 44600</span>
+                    </div>
+
+                    <div class="contact-info">
+                        <i class="fa-solid fa-phone"></i>
+                        <span>+977 1 234567</span>
+                    </div>
+
+                    <div class="contact-info">
+                        <i class="fa-regular fa-envelope"></i>
+                        <span>hello@kalakosh.com</span>
+                    </div>
+
+                    <div class="socials">
+
+                        <div>
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </div>
+
+                        <div>
+                            <i class="fa-brands fa-instagram"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="map-card">
+
+                    <iframe
+                    src="https://maps.google.com/maps?q=thamel%20kathmandu&t=&z=13&ie=UTF8&iwloc=&output=embed">
+                    </iframe>
+
+                    <p>
+                        Visit us in Thamel, the cultural heart of Kathmandu.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- FOOTER -->
+
+<footer>
+
+    <div class="container footer-grid">
+
+        <div>
+
+            <div class="footer-logo">
+
+                <div class="footer-logo-circle">क</div>
+
+                <div>
+                    <h2>KALAKOSH</h2>
+                    <small>हस्त कला कोष</small>
+                </div>
+
+            </div>
+
+            <p>
+                A platform dedicated to preserving and promoting
+                authentic Nepali handicrafts worldwide.
+            </p>
+
+            <div class="footer-socials">
+
+                <div><i class="fa-brands fa-facebook-f"></i></div>
+                <div><i class="fa-brands fa-instagram"></i></div>
+                <div><i class="fa-brands fa-youtube"></i></div>
+                <div><i class="fa-brands fa-twitter"></i></div>
+
+            </div>
+
+        </div>
+
+        <div>
+
+            <h3>Categories</h3>
+
+            <ul>
+                <li>Paintings</li>
+                <li>Textiles</li>
+                <li>Pottery</li>
+                <li>Jewelry</li>
+                <li>Wood Crafts</li>
+            </ul>
+
+        </div>
+
+        <div>
+
+            <h3>Customer Service</h3>
+
+            <ul>
+                <li>About Us</li>
+                <li>Contact Us</li>
+                <li>Track Order</li>
+                <li>Shipping & Delivery</li>
+                <li>Returns & Refunds</li>
+            </ul>
+
+        </div>
+
+        <div>
+
+            <h3>Quick Links</h3>
+
+            <ul>
+                <li>My Account</li>
+                <li>Wishlist</li>
+                <li>Cart</li>
+                <li>Terms & Conditions</li>
+                <li>Privacy Policy</li>
+            </ul>
+
+        </div>
+
+        <div>
+
+            <h3>Contact Us</h3>
+
+            <ul>
+                <li>📞 +977 1 1234567</li>
+                <li>✉ info@kalakosh.com</li>
+                <li>📍 Kathmandu, Nepal</li>
+            </ul>
+
+            <div class="payments">
+                <span>eSewa</span>
+                <span>Khalti</span>
+                <span>VISA</span>
+                <span>MC</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>

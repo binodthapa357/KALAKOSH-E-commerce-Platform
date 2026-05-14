@@ -144,6 +144,11 @@
             background: #d39a3f;
         }
 
+        .nav-links a {
+            text-decoration: none;
+            color: inherit;
+        }
+
         .nav-icons {
             display: flex;
             gap: 25px;
@@ -1581,8 +1586,10 @@
             </span>
 
             <span>
-                <i class="fa-solid fa-shield"></i>
-                Admin
+                <a href="admin/admin-login.html" style="text-decoration: none; color: inherit;">
+                    <i class="fa-solid fa-shield"></i>
+                    Admin
+                </a>
             </span>
 
         </div>
@@ -1593,7 +1600,7 @@
 
     <nav class="navbar">
 
-        <div class="logo-section">
+        <a href="index.html" class="logo-section" style="text-decoration:none; color:inherit;">
 
             <div class="logo-circle">
                 क
@@ -1604,15 +1611,14 @@
                 <p>कलाकोष</p>
             </div>
 
-        </div>
-
+        </a>
         <ul class="nav-links">
 
-            <li class="active">Home</li>
-            <li>Shop</li>
-            <li>Categories</li>
-            <li>About</li>
-            <li>Contact</li>
+            <li class="active"><a href="index.html">Home</a></li>
+            <li><a href="shop.html">Shop</a></li>
+            <li><a href="categories.html">Categories</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
 
         </ul>
 
@@ -2258,12 +2264,7 @@
 
         <!-- FOOTER BOTTOM -->
 
-        <div class="footer-bottom">
-
-            © 2026 KALAKOSH (कलाकोष). All Rights Reserved.
-            Crafted with love in the Himalayas.
-
-        </div>
+        
 
     </footer>
 

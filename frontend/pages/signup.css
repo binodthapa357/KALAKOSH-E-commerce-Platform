@@ -1,0 +1,341 @@
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:15px;
+}.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+/* RESET */
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body{
+  font-family: 'Poppins', sans-serif;
+  background: #f8f2ec;
+  color: #2f1e1e;
+}
+
+/* TOP BAR */
+
+.top-bar{
+  background: #7d1717;
+  color: white;
+  padding: 12px 60px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-size: 14px;
+}
+
+.top-menu{
+  display: flex;
+  gap: 25px;
+}
+
+.top-menu a{
+  text-decoration: none;
+  color: white;
+}
+
+/* NAVBAR */
+
+.navbar{
+  background: #f5efe8;
+  height: 90px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0 60px;
+
+  border-bottom: 1px solid #e5d7ca;
+}
+
+/* LOGO */
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:15px;
+}.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+/* NAV LINKS */
+
+.nav-links{
+  list-style: none;
+  display: flex;
+  gap: 40px;
+}
+
+.nav-links a{
+  text-decoration: none;
+  color: #463636;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.nav-links a:hover{
+  color: #7d1717;
+}
+
+/* NAV ICONS */
+
+.nav-icons{
+  display: flex;
+  gap: 20px;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* MAIN CONTAINER */
+
+.main-container{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  min-height: calc(100vh - 140px);
+}
+
+/* FORM SECTION */
+
+.form-section{
+  background: #f8f3ed;
+  padding: 70px 80px;
+
+  position: relative;
+}
+
+/* dotted background */
+
+.form-section::before{
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background-image: radial-gradient(#dfd0c3 1px, transparent 1px);
+  background-size: 24px 24px;
+
+  opacity: 0.5;
+}
+
+.form-box{
+  position: relative;
+  z-index: 1;
+
+  max-width: 480px;
+}
+
+.form-box h2{
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 64px;
+  color: #7d1717;
+  margin-bottom: 10px;
+}
+
+.subtitle{
+  margin-bottom: 40px;
+  color: #5b4a4a;
+  font-size: 20px;
+}
+
+/* INPUTS */
+
+.input-group{
+  margin-bottom: 28px;
+}
+
+.input-group label{
+  display: block;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.input-group input{
+  width: 100%;
+  height: 60px;
+
+  border-radius: 18px;
+  border: 1px solid #dbcfc4;
+
+  padding: 0 20px;
+  font-size: 16px;
+
+  outline: none;
+  transition: 0.3s;
+}
+
+.input-group input:focus{
+  border-color: #7d1717;
+  box-shadow: 0 0 0 3px rgba(125, 23, 23, 0.1);
+}
+
+/* BUTTON */
+
+.register-btn{
+  width: 100%;
+  height: 62px;
+
+  border: none;
+  border-radius: 40px;
+
+  background: #7d1717;
+  color: white;
+
+  font-size: 22px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: 0.3s;
+
+  margin-top: 10px;
+}
+
+.register-btn:hover{
+  background: #5d1010;
+}
+
+/* SIGN IN */
+
+.signin-text{
+  text-align: center;
+  margin-top: 28px;
+  font-size: 18px;
+  color: #5d4a4a;
+}
+
+.signin-text a{
+  color: #7d1717;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* HERO SECTION */
+
+.hero-section{
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay{
+  position: absolute;
+  inset: 0;
+
+  background: rgba(104, 8, 8, 0.45);
+}
+
+/* HERO CONTENT */
+
+.hero-content{
+  position: absolute;
+  left: 60px;
+  bottom: 70px;
+
+  color: white;
+  z-index: 1;
+}
+
+.hero-content h1{
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 70px;
+  line-height: 1.1;
+  font-weight: 500;
+
+  max-width: 650px;
+}
+
+.hero-content span{
+  color: #f0ba58;
+  font-style: italic;
+}
+
+.hero-content p{
+  margin-top: 20px;
+  font-size: 24px;
+  font-weight: 300;
+}
+
+/* RESPONSIVE */
+
+@media(max-width: 1100px){
+
+  .main-container{
+    grid-template-columns: 1fr;
+  }
+
+  .hero-section{
+    height: 500px;
+  }
+
+}
+
+@media(max-width: 768px){
+
+  .top-bar{
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .navbar{
+    padding: 0 20px;
+  }
+
+  .nav-links{
+    display: none;
+  }
+
+  .form-section{
+    padding: 40px 25px;
+  }
+
+  .form-box h2{
+    font-size: 48px;
+  }
+
+  .hero-content{
+    left: 25px;
+    bottom: 40px;
+  }
+
+  .hero-content h1{
+    font-size: 48px;
+  }
+
+  .hero-content p{
+    font-size: 18px;
+  }
+
+}

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - KALAKOSH</title>
+
+    <link rel="stylesheet" href="cart.css">
+</head>
+<body>
+
+    <!-- Free Shipping -->
+    <div class="free-shipping">
+        🚚 FREE SHIPPING on orders above Rs. 5000 within Nepal
+    </div>
+
+    <!-- Header -->
+    <header>
+
+        <div class="container">
+
+            <div class="header-item">
+
+                <div class="logo">
+                     <img src="assets/logo.png" alt="KALAKOSH" height="40">
+                    <h1>KALAKOSH</h1>
+                    
+                </div>
+
+                <nav>
+
+                    <ul class="nav-links">
+
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="#">Shop</a></li>
+                        <li><a href="#">Categories</a></li>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+
+                    </ul>
+
+                </nav>
+
+                <div class="actions">
+
+                    <button>♡</button>
+
+                    <button class="cart-btn">
+                        🛒
+                        <span class="cart-count">1</span>
+                    </button>
+
+                    <button>👤</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <!-- Cart Section -->
+
+    <section class="cart-section">
+
+        <div class="container">
+
+            <div class="cart-layout">
+
+                <!-- Left Side -->
+
+                <div class="cart-items">
+
+                    <h2>Your Cart</h2>
+
+                    <!-- Empty Cart -->
+
+                    <div class="empty-cart" id="empty-cart">
+
+                        <h2>Your Cart is Empty</h2>
+
+                        <p>
+                            Add products to continue shopping.
+                        </p>
+
+                        <button class="shop-btn"
+                            onclick="window.location.href='index.html'">
+
+                            Continue Shopping
+
+                        </button>
+
+                    </div>
+
+                    <!-- Cart Content -->
+
+                    <div id="cart-content">
+
+                        <div class="cart-card">
+
+                            <div class="product">
+
+                                <img src="assets/image.png" alt="product">
+
+                                <div class="product-info">
+
+                                    <h2>Sacred Tara Thangka</h2>
+
+                                    <p>Kathmandu</p>
+
+                                    <h3>Rs.189</h3>
+
+                                </div>
+
+                            </div>
+
+                            <div class="quantity">
+
+                                <button>-</button>
+
+                                <span>1</span>
+
+                                <button>+</button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Summary -->
+
+                <div class="summary" id="summary">
+
+                    <h2>Order Summary</h2>
+
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>$189</span>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span>Free</span>
+                    </div>
+
+                    <hr>
+
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>$189</span>
+                    </div>
+
+                    <button class="checkout-btn"
+                        onclick="window.location.href='checkout.html'">
+
+                        Checkout
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+
+        <!-- Brand -->
+        <div class="footer-col brand">
+            <div class="logo">
+                <div class="logo-circle">
+                    <img src="assets/logo.png" alt="KALAKOSH" height="30">
+                </div>
+                <div>
+                    <h2>KALAKOSH</h2>
+                    <span>कलाकोष</span>
+                 
+                </div>
+               
+            </div>
+               <p>
+                A platform dedicated to preserving and promoting authentic Nepali handicrafts worldwide.
+            </p>
+
+            <div class="social-icons">
+                <a href="#">f</a>
+                <a href="#">◎</a>
+                <a href="#">▶</a>
+                <a href="#">🐦</a>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="footer-col">
+            <h3>Categories</h3>
+            <ul>
+                <li><a href="#">Paintings</a></li>
+                <li><a href="#">Textiles</a></li>
+                <li><a href="#">Pottery</a></li>
+                <li><a href="#">Jewelry</a></li>
+                <li><a href="#">Wood Crafts</a></li>
+            </ul>
+        </div>
+
+        <!-- Customer Service -->
+        <div class="footer-col">
+            <h3>Customer Service</h3>
+            <ul>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Contact Us</a></li>
+                <li><a href="#">Track Order</a></li>
+                <li><a href="#">Shipping & Delivery</a></li>
+                <li><a href="#">Returns & Refunds</a></li>
+                <li><a href="#">FAQ</a></li>
+            </ul>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-col">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="#">My Account</a></li>
+                <li><a href="#">Wishlist</a></li>
+                <li><a href="#">Cart</a></li>
+                <li><a href="#">Terms & Conditions</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+            </ul>
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-col">
+            <h3>Contact Us</h3>
+            <ul class="contact-info">
+                <li>📞 +977 1 1234567</li>
+                <li>✉ info@kalakosh.com</li>
+                <li>📍 Kathmandu, Nepal</li>
+            </ul>
+
+            <h4>WE ACCEPT</h4>
+            <div class="payments">
+                <span>eSewa</span>
+                <span>Khalti</span>
+                <span>VISA</span>
+                <span>MC</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+        © 2026 KALAKOSH (कलाकोष). All Rights Reserved. Crafted with love in the Himalayas.
+    </div>
+</footer>
+
+    <script src="cart.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vendor Sign In - Kalakosh</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    <!-- Shared Styles -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #fdfaf6; font-family: 'Poppins', sans-serif; color: #2d1a16; }
+
+        /* TOP BAR */
+        .top-bar { background: #7d1d1d; color: white; padding: 10px 35px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+        .top-left { display: flex; align-items: center; gap: 8px; }
+        .top-right { display: flex; align-items: center; gap: 22px; }
+        .top-right span { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+
+        /* NAVBAR */
+        .navbar { height: 82px; background: #f8f3eb; display: flex; justify-content: space-between; align-items: center; padding: 0 35px; border-bottom: 1px solid #ddd3c8; }
+        .logo-section { display: flex; align-items: center; gap: 14px; text-decoration: none;}
+        .logo-circle { width: 40px; height: 40px; border-radius: 50%; background: #d39a3f; display: flex; justify-content: center; align-items: center; font-weight: 600; color: #3a1b14; }
+        .logo-text h2 { font-size: 18px; color: #7d1d1d; letter-spacing: 1px; }
+        .logo-text p { font-size: 12px; color: #7a6d65; }
+        
+        .nav-links { display: flex; gap: 40px; list-style: none; }
+        .nav-links li { cursor: pointer; font-size: 15px; color: #5d4a44; position: relative; }
+        .nav-links .active { color: #7d1d1d; }
+        .nav-icons { display: flex; gap: 25px; font-size: 18px; color: #2d1a16; align-items: center; }
+
+        /* FOOTER */
+        .footer { background: #7d1d1d; color: white; padding: 60px 40px 20px; margin-top: 60px;}
+        .footer-content { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr; gap: 40px; max-width: 1200px; margin: 0 auto; }
+        .footer-logo { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+        .footer-logo .logo-circle { background: #d39a3f; }
+        .footer-logo h2 { color: white; font-size: 18px; }
+        .footer-logo p { color: #e0d5ce; font-size: 12px; }
+        .footer-desc { color: #e0d5ce; font-size: 13px; line-height: 1.6; margin-bottom: 20px; max-width: 250px; }
+        .social-icons { display: flex; gap: 12px; }
+        .social-icons a { width: 35px; height: 35px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.3); display: flex; justify-content: center; align-items: center; color: white; text-decoration: none; transition: 0.3s; }
+        .social-icons a:hover { background: white; color: #7d1d1d; }
+        
+        .footer-col h3 { font-family: 'Cormorant Garamond', serif; font-size: 20px; margin-bottom: 20px; font-weight: 500; color: #d39a3f; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 12px; }
+        .footer-col ul li a { color: #e0d5ce; text-decoration: none; font-size: 14px; transition: 0.3s; }
+        .footer-col ul li a:hover { color: white; }
+        
+        .contact-info li { display: flex; gap: 10px; color: #e0d5ce; font-size: 14px; margin-bottom: 12px; }
+        .payment-methods { margin-top: 20px; }
+        .payment-methods p { font-size: 12px; color: #e0d5ce; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .payment-icons { display: flex; gap: 8px; }
+        .payment-icons span { background: white; color: #333; font-size: 10px; font-weight: bold; padding: 4px 8px; border-radius: 4px; }
+        
+        .footer-bottom { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; color: #e0d5ce; }
+
+    </style>
+    <link rel="stylesheet" href="vendor-signin.css" />
+</head>
+
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="top-left">
+            <i class="fa-solid fa-truck"></i>
+            <span><strong>FREE SHIPPING</strong> on orders above Rs. 5000 within Nepal</span>
+        </div>
+        <div class="top-right">
+            <span><i class="fa-solid fa-box"></i> Track Order</span>
+            <span><i class="fa-solid fa-headset"></i> Help & Support</span>
+            <span><i class="fa-solid fa-store"></i> Vendor</span>
+            <span><i class="fa-solid fa-user-shield"></i> Admin</span>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="index.html" class="logo-section">
+            <div class="logo-circle">क</div>
+            <div class="logo-text">
+                <h2>KALAKOSH</h2>
+                <p>कला कोष</p>
+            </div>
+        </a>
+
+        <ul class="nav-links">
+            <li>Home</li>
+            <li>Shop</li>
+            <li>Categories</li>
+            <li>About</li>
+            <li>Contact</li>
+        </ul>
+
+        <div class="nav-icons">
+            <i class="fa-regular fa-heart"></i>
+            <div class="cart-wrapper">
+                <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+            <i class="fa-regular fa-user"></i>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="signin-container">
+        <div class="signin-card">
+            <div class="signin-header">
+                <p class="subtitle">ARTISAN STUDIO</p>
+                <h1>Vendor Sign In</h1>
+            </div>
+
+            <form action="vendor-dashboard.html" class="signin-form">
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="vendor@kalakosh.com" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+
+                <div class="form-actions">
+                    <label class="remember-me">
+                        <input type="checkbox"> Remember me
+                    </label>
+                    <a href="#" class="forgot-pwd">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="submit-btn">Sign In to Studio</button>
+            </form>
+
+            <div class="signin-footer">
+                <p>Want to sell on Kalakosh? <a href="#">Apply as Artisan</a></p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <div class="logo-circle">क</div>
+                    <div class="logo-text">
+                        <h2>KALAKOSH</h2>
+                        <p>कला कोष</p>
+                    </div>
+                </div>
+                <p class="footer-desc">A platform dedicated to preserving and promoting authentic Nepali handicrafts worldwide.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h3>Categories</h3>
+                <ul>
+                    <li><a href="#">Paintings</a></li>
+                    <li><a href="#">Textiles</a></li>
+                    <li><a href="#">Pottery</a></li>
+                    <li><a href="#">Jewelry</a></li>
+                    <li><a href="#">Wood Crafts</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Customer Service</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Track Order</a></li>
+                    <li><a href="#">Shipping & Delivery</a></li>
+                    <li><a href="#">Returns & Refunds</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">My Account</a></li>
+                    <li><a href="#">Wishlist</a></li>
+                    <li><a href="#">Cart</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Contact Us</h3>
+                <ul class="contact-info">
+                    <li><i class="fa-solid fa-phone"></i> +977 1 1234567</li>
+                    <li><i class="fa-regular fa-envelope"></i> info@kalakosh.com</li>
+                    <li><i class="fa-solid fa-location-dot"></i> Kathmandu, Nepal</li>
+                </ul>
+                <div class="payment-methods">
+                    <p>WE ACCEPT</p>
+                    <div class="payment-icons">
+                        <span>eSewa</span>
+                        <span>Khalti</span>
+                        <span>VISA</span>
+                        <span>MC</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 KALAKOSH (कला कोष). All Rights Reserved. Crafted with love in the Himalayas.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,12 +1,13 @@
 import express, { response } from "express";
 import { readFile } from "fs";
 
-
 import fs from "fs/promises";
 import config from "./config/config.js";
+import connectDB from "./config/db.js";
 
 const app = express();
 
+connectDB();
 
 app.get("/", (request, response) => {
   response.send("Home Page");

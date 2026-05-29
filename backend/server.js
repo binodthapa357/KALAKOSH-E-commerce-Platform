@@ -8,6 +8,7 @@ import productRoute from "./src/routes/product.route.js";
 import connectDB from "./src/config/db.js";
 
 const app = express();
+app.use(express.json());
 
 connectDB();
 

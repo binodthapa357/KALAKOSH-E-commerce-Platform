@@ -1,27 +1,61 @@
-import fs from "fs/promises";
 import productService from "../services/product.service.js";
 
 const getAllProducts = async (req, res) => {
-  const products = await productService.getAllProducts();
-
-  res.json(products);
+  try {
+    const products = await productService.getAllProducts();
+    res.json(products);
+  } catch (error) {
+    console.error("Error in getAllProducts:", error);
+    res.status(500).json({ message: "Error fetching products", error: error.message });
+  }
 };
 
 const getFirstProduct = async (req, res) => {
-  const product = await productService.getFirstProduct();
-  res.json(product);
+  try {
+    const product = await productService.getFirstProduct();
+    res.json(product);
+  } catch (error) {
+    console.error("Error in getFirstProduct:", error);
+    res.status(500).json({ message: "Error fetching product", error: error.message });
+  }
 };
 
 const getProductByID = async (req, res) => {
-  const id = req.params.id;
-  const product = await productService.getProductByID(id);
-  if (!product) return res.status(404).json({ message: "Product not found." });
-  res.json(product);
+  try {
+    const id = req.params.id;
+    const product = await productService.getProductByID(id);
+    if (!product) return res.status(404).json({ message: "Product not found." });
+    res.json(product);
+  } catch (error) {
+    console.error("Error in getProductByID:", error);
+    res.status(500).json({ message: "Error fetching product by ID", error: error.message });
+  }
 };
 
 const createProduct = async (req, res) => {
-  const product = await productService.createProduct(req.body);
-  res.status(201).json(product);
+  try {
+    const { name, category, price } = req.body;
+    
+    // Explicit body validation to return precise bad request responses
+    if (!name) {
+      return res.status(400).json({ message: "Validation error: Product name is required" });
+    }
+    if (!category) {
+      return res.status(400).json({ message: "Validation error: Product category is required" });
+    }
+    if (price === undefined || price === null) {
+      return res.status(400).json({ message: "Validation error: Product price is required" });
+    }
+    if (isNaN(price) || price < 0) {
+      return res.status(400).json({ message: "Validation error: Product price must be a positive number" });
+    }
+
+    const product = await productService.createProduct(req.body);
+    res.status(201).json(product);
+  } catch (error) {
+    console.error("Error in createProduct:", error);
+    res.status(400).json({ message: error.message });
+  }
 };
 
 export default {

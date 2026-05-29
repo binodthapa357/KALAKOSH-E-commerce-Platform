@@ -20,8 +20,8 @@ const getProductByID = async (req, res) => {
 };
 
 const createProduct = async (req, res) => {
-  const product = await productService.getProduct();
-  res.json(product);
+  const product = await productService.createProduct(req.body);
+  res.status(201).json(product);
 };
 
 export default {

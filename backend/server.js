@@ -4,7 +4,7 @@ import { readFile } from "fs";
 import fs from "fs/promises";
 import config from "./src/config/config.js";
 
-import productRoute from "./routes/product.route.js";
+import productRoute from "./src/routes/product.route.js";
 import connectDB from "./src/config/db.js";
 
 const app = express();

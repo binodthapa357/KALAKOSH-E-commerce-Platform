@@ -1,6 +1,6 @@
 import { error } from "console";
 import mongoose from "mongoose";
-import config from "./src/config.js";
+import config from "./config.js";
 
 function connectDB() {
   mongoose

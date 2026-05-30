@@ -31,7 +31,7 @@ const getProductByID = async (req, res) => {
     res.status(500).json({ message: "Error fetching product by ID", error: error.message });
   }
 };
-
+//updated by Bibhusha
 const createProduct = async (req, res) => {
   try {
     const { name, category, price } = req.body;
@@ -58,9 +58,21 @@ const createProduct = async (req, res) => {
   }
 };
 
+const searchProducts = async (req, res) => {
+  try {
+    const { keyword, category, minPrice, maxPrice } = req.query;
+    const products = await productService.searchProducts({ keyword, category, minPrice, maxPrice });
+    res.json(products);
+  } catch (error) {
+    console.error("Error in searchProducts:", error);
+    res.status(500).json({ message: "Error searching products", error: error.message });
+  }
+};
+
 export default {
   getAllProducts,
   getFirstProduct,
   getProductByID,
   createProduct,
+  searchProducts,
 };

@@ -20,17 +20,24 @@ const getFirstProduct = async (req, res) => {
   }
 };
 
+//Updated By Spriha
 const getProductByID = async (req, res) => {
   try {
     const id = req.params.id;
     const product = await productService.getProductByID(id);
-    if (!product) return res.status(404).json({ message: "Product not found." });
-    res.json(product);
+    res.status(200).json({
+      success: true,
+      data: product,
+    });
   } catch (error) {
     console.error("Error in getProductByID:", error);
-    res.status(500).json({ message: "Error fetching product by ID", error: error.message });
+    res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Server error",
+    });
   }
 };
+
 //updated by Bibhusha
 const createProduct = async (req, res) => {
   try {

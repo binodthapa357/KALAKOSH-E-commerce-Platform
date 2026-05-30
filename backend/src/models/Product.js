@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+const reviewSchema = new mongoose.Schema({
+  reviewerName: { type: String, required: true },
+  rating:       { type: Number, min: 1, max: 5, required: true },
+  comment:      { type: String },
+  createdAt:    { type: Date, default: Date.now },
+});
+
 const productScheme = new mongoose.Schema(
   {
     name: {
@@ -40,6 +47,12 @@ const productScheme = new mongoose.Schema(
       enum: ["Active", "Inactive"],
       default: "Active",
     },
+    artisan: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    ratings: { type: Number, default: 0 },
+    reviews: [reviewSchema],
   },
   {
     timestamps: true,

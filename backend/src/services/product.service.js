@@ -8,8 +8,15 @@ const getFirstProduct = async () => {
   return await Product.findOne();
 };
 
+//Updated By Spriha
 const getProductByID = async (id) => {
-  return await Product.findById(id);
+  const product = await Product.findById(id).populate("artisan", "name district bio");
+  if (!product) {
+    const err = new Error("Product not found");
+    err.statusCode = 404;
+    throw err;
+  }
+  return product;
 };
 
 const createProduct = async (data) => {

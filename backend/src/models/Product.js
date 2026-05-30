@@ -1,7 +1,12 @@
 import mongoose from "mongoose";
+import Counter from "./Counter.js";
 
 const productScheme = new mongoose.Schema(
   {
+    productId: {
+      type: Number,
+      unique: true,
+    },
     name: {
       type: String,
       required: [true, "Product name is required"],
@@ -47,5 +52,18 @@ const productScheme = new mongoose.Schema(
 );
 
 productScheme.index({ name: "text", description: "text" });
+
+// Auto-increment productId before saving a new product
+productScheme.pre("save", async function (next) {
+  if (this.isNew) {
+    const counter = await Counter.findByIdAndUpdate(
+      { _id: "productId" },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+    this.productId = counter.seq;
+  }
+  next();
+});
 
 export default mongoose.model("Product", productScheme);

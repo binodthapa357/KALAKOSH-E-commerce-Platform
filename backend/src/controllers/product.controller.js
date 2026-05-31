@@ -8,7 +8,9 @@ const getAllProducts = async (req, res) => {
     console.error("Error in getAllProducts:", error);
     res.status(500).json({ message: "Error fetching products", error: error.message });
   }
+  
 };
+
 
 const getFirstProduct = async (req, res) => {
   try {
@@ -57,6 +59,8 @@ const createProduct = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+
 
 export default {
   getAllProducts,

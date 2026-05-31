@@ -16,9 +16,12 @@ const createProduct = async (data) => {
   return await Product.create(data);
 };
 
+
+
 export default {
   getAllProducts,
   getFirstProduct,
   getProductByID,
   createProduct,
+ 
 };

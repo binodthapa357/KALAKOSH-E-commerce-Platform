@@ -10,4 +10,5 @@ router.get("/:id", productController.getProductByID);
 
 router.post("/", productController.createProduct);
 
+
 export default router;

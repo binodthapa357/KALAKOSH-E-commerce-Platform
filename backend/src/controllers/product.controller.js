@@ -59,6 +59,53 @@ const createProduct = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+const searchProducts = async (req, res) => {
+  try {
+    const { keyword, category, minPrice, maxPrice } = req.query;
+    const products = await productService.searchProducts({ keyword, category, minPrice, maxPrice });
+    res.json(products);
+  } catch (error) {
+    console.error("Error in searchProducts:", error);
+    res.status(500).json({ message: "Error searching products", error: error.message });
+  }
+};
+
+const updateProduct = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ message: "Validation error: Request body is empty or missing. Please ensure you are sending JSON data." });
+    }
+
+    const { name, category, price } = req.body;
+
+    // Optional validation: only validate fields if they are provided (not undefined)
+    if (name !== undefined && !name) {
+      return res.status(400).json({ message: "Validation error: Product name cannot be empty" });
+    }
+    if (category !== undefined && !category) {
+      return res.status(400).json({ message: "Validation error: Product category cannot be empty" });
+    }
+    if (price !== undefined) {
+      if (price === null) {
+        return res.status(400).json({ message: "Validation error: Product price is required" });
+      }
+      if (isNaN(price) || price < 0) {
+        return res.status(400).json({ message: "Validation error: Product price must be a positive number" });
+      }
+    }
+
+    const updatedProduct = await productService.updateProduct(id, req.body);
+    if (!updatedProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.json(updatedProduct);
+  } catch (error) {
+    console.error("Error in updateProduct:", error);
+    res.status(400).json({ message: error.message });
+  }
+};
 
 export default {
   getAllProducts,
@@ -66,4 +113,5 @@ export default {
   getProductByID,
   createProduct,
   searchProducts,
+  updateProduct,
 };

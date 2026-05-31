@@ -40,10 +40,15 @@ const searchProducts = async ({ keyword, category, minPrice, maxPrice }) => {
   return await Product.find(filter);
 };
 
+const updateProduct = async (id, data) => {
+  return await Product.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+};
+
 export default {
   getAllProducts,
   getFirstProduct,
   getProductByID,
   createProduct,
   searchProducts,
+  updateProduct,
 };

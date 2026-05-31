@@ -11,6 +11,6 @@ router.get("/search", validateSearch, productController.searchProducts);
 router.get("/:id", productController.getProductByID);
 
 router.post("/", productController.createProduct);
-
+router.put("/:id", productController.updateProduct);
 
 export default router;

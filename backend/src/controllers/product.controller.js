@@ -33,7 +33,7 @@ const getProductByID = async (req, res) => {
     res.status(500).json({ message: "Error fetching product by ID", error: error.message });
   }
 };
-
+//updated by Bibhusha
 const createProduct = async (req, res) => {
   try {
     const { name, category, price } = req.body;
@@ -60,11 +60,10 @@ const createProduct = async (req, res) => {
   }
 };
 
-
-
 export default {
   getAllProducts,
   getFirstProduct,
   getProductByID,
   createProduct,
+  searchProducts,
 };

@@ -5,6 +5,7 @@ import {
   forgotPassword,
   resetPassword,
   getMe,
+  createVendorProfile,
 } from "../controllers/auth.controller.js";
 import { protect } from "../middleware/auth.middleware.js";
 
@@ -18,5 +19,6 @@ router.put("/reset-password", resetPassword);
 
 // Protected routes (Requires valid JWT session)
 router.get("/me", protect, getMe);
+router.post("/vendor", protect, createVendorProfile);
 
 export default router;

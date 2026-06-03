@@ -240,7 +240,11 @@ export const getMe = async (req, res, next) => {
         updatedAt: req.user.updatedAt,
       },
     });
+  } catch (error) {
+    next(error);
+  }
 };
+
 
 /**
  * @desc    Create a vendor profile for an authenticated user with vendor role

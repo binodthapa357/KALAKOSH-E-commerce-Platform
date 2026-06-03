@@ -305,54 +305,115 @@ Recommended .gitignore
 
 node_modules
 .env
-Future Backend Features
-## PHASE 2 — Authentication
-Register
-Login
-JWT Auth
-Protected Routes
-Roles
-Admin
-Seller
-Customer
-## PHASE 3 — Product System
-Product CRUD
-Categories
-Stock
-Product Images
-## PHASE 4 — Cart & Orders
-Add to cart
-Checkout
-Order history
-## PHASE 5 — Payment Integration
+# Completed Backend Architecture & Features
 
-Possible Nepal payment gateways:
+We have completed the entire foundational architecture of the **Kala Kosh Backend Services**, fully implementing robust and secure RESTful APIs for Authentication, Categories, Products, and Reviews.
 
-eSewa
-Khalti
-## PHASE 6 — Admin Dashboard APIs
-Manage users
-Manage sellers
-Manage products
-Analytics
-## PHASE 7 — Deployment
+## 🚀 Fully Implemented Modules
 
-Deploy backend on:
+### 👤 1. Authentication & Security (Phase 2 Complete)
+- **Registration & Login**: Secure signup with bcryptjs password hashing and role-based assignments (`user`, `vendor`, `admin`).
+- **JWT Protection**: Restricts sensitive resources using a robust `protect` session guard.
+- **Role-based Authorization**: Restricts capabilities using `authorize(...roles)` middlewares.
+- **OTP Password Reset**: Triggers custom generated 6-digit verification codes using highly secure SHA-256 database hashing, complete with automatic 10-minute expiry validations and responsive HTML notification emailing.
 
-Render
-Railway
-VPS
-DigitalOcean
-Important Advice
+### 📂 2. Category Hierarchy
+- **Auto-slugification**: Automates clean, search-friendly slugs on Mongoose schema pre-validation.
+- **Category Queries**: Supports parent/child relationships to build deep nested category views.
 
-After setup is complete:
+### 🎨 3. Comprehensive Product Module (Phase 3 Complete)
+- **Multi-criteria Feed**: Returns paginated products with multi-property queries (`category`, `region`, `material`, price range) and sorting (`price`, `-price`, `rating`, `newest`).
+- **Clash Protection**: Orders routes strictly to prevent Express route-matching parameter collisions.
+- **Admin Previews**: Integrates optional auth middleware on public lists to enable administrators to preview pending products inline.
+- **MongoDB Text Search**: Connects a high-performance compound `$text` search index over product names, descriptions, and region.
 
-User Model
-Register API
-Login API
-JWT Authentication
-Protected Routes
-Seller System
-Product CRUD
-Order System
+### ☁️ 4. Multer Memory Uploads & Cloudinary fallbacks
+- **Memory Buffer Stream**: Utilizes `multer` with `memoryStorage` (5MB limits) to parse multipart/form-data.
+- **Graceful Fallbacks**: Features dynamic visual mockup fallbacks (lorem picsum seeds + mock public IDs) if credentials are unconfigured, keeping the backend 100% functional locally.
+- **Image Deletions**: Automatically resolves standard and mock Cloudinary URLs to pull entries from MongoDB and destroy Cloudinary assets in parallel.
+
+### ⭐ 5. Rating Recalculations & Stock Checks (Phase 5 Complete)
+- **Recalculations**: Leverages static Mongoose methods and schema post-hooks to auto-aggregate average ratings whenever reviews are saved, edited, or deleted.
+- **Anti-spam Guard**: Enforces strict compound indices (`user_id` + `product_id`) preventing multiple product reviews per customer.
+- **Stock Enforcements**: Implements non-negative stock patch protections for artisans/vendors.
+
+---
+
+## 🛣️ Complete API Route Registry
+
+### 🔑 Authentication Endpoints (`/api/auth`)
+
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Public | Registers a new user with standard password hashing. |
+| `POST` | `/api/auth/login` | Public | Authenticates credentials and returns a JWT token. |
+| `POST` | `/api/auth/forgot-password` | Public | Generates and sends a 6-digit password reset OTP to email. |
+| `PUT` | `/api/auth/reset-password` | Public | Resets password after verifying active OTP. |
+| `GET` | `/api/auth/me` | Protected | Retrieves current logged-in user profile details. |
+
+### 📂 Category Endpoints (`/api/categories`)
+
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/categories` | Public | Retrieves all product categories. |
+| `GET` | `/api/categories/:id` | Public | Retrieves detailed information of a specific category by ID. |
+| `POST` | `/api/categories` | Admin Only | Creates a new category (pre-validates and generates slugs). |
+| `PUT` | `/api/categories/:id` | Admin Only | Updates a specific category's details (name, image, status). |
+| `DELETE` | `/api/categories/:id` | Admin Only | Deletes a specific category from the database. |
+
+### 🎨 Product Endpoints (`/api/products`)
+
+#### Group 1: Product Listing & Search (Public)
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/products` | Public / Opt-Auth | Fetches active products with pagination (`page`, `limit`), sorting (`price`, `-price`, `rating`, `newest`), and filters (`category`, `region`, `material`, price range). Admins can append `?includeInactive=true` to preview draft listings. |
+| `GET` | `/api/products/search` | Public | Performs MongoDB `$text` searches on Name + Description with category and price filters. |
+| `GET` | `/api/products/featured` | Public | Retrieves top 8 active products sorted by highest rating for homepage hero. |
+| `GET` | `/api/products/first` | Public | Utility compatibility endpoint fetching the first product entry. |
+
+#### Group 2: Product & Category Views (Public)
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/products/category/:name` | Public | Retrieves all active products in one category. Validates category name existence before executing. |
+| `GET` | `/api/products/artisan/:id` | Public | Retrieves all active products uploaded by a specific vendor profile ID. |
+| `GET` | `/api/products/:id` | Public | Retrieves a single product with populated Category details, Vendor details, and all user Reviews. |
+
+#### Group 3: Creation & Multi-Image Uploads (Protected)
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/products` | Vendor / Admin | Creates a new product. Accepts `multipart/form-data` with up to 5 images uploaded to Cloudinary. |
+| `POST` | `/api/products/:id/images` | Owner / Admin | Uploads and appends extra images to an existing product (up to 10 total). |
+
+#### Group 4: Updates, Approvals & Deletions (Protected)
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `PUT` | `/api/products/:id` | Owner / Admin | Updates product details (name, price, stock, category). Ownership strictly enforced. |
+| `PUT` | `/api/products/:id/approve` | Admin Only | Approves or rejects a pending listing, changing status to `active` or `inactive`. |
+| `DELETE` | `/api/products/:id` | Admin Only | Deletes a product completely from DB and removes all associated images from Cloudinary. |
+| `DELETE` | `/api/products/:id/images/:imageId` | Owner / Admin | Removes a specific image URL from MongoDB and deletes it from Cloudinary by ID. |
+
+#### Group 5: Review Actions & Stock Checks (Protected)
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/products/:id/reviews` | Public | Retrieves all reviews for a product, populated with user name. |
+| `POST` | `/api/products/:id/reviews` | Buyer Only | Adds a rating (1 to 5) and comment. Enforces 1 review limit per buyer and auto-recalculates ratings. |
+| `DELETE` | `/api/products/:id/reviews/:reviewId` | Owner / Admin | Deletes a review and auto-recalculates product average rating. |
+| `PATCH` | `/api/products/:id/stock` | Owner / Admin | Updates product stock quantity. Non-negative values enforced. |
+
+---
+
+## ⚡ Running & Testing the Workspace
+
+### 1. Launch Dev Server
+Ensure your environment variables are configured in `.env`, then execute:
+```bash
+npm run dev
+```
+
+### 2. Run Integration Verifier
+We have included a custom integration script that maps and tests imports, libraries, database connections, and routes registration. Run it using:
+```bash
+node src/utils/testProductModule.js
+```
+
 

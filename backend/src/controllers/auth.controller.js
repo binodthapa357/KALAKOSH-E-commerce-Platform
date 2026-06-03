@@ -1,7 +1,9 @@
 import crypto from "crypto";
 import User from "../models/User.model.js";
+import Vendor from "../models/Vendor.model.js";
 import generateToken from "../utils/generateToken.js";
 import sendEmail from "../utils/sendEmail.js";
+
 
 /**
  * @desc    Register a new user
@@ -238,6 +240,45 @@ export const getMe = async (req, res, next) => {
         updatedAt: req.user.updatedAt,
       },
     });
+};
+
+/**
+ * @desc    Create a vendor profile for an authenticated user with vendor role
+ * @route   POST /api/auth/vendor
+ * @access  Private (Vendor only)
+ */
+export const createVendorProfile = async (req, res, next) => {
+  try {
+    const { shop_name, pan_number, bank_details } = req.body;
+
+    if (!shop_name || !pan_number || !bank_details) {
+      return res.status(400).json({ message: "Please provide shop_name, pan_number, and bank_details" });
+    }
+
+    // Check if user has the vendor role
+    if (req.user.role !== "vendor" && req.user.role !== "admin") {
+      return res.status(403).json({ message: "Only users registered with the 'vendor' role can create a vendor profile" });
+    }
+
+    // Check if vendor profile already exists for this user
+    const existingVendor = await Vendor.findOne({ user_id: req.user._id });
+    if (existingVendor) {
+      return res.status(400).json({ message: "Vendor profile already exists for this user account" });
+    }
+
+    const vendor = await Vendor.create({
+      user_id: req.user._id,
+      shop_name,
+      pan_number,
+      bank_details,
+      status: "pending", // starts as pending approval
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Vendor profile created successfully! It is pending admin approval.",
+      vendor,
+    });
   } catch (error) {
     next(error);
   }
@@ -249,4 +290,5 @@ export default {
   forgotPassword,
   resetPassword,
   getMe,
+  createVendorProfile,
 };

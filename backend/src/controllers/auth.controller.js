@@ -1,8 +1,10 @@
 import crypto from "crypto";
+import mongoose from "mongoose";
 import User from "../models/User.model.js";
 import Vendor from "../models/Vendor.model.js";
 import generateToken from "../utils/generateToken.js";
 import sendEmail from "../utils/sendEmail.js";
+
 
 
 /**
@@ -288,6 +290,51 @@ export const createVendorProfile = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Update vendor status (approve, suspend, reject)
+ * @route   PUT /api/auth/vendor/:id/status
+ * @access  Private (Admin Only)
+ */
+export const updateVendorStatus = async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    const vendorId = req.params.id;
+
+    if (!status) {
+      return res.status(400).json({ message: "Please provide a status value" });
+    }
+
+    if (!["pending", "active", "suspended", "rejected"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status. Must be pending, active, suspended, or rejected" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(vendorId)) {
+      return res.status(400).json({ message: "Invalid vendor ID format" });
+    }
+
+    const vendor = await Vendor.findById(vendorId);
+    if (!vendor) {
+      return res.status(404).json({ message: "Vendor profile not found" });
+    }
+
+    vendor.status = status;
+    await vendor.save();
+
+    // If active, also ensure the linked user has role 'vendor'
+    if (status === "active") {
+      await User.findByIdAndUpdate(vendor.user_id, { role: "vendor" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Vendor profile status updated to ${status} successfully`,
+      vendor,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   register,
   login,
@@ -295,4 +342,5 @@ export default {
   resetPassword,
   getMe,
   createVendorProfile,
+  updateVendorStatus,
 };

@@ -293,6 +293,8 @@ To keep ratings secure and automated:
 | `POST` | `/api/auth/forgot-password` | Public | `email` | Generate and email 6-digit OTP |
 | `PUT` | `/api/auth/reset-password` | Public | `otp, password` | Reset password using valid OTP code |
 | `GET` | `/api/auth/me` | Protected | None | Retrieve user profile details |
+| `POST` | `/api/auth/vendor` | Protected (Vendor) | `shop_name, pan_number, bank_details` | Create a vendor profile for user |
+| `PUT` | `/api/auth/vendor/:id/status` | Admin Only | `status` | Update vendor profile status |
 
 ### 📂 Category APIs (`/api/categories`)
 | Method | Endpoint | Access | Description |

@@ -1,14 +1,12 @@
 import mongoose from "mongoose";
-
-const reviewSchema = new mongoose.Schema({
-  reviewerName: { type: String, required: true },
-  rating:       { type: Number, min: 1, max: 5, required: true },
-  comment:      { type: String },
-  createdAt:    { type: Date, default: Date.now },
-});
+import Counter from "./Counter.js";
 
 const productScheme = new mongoose.Schema(
   {
+    productId: {
+      type: Number,
+      unique: true,
+    },
     name: {
       type: String,
       required: [true, "Product name is required"],
@@ -47,12 +45,6 @@ const productScheme = new mongoose.Schema(
       enum: ["Active", "Inactive"],
       default: "Active",
     },
-    artisan: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    ratings: { type: Number, default: 0 },
-    reviews: [reviewSchema],
   },
   {
     timestamps: true,
@@ -60,5 +52,18 @@ const productScheme = new mongoose.Schema(
 );
 
 productScheme.index({ name: "text", description: "text" });
+
+// Auto-increment productId before saving a new product
+productScheme.pre("save", async function (next) {
+  if (this.isNew) {
+    const counter = await Counter.findByIdAndUpdate(
+      { _id: "productId" },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+    this.productId = counter.seq;
+  }
+  next();
+});
 
 export default mongoose.model("Product", productScheme);

@@ -295,6 +295,10 @@ To keep ratings secure and automated:
 | `GET` | `/api/auth/me` | Protected | None | Retrieve user profile details |
 | `POST` | `/api/auth/vendor` | Protected (Vendor) | `shop_name, pan_number, bank_details` | Create a vendor profile for user |
 | `PUT` | `/api/auth/vendor/:id/status` | Admin Only | `status` | Update vendor profile status |
+| `GET` | `/api/auth/addresses` | Protected | None | Retrieve all saved shipping addresses |
+| `POST` | `/api/auth/addresses` | Protected | `street, city, state, postal_code, phone, is_default` | Add shipping address to user profile |
+| `PUT` | `/api/auth/addresses/:addressId` | Protected | `street, city, state, phone, is_default` | Edit saved shipping address |
+| `DELETE`| `/api/auth/addresses/:addressId` | Protected | None | Remove address from user profile |
 
 ### 📂 Category APIs (`/api/categories`)
 | Method | Endpoint | Access | Description |
@@ -329,6 +333,45 @@ To keep ratings secure and automated:
 | `POST` | `/api/products/:id/reviews` | Buyer Only | `rating` (1-5), `comment` | Post product review (Recalculates rating) |
 | `DELETE`| `/api/products/:id/reviews/:reviewId`| Owner / Admin| None | Delete review (Recalculates rating) |
 
+### 🛒 Cart APIs (`/api/cart`)
+| Method | Endpoint | Access | Body Parameters | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/api/cart` | Protected | None | Get user's active cart with products populated |
+| `POST` | `/api/cart` | Protected | `product_id, quantity` | Add product to cart or increment quantity |
+| `PUT` | `/api/cart` | Protected | `product_id, quantity` | Update quantity of cart item |
+| `DELETE`| `/api/cart/:productId` | Protected | None | Remove a specific item from cart |
+| `DELETE`| `/api/cart` | Protected | None | Clear all items from cart |
+
+### 💖 Wishlist APIs (`/api/wishlist`)
+| Method | Endpoint | Access | Body Parameters | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/api/wishlist` | Protected | None | Get user's wishlist with products populated |
+| `POST` | `/api/wishlist` | Protected | `product_id` | Toggle product presence in wishlist |
+| `DELETE`| `/api/wishlist/:productId` | Protected | None | Remove a product from wishlist |
+
+### 📦 Order APIs (`/api/orders`)
+| Method | Endpoint | Access | Body Parameters | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `POST` | `/api/orders` | Protected | `shipping_address, payment_method, discount` | Place new order, decrements stock, clears cart |
+| `GET` | `/api/orders/me` | Protected | None | Get all orders belonging to active user |
+| `GET` | `/api/orders/:id` | Protected | None | Get detailed order summary with order items |
+| `GET` | `/api/orders` | Admin Only | None | List all orders on the platform |
+| `PUT` | `/api/orders/:id/status` | Admin Only | `order_status, payment_status` | Update overall order and/or payment status |
+| `PUT` | `/api/orders/items/:orderItemId/status` | Vendor / Admin | `status` | Update individual order item status (Vendor ships item) |
+
+### 🚚 Shipping APIs (`/api/shipping`)
+| Method | Endpoint | Access | Body Parameters | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/api/shipping/rates` | Public | None | Get standard shipping rates for Nepal regions |
+| `POST` | `/api/shipping/calculate` | Public | `city, state, subtotal` | Calculate shipping cost & transit estimate |
+
+### 💳 Payment APIs (`/api/payments`)
+| Method | Endpoint | Access | Body Parameters | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `POST` | `/api/payments/verify/esewa` | Public | `oid, amt, refId` | Verify eSewa transaction, mark order as paid |
+| `POST` | `/api/payments/verify/khalti` | Public | `token, amount, order_id` | Verify Khalti transaction token, mark order as paid |
+| `POST` | `/api/payments/cod/confirm/:id` | Vendor / Admin | None | Confirm payment collection for COD order |
+
 ---
 
 ## ⚡ Running & Testing the Workspace
@@ -339,7 +382,7 @@ Ensure your environment variables are configured in `.env` (including `PORT`, `M
 npm run dev
 ```
 
-### 2. Run Integration Verifier
+### 2. Run Integration Verifier (Products)
 We have included a custom integration script that maps and tests imports, libraries, database connections, and routes registration. Run it using:
 ```bash
 node src/utils/testProductModule.js
@@ -355,4 +398,10 @@ node src/utils/testModels.js
 To run end-to-end testing on registration, login, forgot password OTP generation, JWT session protection, and global error handling:
 ```bash
 node src/utils/testAuth.js
+```
+
+### 5. Run Cart, Wishlist, Order & Payment Integration Tests
+To run comprehensive integration testing on user shopping carts, wishlist toggling, shipping zone calculations, stock reservations on order checkouts, sequential invoice code generations (`KLK-XXXX`), payment confirmations (eSewa & Khalti widget tokens), and vendor status checks:
+```bash
+node src/utils/testOrderCartModule.js
 ```

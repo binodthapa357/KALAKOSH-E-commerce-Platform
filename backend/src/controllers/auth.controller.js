@@ -335,6 +335,127 @@ export const updateVendorStatus = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Get user's saved addresses
+ * @route   GET /api/auth/addresses
+ * @access  Private
+ */
+export const getAddresses = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).select("addresses");
+    res.status(200).json({ success: true, addresses: user.addresses });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Add a new address to user profile
+ * @route   POST /api/auth/addresses
+ * @access  Private
+ */
+export const addAddress = async (req, res, next) => {
+  try {
+    const { street, city, state, postal_code, country, phone, is_default } = req.body;
+
+    if (!street || !city || !state || !phone) {
+      return res.status(400).json({ message: "Street, city, state, and phone number are required" });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (is_default) {
+      user.addresses.forEach((addr) => {
+        addr.is_default = false;
+      });
+    }
+
+    const isFirst = user.addresses.length === 0;
+
+    user.addresses.push({
+      street,
+      city,
+      state,
+      postal_code,
+      country,
+      phone,
+      is_default: isFirst ? true : !!is_default,
+    });
+
+    await user.save();
+    res.status(201).json({ success: true, message: "Address added successfully", addresses: user.addresses });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Update an address on user profile
+ * @route   PUT /api/auth/addresses/:addressId
+ * @access  Private
+ */
+export const updateAddress = async (req, res, next) => {
+  try {
+    const { addressId } = req.params;
+    const { street, city, state, postal_code, country, phone, is_default } = req.body;
+
+    const user = await User.findById(req.user._id);
+    const address = user.addresses.id(addressId);
+
+    if (!address) {
+      return res.status(404).json({ message: "Address not found" });
+    }
+
+    if (street) address.street = street;
+    if (city) address.city = city;
+    if (state) address.state = state;
+    if (postal_code !== undefined) address.postal_code = postal_code;
+    if (country) address.country = country;
+    if (phone) address.phone = phone;
+
+    if (is_default) {
+      user.addresses.forEach((addr) => {
+        addr.is_default = addr._id.toString() === addressId;
+      });
+    }
+
+    await user.save();
+    res.status(200).json({ success: true, message: "Address updated successfully", addresses: user.addresses });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Delete an address from user profile
+ * @route   DELETE /api/auth/addresses/:addressId
+ * @access  Private
+ */
+export const deleteAddress = async (req, res, next) => {
+  try {
+    const { addressId } = req.params;
+
+    const user = await User.findById(req.user._id);
+    const address = user.addresses.id(addressId);
+
+    if (!address) {
+      return res.status(404).json({ message: "Address not found" });
+    }
+
+    const wasDefault = address.is_default;
+    user.addresses.pull({ _id: addressId });
+
+    if (wasDefault && user.addresses.length > 0) {
+      user.addresses[0].is_default = true;
+    }
+
+    await user.save();
+    res.status(200).json({ success: true, message: "Address deleted successfully", addresses: user.addresses });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   register,
   login,
@@ -343,4 +464,8 @@ export default {
   getMe,
   createVendorProfile,
   updateVendorStatus,
+  getAddresses,
+  addAddress,
+  updateAddress,
+  deleteAddress,
 };

@@ -1,0 +1,231 @@
+/* HERO */
+
+.about-hero {
+  background: #f5eee4;
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.about-hero .subtitle {
+  letter-spacing: 6px;
+  color: #8e6a54;
+  font-size: 13px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.about-hero h2 {
+  font-size: 52px;
+  color: var(--crimson);
+  font-family: Georgia, serif;
+  margin-bottom: 18px;
+}
+
+.about-hero .hero-text {
+  color: var(--text-mid);
+  font-size: 18px;
+  max-width: 620px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* STORY */
+
+.story-section {
+  padding: 80px 0;
+}
+
+.story-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  align-items: center;
+  margin-bottom: 70px;
+}
+
+.story-left h3 {
+  color: var(--gold);
+  letter-spacing: 3px;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.story-left h2 {
+  font-family: Georgia, serif;
+  color: var(--crimson);
+  font-size: 36px;
+  margin-bottom: 22px;
+}
+
+.story-left p {
+  color: var(--text-mid);
+  line-height: 1.8;
+  margin-bottom: 18px;
+  font-size: 15px;
+}
+
+.story-image img {
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+  border-radius: 24px;
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+.mission-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+}
+
+.info-card {
+  background: #f9f6f1;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 32px 28px;
+  box-shadow: 0 4px 14px var(--shadow);
+}
+
+.info-card h4 {
+  color: var(--crimson);
+  font-family: Georgia, serif;
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.info-card p {
+  color: var(--text-mid);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ARTISANS */
+
+.artisan-section {
+  background: #fbf8f2;
+  padding: 80px 0;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.section-title p {
+  letter-spacing: 4px;
+  color: #8e6a54;
+  font-size: 13px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.section-title h2 {
+  font-family: Georgia, serif;
+  color: var(--crimson);
+  font-size: 36px;
+}
+
+.artisan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.artisan-card {
+  background: #f9f6f1;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 4px 14px var(--shadow);
+}
+
+.artisan-card img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 18px;
+}
+
+.artisan-card h3 {
+  color: var(--crimson);
+  font-family: Georgia, serif;
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.artisan-card span {
+  display: block;
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.artisan-card p {
+  color: var(--text-mid);
+  font-size: 13px;
+}
+
+/* CTA */
+
+.cta-section {
+  padding: 80px 0;
+}
+
+.cta-box {
+  background: var(--crimson);
+  border-radius: 30px;
+  padding: 60px 40px;
+  text-align: center;
+  color: white;
+}
+
+.cta-box h2 {
+  font-family: Georgia, serif;
+  font-size: 34px;
+  margin-bottom: 14px;
+}
+
+.cta-box p {
+  color: #f3e8da;
+  margin-bottom: 28px;
+  font-size: 16px;
+}
+
+.cta-btn {
+  background: white;
+  color: var(--crimson);
+  border: none;
+  padding: 16px 34px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.cta-btn:hover {
+  background: var(--gold-light);
+  color: white;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 992px) {
+  .story-grid,
+  .mission-grid,
+  .artisan-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-hero h2 {
+    font-size: 36px;
+  }
+
+  .story-left h2,
+  .section-title h2 {
+    font-size: 28px;
+  }
+}

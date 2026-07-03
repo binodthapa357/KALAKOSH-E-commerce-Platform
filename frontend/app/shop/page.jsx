@@ -1,6 +1,9 @@
 // app/shop/page.jsx
-import "./shop.css";
+"use client";
+
 import Image from "next/image";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 const products = [
   { id: 1, name: "Himalayan Landscape Painting", price: "$120", rating: 4.9, reviews: 128, location: "Kathmandu", material: "Cotton Canvas", image: "/images/product1.jpg" },
@@ -14,40 +17,11 @@ const products = [
 ];
 
 export default function Shop() {
+  const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+
   return (
     <div className="shop-page">
-      {/* TOP BAR */}
-      <div className="top-bar">
-        <div className="top-bar-inner">
-          <p className="top-bar-note">✦ Free shipping worldwide on orders over $150</p>
-          <div className="top-bar-links">
-            <a href="#">Track Order</a>
-            <a href="#">Help & Support</a>
-            <a href="#">Vendors</a>
-            <a href="#">Admin</a>
-            <span className="divider">|</span>
-            <a href="#" aria-label="Wishlist">♡</a>
-            <a href="#" aria-label="Cart">🛒</a>
-            <a href="#" aria-label="Account">👤</a>
-          </div>
-        </div>
-      </div>
-
-      {/* HEADER */}
-      <header className="site-header">
-        <div className="logo">
-          <h2>KALAKOSH</h2>
-          <span>कलाकोष</span>
-        </div>
-        <nav className="main-nav">
-          <a href="#">Home</a>
-          <a href="#" className="active">Shop</a>
-          <a href="#">Categories</a>
-          <a href="#">About</a>
-          <a href="#">Contact</a>
-        </nav>
-      </header>
-
       {/* HERO */}
       <section className="shop-hero">
         <p className="hero-subtitle">— ALL TREASURES —</p>
@@ -105,87 +79,53 @@ export default function Shop() {
               <h2>Featured Products</h2>
               <p className="results">Showing {products.length} of 48 treasures</p>
             </div>
-            <select>
-              <option>Sort by: Featured</option>
-              <option>Newest</option>
-              <option>Price: Low to High</option>
-              <option>Price: High to Low</option>
+            <select defaultValue="Featured">
+              <option value="Featured">Sort by: Featured</option>
+              <option value="Newest">Newest</option>
+              <option value="LowToHigh">Price: Low to High</option>
+              <option value="HighToLow">Price: High to Low</option>
             </select>
           </div>
 
           <div className="product-grid">
-            {products.map((item) => (
-              <div className="product-card" key={item.id}>
-                <div className="image-box">
-                  <Image src={item.image} alt={item.name} fill className="product-image" />
-                  <button className="wish-btn" aria-label="Wishlist">♡</button>
-                </div>
-                <div className="card-body">
-                  <div className="rating">
-                    <span className="stars">★</span>
-                    <span className="rating-num">{item.rating}</span>
-                    <span className="rating-count">({item.reviews})</span>
+            {products.map((item) => {
+              const isWish = isInWishlist(item.id);
+              return (
+                <div className="product-card" key={item.id}>
+                  <div className="image-box">
+                    <Image src={item.image} alt={item.name} fill className="product-image" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" priority={item.id <= 4} />
+                    <button 
+                      className={`wish-btn ${isWish ? "active" : ""}`} 
+                      aria-label="Wishlist"
+                      onClick={() => toggleWishlist(item)}
+                    >
+                      {isWish ? "♥" : "♡"}
+                    </button>
                   </div>
-                  <h3>{item.name}</h3>
-                  <p className="meta">{item.location} • {item.material}</p>
-                  <div className="card-footer">
-                    <span className="price-tag">{item.price}</span>
-                    <button className="add-btn">🛒 Add</button>
+                  <div className="card-body">
+                    <div className="rating">
+                      <span className="stars">★</span>
+                      <span className="rating-num">{item.rating}</span>
+                      <span className="rating-count">({item.reviews})</span>
+                    </div>
+                    <h3>{item.name}</h3>
+                    <p className="meta">{item.location} • {item.material}</p>
+                    <div className="card-footer">
+                      <span className="price-tag">{item.price}</span>
+                      <button 
+                        className="add-btn" 
+                        onClick={() => addToCart(item)}
+                      >
+                        🛒 Add
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </main>
       </section>
-
-      {/* FOOTER */}
-      <footer className="site-footer">
-        <div className="footer-grid">
-          <div className="footer-col">
-            <h2 className="footer-logo">KALAKOSH</h2>
-            <span className="footer-sub">कलाकोष</span>
-            <p>Preserving Nepal's rich heritage through authentic handcrafted treasures made by master artisans.</p>
-          </div>
-          <div className="footer-col">
-            <h4>Categories</h4>
-            <a href="#">Paintings</a>
-            <a href="#">Textiles</a>
-            <a href="#">Pottery</a>
-            <a href="#">Jewelry</a>
-            <a href="#">Wood Crafts</a>
-          </div>
-          <div className="footer-col">
-            <h4>Customer Service</h4>
-            <a href="#">Track Order</a>
-            <a href="#">Shipping Info</a>
-            <a href="#">Returns</a>
-            <a href="#">Help & Support</a>
-          </div>
-          <div className="footer-col">
-            <h4>Quick Links</h4>
-            <a href="#">About Us</a>
-            <a href="#">Our Artisans</a>
-            <a href="#">Vendors</a>
-            <a href="#">Blog</a>
-          </div>
-          <div className="footer-col">
-            <h4>Contact Us</h4>
-            <p>Thamel, Kathmandu, Nepal</p>
-            <p>hello@kalakosh.com</p>
-            <p>+977 1 4123456</p>
-            <div className="socials">
-              <a href="#">f</a><a href="#">ig</a><a href="#">yt</a><a href="#">in</a>
-            </div>
-            <div className="pay-badges">
-              <span>eSewa</span><span>Khalti</span><span>VISA</span><span>MC</span>
-            </div>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <p>© 2025 Kalakosh. Handcrafted with love in Nepal.</p>
-        </div>
-      </footer>
     </div>
   );
 }

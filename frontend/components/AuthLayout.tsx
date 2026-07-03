@@ -15,7 +15,7 @@ export default function AuthLayout({
     children: React.ReactNode;
 }) {
     return (
-        <section className="grid min-h-[calc(100vh-160px)] grid-cols-1 md:grid-cols-2">
+        <section className="grid min-h-screen grid-cols-1 md:grid-cols-2">
             {/* Form side */}
             <div className="flex items-center justify-center bg-secondary-50 px-6 py-12">
                 <div className="w-full max-w-md">{children}</div>

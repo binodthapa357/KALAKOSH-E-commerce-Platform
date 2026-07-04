@@ -3,7 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Input } from '@/app/components/ui/Input';
 import { FaArrowLeft, FaUpload } from 'react-icons/fa6';
+import Image from 'next/image';
+import { Button } from '@/app/components/ui/Button';
 
 export default function CreateProductPage() {
   const router = useRouter();
@@ -172,18 +175,18 @@ export default function CreateProductPage() {
             >
               {imagePreview ? (
                 <div className="space-y-4">
-                  <img
+                  <Image
                     src={imagePreview}
                     alt="Preview"
-                    className="w-full max-h-[200px] object-contain rounded-lg"
+                    className="w-full max-h-50 object-contain rounded-lg"
                   />
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setImagePreview(null)}
                     className="text-red-600 hover:text-red-700 text-sm"
                   >
                     Remove Image
-                  </button>
+                  </Button>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -194,7 +197,7 @@ export default function CreateProductPage() {
                   <p className="text-text-light text-sm">PNG, JPG up to 5MB</p>
                 </div>
               )}
-              <input
+              <Input
                 type="file"
                 accept="image/*"
                 onChange={handleImageUpload}

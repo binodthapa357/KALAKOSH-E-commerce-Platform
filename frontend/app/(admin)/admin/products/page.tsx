@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { FaPlus, FaSearch, FaEdit, FaTrash, FaEye } from 'react-icons/fa';
+import { Button } from '@/app/components/ui/Button';
 
 // Mock product data
 const mockProducts = [
@@ -56,7 +57,7 @@ export default function ProductsPage() {
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-4 mb-6">
-        <div className="relative flex-1 min-w-[200px]">
+        <div className="relative flex-1 min-w-50">
           <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-text-light" />
           <input
             type="text"
@@ -125,12 +126,12 @@ export default function ProductsPage() {
                     >
                       <FaEdit />
                     </Link>
-                    <button
+                    <Button
                       className="p-2 rounded-lg hover:bg-red-100 text-text-light hover:text-red-600 transition-colors"
                       onClick={() => console.log('Delete product:', product.id)}
                     >
                       <FaTrash />
-                    </button>
+                    </Button>
                   </div>
                 </td>
               </tr>

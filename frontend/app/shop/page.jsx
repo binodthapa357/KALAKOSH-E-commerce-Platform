@@ -17,7 +17,7 @@ export default function Shop() {
   return (
     <div className="shop-page">
       {/* TOP BAR */}
-      <div className="top-bar">
+      {/* <div className="top-bar">
         <div className="top-bar-inner">
           <p className="top-bar-note">✦ Free shipping worldwide on orders over $150</p>
           <div className="top-bar-links">
@@ -31,10 +31,10 @@ export default function Shop() {
             <a href="#" aria-label="Account">👤</a>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* HEADER */}
-      <header className="site-header">
+      {/* <header className="site-header">
         <div className="logo">
           <h2>KALAKOSH</h2>
           <span>कलाकोष</span>
@@ -46,7 +46,7 @@ export default function Shop() {
           <a href="#">About</a>
           <a href="#">Contact</a>
         </nav>
-      </header>
+      </header> */}
 
       {/* HERO */}
       <section className="shop-hero">
@@ -140,7 +140,7 @@ export default function Shop() {
       </section>
 
       {/* FOOTER */}
-      <footer className="site-footer">
+      {/* <footer className="site-footer">
         <div className="footer-grid">
           <div className="footer-col">
             <h2 className="footer-logo">KALAKOSH</h2>
@@ -185,7 +185,7 @@ export default function Shop() {
         <div className="footer-bottom">
           <p>© 2025 Kalakosh. Handcrafted with love in Nepal.</p>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 }

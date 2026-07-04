@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import { 
   Button, 
-  Input, 
-  Card, 
-  CardTitle, 
+//   Input, 
+//   Card, 
+//   CardTitle, 
   Badge,
   Table,
   TableHead,
@@ -221,7 +222,7 @@ export default function AdminLogin() {
           <div className="flex items-center justify-between h-20">
             <Link href="/" className="flex items-center gap-3.5 no-underline">
               <div className="w-12 h-12 rounded-full bg-secondary-500 flex items-center justify-center overflow-hidden">
-                <img src="/images/logo.png" alt="Logo" className="w-full h-full object-cover" />
+                <Image src="/images/logo.png" alt="Logo" className="w-full h-full object-cover" />
               </div>
               <div className="flex flex-col justify-center">
                 <h2 className="text-xl text-primary-700 font-bold uppercase leading-tight font-sans">KALAKOSH</h2>
@@ -240,25 +241,25 @@ export default function AdminLogin() {
             </nav>
 
             <div className="flex items-center gap-4">
-              <button className="border-none bg-transparent text-xl cursor-pointer text-text-dark hover:text-primary-700 transition-colors">
+              <Button className="border-none bg-transparent text-xl cursor-pointer text-text-dark hover:text-primary-700 transition-colors">
                 <i className="fa-regular fa-heart"></i>
-              </button>
-              <button className="border-none bg-transparent text-xl cursor-pointer text-text-dark hover:text-primary-700 transition-colors">
+              </Button>
+              <Button className="border-none bg-transparent text-xl cursor-pointer text-text-dark hover:text-primary-700 transition-colors">
                 <i className="fa-solid fa-bag-shopping"></i>
-              </button>
-              <button className="border-none bg-transparent text-xl cursor-pointer text-text-dark hover:text-primary-700 transition-colors">
+              </Button>
+              <Button className="border-none bg-transparent text-xl cursor-pointer text-text-dark hover:text-primary-700 transition-colors">
                 <i className="fa-regular fa-user"></i>
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       </header>
 
       {/* Main Login */}
-      <main className="grid md:grid-cols-[1.08fr_1fr] min-h-[760px]">
+      <main className="grid md:grid-cols-[1.08fr_1fr] min-h-190">
         {/* Left Side - Hero */}
         <div className="relative overflow-hidden hidden md:block">
-          <img src="/images/artisian1.jpg" alt="artisan image" className="w-full h-full object-cover" />
+          <Image src="/images/artisian1.jpg" alt="artisan image" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-primary-700/82 to-primary-700/88 z-10"></div>
           <div className="absolute inset-0 z-20 p-12 flex flex-col justify-between text-white">
             <div className="flex items-center gap-3.5">
@@ -273,7 +274,7 @@ export default function AdminLogin() {
                 Steward of <br />
                 <span className="text-secondary-300 italic">Heritage</span>
               </h2>
-              <p className="max-w-[520px] leading-relaxed text-white/90 text-xl">
+              <p className="max-w-130 leading-relaxed text-white/90 text-xl">
                 Oversee artisans, curate the catalog, and protect the integrity of Nepal's living craft.
               </p>
             </div>

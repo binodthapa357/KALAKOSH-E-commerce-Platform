@@ -10,8 +10,8 @@ import {
   TableCell,
   TableActions,
   TablePagination,
-  Card,
-  CardTitle,
+//   Card,
+//   CardTitle,
   SearchBar,
   Badge,
   Button
@@ -120,7 +120,7 @@ export default function ReviewsPage() {
         <SearchBar 
           placeholder="Search reviews..." 
           onSearch={setSearchTerm} 
-          className="flex-1 min-w-[200px]"
+          className="flex-1 min-w-50"
         />
         <select
           value={filterStatus}
@@ -176,15 +176,15 @@ export default function ReviewsPage() {
                   </TableCell>
                   <TableCell align="right">
                     <TableActions>
-                      <button className="p-2 rounded-lg hover:bg-primary-100 text-text-light hover:text-primary-700 transition-colors">
+                      <Button className="p-2 rounded-lg hover:bg-primary-100 text-text-light hover:text-primary-700 transition-colors">
                         <FaEye />
-                      </button>
-                      <button className="p-2 rounded-lg hover:bg-primary-100 text-text-light hover:text-primary-700 transition-colors">
+                      </Button>
+                      <Button className="p-2 rounded-lg hover:bg-primary-100 text-text-light hover:text-primary-700 transition-colors">
                         <FaEdit />
-                      </button>
-                      <button className="p-2 rounded-lg hover:bg-red-100 text-text-light hover:text-red-600 transition-colors">
+                      </Button>
+                      <Button className="p-2 rounded-lg hover:bg-red-100 text-text-light hover:text-red-600 transition-colors">
                         <FaTrash />
-                      </button>
+                      </Button>
                     </TableActions>
                   </TableCell>
                 </TableRow>

@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { FaPlus, FaEdit, FaTrash, FaImage, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { Input } from '@/app/components/ui/Input';
 
 // Mock banners data
 const mockBanners = [
@@ -71,7 +73,7 @@ export default function BannersPage() {
           >
             <div className="relative h-48 bg-gray-200 flex items-center justify-center">
               {banner.image ? (
-                <img src={banner.image} alt={banner.title} className="w-full h-full object-cover" />
+                <Image src={banner.image} alt={banner.title} className="w-full h-full object-cover" />
               ) : (
                 <FaImage className="text-4xl text-text-light" />
               )}
@@ -164,7 +166,7 @@ export default function BannersPage() {
                   <FaImage className="text-3xl text-text-light mx-auto mb-2" />
                   <p className="text-text-mid">Click to upload image</p>
                   <p className="text-text-light text-sm">PNG, JPG up to 5MB</p>
-                  <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" />
+                  <Input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" />
                 </div>
               </div>
             </div>

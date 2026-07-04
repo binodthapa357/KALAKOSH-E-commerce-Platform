@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft, FaUpload } from 'react-icons/fa6';
+import { Input } from '@/app/components/ui/Input';
 
 // Mock product data for demo
 const mockProduct = {
@@ -218,7 +219,7 @@ export default function EditProductPage() {
                   <img
                     src={imagePreview}
                     alt="Preview"
-                    className="w-full max-h-[200px] object-contain rounded-lg"
+                    className="w-full max-h-50 object-contain rounded-lg"
                   />
                   <button
                     type="button"
@@ -237,7 +238,7 @@ export default function EditProductPage() {
                   <p className="text-text-light text-sm">PNG, JPG up to 5MB</p>
                 </div>
               )}
-              <input
+              <Input
                 type="file"
                 accept="image/*"
                 onChange={handleImageUpload}

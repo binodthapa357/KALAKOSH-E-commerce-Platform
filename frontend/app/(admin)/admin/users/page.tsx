@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { FaSearch, FaEdit, FaTrash, FaUserPlus, FaUserCog } from 'react-icons/fa';
+import { Button } from '@/app/components/ui/Button';
 
 // Mock users data
 const mockUsers = [
@@ -70,7 +71,7 @@ export default function UsersPage() {
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-4 mb-6">
-        <div className="relative flex-1 min-w-[200px]">
+        <div className="relative flex-1 min-w-50">
           <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-text-light" />
           <input
             type="text"
@@ -129,15 +130,15 @@ export default function UsersPage() {
                 </td>
                 <td className="py-4 border-t border-black/5 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <button className="p-2 rounded-lg hover:bg-primary-100 text-text-light hover:text-primary-700 transition-colors">
+                    <Button className="p-2 rounded-lg hover:bg-primary-100 text-text-light hover:text-primary-700 transition-colors">
                       <FaUserCog />
-                    </button>
-                    <button className="p-2 rounded-lg hover:bg-primary-100 text-text-light hover:text-primary-700 transition-colors">
+                    </Button>
+                    <Button className="p-2 rounded-lg hover:bg-primary-100 text-text-light hover:text-primary-700 transition-colors">
                       <FaEdit />
-                    </button>
-                    <button className="p-2 rounded-lg hover:bg-red-100 text-text-light hover:text-red-600 transition-colors">
+                    </Button>
+                    <Button className="p-2 rounded-lg hover:bg-red-100 text-text-light hover:text-red-600 transition-colors">
                       <FaTrash />
-                    </button>
+                    </Button>
                   </div>
                 </td>
               </tr>

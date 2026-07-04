@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { Button } from '@/app/components/ui/Button';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   FaBorderAll,
@@ -10,9 +12,9 @@ import {
   FaCube,
   FaTags,
   FaRegClipboard,
-  FaTicket,
+//   FaTicket,
   FaRegStar,
-  FaRegFileLines,
+//   FaRegFileLines,
   FaGear,
   FaArrowRightFromBracket,
   FaTag,
@@ -89,7 +91,7 @@ export default function AdminLayout({
   return (
     <>
       {/* Top Bar */}
-      <div className="bg-primary-700 text-white/90 text-xs tracking-wide py-2 px-4 md:px-10">
+      {/* <div className="bg-primary-700 text-white/90 text-xs tracking-wide py-2 px-4 md:px-10">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-2.5">
             <FaTag className="text-secondary-500" />
@@ -110,15 +112,18 @@ export default function AdminLayout({
             </Link>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Header */}
-      <header className="bg-warm-white border-b border-border">
+      {/* <header className="bg-warm-white border-b border-border">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex items-center justify-between h-20">
             <Link href="/" className="flex items-center gap-3.5 no-underline">
               <div className="w-12 h-12 rounded-full bg-secondary-500 flex items-center justify-center overflow-hidden">
-                <img src="/images/logo.png" alt="Logo" className="w-full h-full object-cover" />
+                <Image src="/images/logo.png" alt="Logo"
+                height={100}
+                width={100}
+                className="w-full h-full object-cover" />
               </div>
               <div className="flex flex-col justify-center">
                 <h2 className="text-xl text-primary-700 font-bold uppercase leading-tight font-sans">KALAKOSH</h2>
@@ -127,19 +132,19 @@ export default function AdminLayout({
             </Link>
 
             <div className="flex items-center gap-4">
-              <button className="border-none bg-transparent text-xl cursor-pointer text-text-dark hover:text-primary-700 transition-colors">
+              <Button className="border-none bg-transparent text-xl cursor-pointer text-text-dark hover:text-primary-700 transition-colors">
                 <i className="fa-regular fa-heart"></i>
-              </button>
-              <button className="border-none bg-transparent text-xl cursor-pointer text-text-dark hover:text-primary-700 transition-colors">
+              </Button>
+              <Button className="border-none bg-transparent text-xl cursor-pointer text-text-dark hover:text-primary-700 transition-colors">
                 <i className="fa-solid fa-bag-shopping"></i>
-              </button>
-              <button className="border-none bg-transparent text-xl cursor-pointer text-text-dark hover:text-primary-700 transition-colors">
+              </Button>
+              <Button className="border-none bg-transparent text-xl cursor-pointer text-text-dark hover:text-primary-700 transition-colors">
                 <i className="fa-regular fa-user"></i>
-              </button>
+              </Button>
             </div>
           </div>
         </div>
-      </header>
+      </header> */}
 
       {/* Dashboard Layout */}
       <div className="grid grid-cols-1 md:grid-cols-[290px_1fr] gap-8 p-4 md:p-8 pb-20 min-h-screen bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIiIGhlaWdodD0iMjIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSIyMiIgaGVpZ2h0PSIyMiIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMSAxIEwgMTEgMjEgTSAxIDExIEwgMjEgMTEiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgwLDAsMCwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')]">

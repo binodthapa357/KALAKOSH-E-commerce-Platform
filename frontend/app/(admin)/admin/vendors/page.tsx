@@ -11,7 +11,7 @@ import {
   TableActions,
   TablePagination,
   Card,
-  CardTitle,
+//   CardTitle,
   SearchBar,
   Badge,
   Button
@@ -204,15 +204,15 @@ export default function VendorsPage() {
                   </TableCell>
                   <TableCell align="right">
                     <TableActions>
-                      <button className="p-2 rounded-lg hover:bg-primary-100 text-text-light hover:text-primary-700 transition-colors">
+                      <Button className="p-2 rounded-lg hover:bg-primary-100 text-text-light hover:text-primary-700 transition-colors">
                         <FaEye />
-                      </button>
-                      <button className="p-2 rounded-lg hover:bg-primary-100 text-text-light hover:text-primary-700 transition-colors">
+                      </Button>
+                      <Button className="p-2 rounded-lg hover:bg-primary-100 text-text-light hover:text-primary-700 transition-colors">
                         <FaEdit />
-                      </button>
-                      <button className="p-2 rounded-lg hover:bg-red-100 text-text-light hover:text-red-600 transition-colors">
+                      </Button>
+                      <Button className="p-2 rounded-lg hover:bg-red-100 text-text-light hover:text-red-600 transition-colors">
                         <FaTrash />
-                      </button>
+                      </Button>
                     </TableActions>
                   </TableCell>
                 </TableRow>

@@ -9,7 +9,7 @@ export async function login(formData: FormData) {
   const remember = formData.get('remember') === 'on';
 
   // Validate credentials
-  if (email === 'admin@kalakosh.com' && password === 'admin123') {
+  if (email === 'admin@kalakosh.com' && pa  ssword === 'admin123') {
     // Set cookie
     const cookieOptions = {
       httpOnly: true,

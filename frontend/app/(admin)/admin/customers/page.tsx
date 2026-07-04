@@ -34,7 +34,7 @@ export default function CustomersPage() {
 
       {/* Search */}
       <div className="flex flex-wrap items-center gap-4 mb-6">
-        <div className="relative flex-1 min-w-[200px]">
+        <div className="relative flex-1 min-w-50">
           <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-text-light" />
           <input
             type="text"

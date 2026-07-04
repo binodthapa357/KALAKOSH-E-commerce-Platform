@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { FaSearch, FaEye } from 'react-icons/fa';
+import {Button} from '@/app/components/ui/Button';
 
 // Mock orders data
 const mockOrders = [
@@ -52,7 +53,7 @@ export default function OrdersPage() {
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-4 mb-6">
-        <div className="relative flex-1 min-w-[200px]">
+        <div className="relative flex-1 min-w-50">
           <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-text-light" />
           <input
             type="text"
@@ -117,12 +118,12 @@ export default function OrdersPage() {
                   </span>
                 </td>
                 <td className="py-4 border-t border-black/5 text-right">
-                  <button
+                  <Button
                     onClick={() => setSelectedOrder(order)}
                     className="p-2 rounded-lg hover:bg-primary-100 text-text-light hover:text-primary-700 transition-colors"
                   >
                     <FaEye />
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))}

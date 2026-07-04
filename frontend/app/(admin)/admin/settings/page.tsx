@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
 import { FaSave, FaStore, FaPalette, FaShippingFast, FaCreditCard, FaEnvelope, FaGlobe } from 'react-icons/fa';
+import { Input } from '@/app/components/ui/Input';
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('general');
@@ -51,7 +52,7 @@ export default function SettingsPage() {
           <div className="space-y-6">
             <div>
               <label className="block text-text-dark text-sm font-medium mb-2">Store Email</label>
-              <input
+              <Input
                 type="email"
                 defaultValue="info@kalakosh.com"
                 className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
@@ -81,12 +82,12 @@ export default function SettingsPage() {
             <div>
               <label className="block text-text-dark text-sm font-medium mb-2">Primary Color</label>
               <div className="flex items-center gap-4">
-                <input
+                <Input
                   type="color"
                   defaultValue="#7B1F1F"
                   className="w-16 h-16 rounded-lg border border-border cursor-pointer"
                 />
-                <input
+                <Input
                   type="text"
                   defaultValue="#7B1F1F"
                   className="flex-1 px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
@@ -96,12 +97,12 @@ export default function SettingsPage() {
             <div>
               <label className="block text-text-dark text-sm font-medium mb-2">Secondary Color</label>
               <div className="flex items-center gap-4">
-                <input
+                <Input
                   type="color"
                   defaultValue="#C9973A"
                   className="w-16 h-16 rounded-lg border border-border cursor-pointer"
                 />
-                <input
+                <Input
                   type="text"
                   defaultValue="#C9973A"
                   className="flex-1 px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"

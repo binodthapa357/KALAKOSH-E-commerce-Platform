@@ -82,7 +82,7 @@
         </div>
 
         <div class="top-right">
-            <span>Track Order</span>
+            <a href="../html-files/track-order.html" style="text-decoration: none; color: inherit;"><span>Track Order</span></a>
             <span>Help & Support</span>
             <span>Vendor</span>
             <span>Admin</span>
@@ -183,5 +183,22 @@
 
     </section>
 
+    <script>
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const emailInput = document.querySelector('input[type="email"]');
+            const email = emailInput ? emailInput.value : 'binod@kalakosh.com';
+            const name = email.split('@')[0];
+            const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
+            
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userName', capitalizedName || 'Binod Thapa');
+            
+            // Redirect back to track order page
+            window.location.href = '../html-files/track-order.html';
+        });
+    </script>
 </body>
 </html>

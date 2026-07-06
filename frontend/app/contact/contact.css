@@ -10,10 +10,11 @@
   letter-spacing: 6px;
   color: #8e6a54;
   font-size: 13px;
+  
   margin-bottom: 16px;
 }
 
-.contact-hero h1 {
+.contact-hero h1  {
   font-size: 64px;
   color: var(--crimson);
   font-family: Georgia, serif;

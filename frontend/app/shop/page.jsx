@@ -22,6 +22,38 @@ export default function Shop() {
 
   return (
     <div className="shop-page">
+      {/* TOP BAR */}
+      {/* <div className="top-bar">
+        <div className="top-bar-inner">
+          <p className="top-bar-note">✦ Free shipping worldwide on orders over $150</p>
+          <div className="top-bar-links">
+            <a href="#">Track Order</a>
+            <a href="#">Help & Support</a>
+            <a href="#">Vendors</a>
+            <a href="#">Admin</a>
+            <span className="divider">|</span>
+            <a href="#" aria-label="Wishlist">♡</a>
+            <a href="#" aria-label="Cart">🛒</a>
+            <a href="#" aria-label="Account">👤</a>
+          </div>
+        </div>
+      </div> */}
+
+      {/* HEADER */}
+      {/* <header className="site-header">
+        <div className="logo">
+          <h2>KALAKOSH</h2>
+          <span>कलाकोष</span>
+        </div>
+        <nav className="main-nav">
+          <a href="#">Home</a>
+          <a href="#" className="active">Shop</a>
+          <a href="#">Categories</a>
+          <a href="#">About</a>
+          <a href="#">Contact</a>
+        </nav>
+      </header> */}
+
       {/* HERO */}
       <section className="shop-hero">
         <p className="hero-subtitle">— ALL TREASURES —</p>
@@ -126,6 +158,54 @@ export default function Shop() {
           </div>
         </main>
       </section>
+
+      {/* FOOTER */}
+      {/* <footer className="site-footer">
+        <div className="footer-grid">
+          <div className="footer-col">
+            <h2 className="footer-logo">KALAKOSH</h2>
+            <span className="footer-sub">कलाकोष</span>
+            <p>Preserving Nepal's rich heritage through authentic handcrafted treasures made by master artisans.</p>
+          </div>
+          <div className="footer-col">
+            <h4>Categories</h4>
+            <a href="#">Paintings</a>
+            <a href="#">Textiles</a>
+            <a href="#">Pottery</a>
+            <a href="#">Jewelry</a>
+            <a href="#">Wood Crafts</a>
+          </div>
+          <div className="footer-col">
+            <h4>Customer Service</h4>
+            <a href="#">Track Order</a>
+            <a href="#">Shipping Info</a>
+            <a href="#">Returns</a>
+            <a href="#">Help & Support</a>
+          </div>
+          <div className="footer-col">
+            <h4>Quick Links</h4>
+            <a href="#">About Us</a>
+            <a href="#">Our Artisans</a>
+            <a href="#">Vendors</a>
+            <a href="#">Blog</a>
+          </div>
+          <div className="footer-col">
+            <h4>Contact Us</h4>
+            <p>Thamel, Kathmandu, Nepal</p>
+            <p>hello@kalakosh.com</p>
+            <p>+977 1 4123456</p>
+            <div className="socials">
+              <a href="#">f</a><a href="#">ig</a><a href="#">yt</a><a href="#">in</a>
+            </div>
+            <div className="pay-badges">
+              <span>eSewa</span><span>Khalti</span><span>VISA</span><span>MC</span>
+            </div>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p>© 2025 Kalakosh. Handcrafted with love in Nepal.</p>
+        </div>
+      </footer> */}
     </div>
   );
 }

@@ -1,31 +1,37 @@
-import Link from "next/link";
-import Image from "next/image";
-import { Truck, FileText, Headphones, Heart, ShoppingBag, User } from "lucide-react";
+import React from 'react';
+import Link from 'next/link';
+import {Button} from '@/components/ui/button';
+import {Heart, ShoppingBag, User} from 'lucide-react';
+import Image from 'next/image';
 
 const navLinks = [
-  { label: "Home", href: "/" },
-  { label: "Shop", href: "/shop" },
-  { label: "Categories", href: "/categories" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  {
+    href: "/",
+    label: "Home",
+  },
+  {
+    href: "/shop",
+    label: "Shop",
+  },
+  {
+    href: "/about",
+    label: "About",
+  },
+  {
+    href: "/contact",
+    label: "Contact",
+  },
 ];
 
 const Navbar = () => {
   return (
-    <header className="w-full">
-      {/* Top bar */}
-      <div className="flex items-center justify-between bg-[#5C1A1A] px-6 py-2 text-xs text-white sm:px-10">
-        <div className="flex items-center gap-2">
-          <Truck className="h-3.5 w-3.5" />
-          <span>FREE SHIPPING on orders above Rs. 5000 within Nepal</span>
-        </div>
-        <div className="flex items-center gap-6">
-          <Link href="/track-order" className="flex items-center gap-1.5 hover:underline">
-            <FileText className="h-3.5 w-3.5" /> Track Order
-          </Link>
-          <Link href="/contact" className="flex items-center gap-1.5 hover:underline">
-            <Headphones className="h-3.5 w-3.5" /> Help & Support
-          </Link>
+    <header className="w-full bg-white shadow-sm">
+      {/* Top Banner */}
+      <div className="w-full bg-[#5C1A1A] text-white text-[11px] py-2 px-4 sm:px-8 flex justify-between items-center tracking-wide">
+        <div>FREE SHIPPING on orders above Rs. 5000 within Nepal.</div>
+        <div className="flex gap-6 items-center">
+          <button className="hover:underline transition-all">📋 Track Order</button>
+          <button className="hover:underline transition-all">❓ Help & Support</button>
         </div>
       </div>
 

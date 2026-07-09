@@ -1,13 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
-import { Button } from '@/app/components/ui/Button';
+import {Button} from './ui/button';
 
 const Navbar = () => {
   return (
     <header className="w-full bg-white shadow-sm">
       {/* Top Banner */}
       <div className="w-full bg-[#5C1A1A] text-white text-[11px] py-2 px-4 sm:px-8 flex justify-between items-center tracking-wide">
-        <div>🚚 FREE SHIPPING on orders above Rs. 5000 within Nepal.</div>
+        <div>FREE SHIPPING on orders above Rs. 5000 within Nepal.</div>
         <div className="flex gap-6 items-center">
           <button className="hover:underline transition-all">📋 Track Order</button>
           <button className="hover:underline transition-all">❓ Help & Support</button>

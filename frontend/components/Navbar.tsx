@@ -1,6 +1,27 @@
 import React from 'react';
 import Link from 'next/link';
-import {Button} from './ui/button';
+import {Button} from '@/components/ui/button';
+import {Heart, ShoppingBag, User} from 'lucide-react';
+import Image from 'next/image';
+
+const navLinks = [
+  {
+    href: "/",
+    label: "Home",
+  },
+  {
+    href: "/shop",
+    label: "Shop",
+  },
+  {
+    href: "/about",
+    label: "About",
+  },
+  {
+    href: "/contact",
+    label: "Contact",
+  },
+];
 
 const Navbar = () => {
   return (

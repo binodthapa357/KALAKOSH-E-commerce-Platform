@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft, FaUpload } from 'react-icons/fa6';
-import { Input } from '@/app/components/ui/Input';
+import { Input } from '@/components/ui/input';
 
 // Mock product data for demo
 const mockProduct = {
@@ -210,9 +210,8 @@ export default function EditProductPage() {
           <div className="bg-[#F7F2EA] border border-border rounded-2xl p-7 sticky top-4">
             <h3 className="font-serif text-primary-700 text-2xl mb-4">Product Image</h3>
             <div
-              className={`border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors ${
-                imagePreview ? 'border-primary-400' : 'hover:border-primary-400'
-              }`}
+              className={`border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors ${imagePreview ? 'border-primary-400' : 'hover:border-primary-400'
+                }`}
             >
               {imagePreview ? (
                 <div className="space-y-4">

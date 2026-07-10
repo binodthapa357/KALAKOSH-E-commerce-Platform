@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { FaPlus, FaEdit, FaTrash, FaImage, FaEye, FaEyeSlash } from 'react-icons/fa';
-import { Input } from '@/app/components/ui/Input';
+import { Input } from '@/components/ui/input';
 
 // Mock banners data
 const mockBanners = [
@@ -73,7 +73,10 @@ export default function BannersPage() {
           >
             <div className="relative h-48 bg-gray-200 flex items-center justify-center">
               {banner.image ? (
-                <Image src={banner.image} alt={banner.title} className="w-full h-full object-cover" />
+                <Image src={banner.image} alt={banner.title}
+                height={100}
+                width={100}
+                className="w-full h-full object-cover" />
               ) : (
                 <FaImage className="text-4xl text-text-light" />
               )}

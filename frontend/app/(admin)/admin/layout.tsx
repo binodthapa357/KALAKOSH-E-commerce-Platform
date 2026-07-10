@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Button } from '@/app/components/ui/Button';
+// import Image from 'next/image';
+// import { Button } from '@/app/components/ui/Button';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   FaBorderAll,
   FaRegUser,
-  FaStore,
+//   FaStore,
   FaCube,
   FaTags,
   FaRegClipboard,
@@ -17,13 +17,13 @@ import {
 //   FaRegFileLines,
   FaGear,
   FaArrowRightFromBracket,
-  FaTag,
-  FaTruckFast,
-  FaRegCircleQuestion,
+//   FaTag,
+//   FaTruckFast,
+//   FaRegCircleQuestion,
   FaImage,        // ✅ For Banners
   FaUsers,        // ✅ For Customers
 } from 'react-icons/fa6';
-import { IoShieldCheckmarkSharp } from "react-icons/io5";
+// import { IoShieldCheckmarkSharp } from "react-icons/io5";
 
 const menuItems = [
   { href: '/admin', label: 'Dashboard', icon: FaBorderAll },

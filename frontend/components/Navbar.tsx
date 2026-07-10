@@ -25,7 +25,6 @@ const navLinks = [
     href: "/contact",
     label: "Contact",
   },
-  
 ];
 
 const Navbar = () => {
@@ -44,7 +43,13 @@ const Navbar = () => {
       <div className="flex items-center justify-between bg-[#FBF3E7] px-6 py-4 sm:px-10">
         <Link href="/" className="flex items-center gap-3">
           <div className="relative h-9 w-9 overflow-hidden rounded-full">
-            <Image src="/images/logo.png" alt="Kalakosh logo" fill className="object-cover" />
+            <Image
+              src="/images/logo.png"
+              alt="Kalakosh logo"
+              fill
+              sizes="36px"
+              className="object-cover"
+            />
           </div>
           <span className="text-lg font-serif uppercase tracking-[0.15em] text-[#5C2E2E]">
             Kalakosh

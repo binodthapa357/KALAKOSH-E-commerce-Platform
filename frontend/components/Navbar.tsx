@@ -14,6 +14,10 @@ const navLinks = [
     label: "Shop",
   },
   {
+    href: "/categories",
+    label: "Categories",
+  },
+  {
     href: "/about",
     label: "About",
   },
@@ -21,6 +25,7 @@ const navLinks = [
     href: "/contact",
     label: "Contact",
   },
+  
 ];
 
 const Navbar = () => {

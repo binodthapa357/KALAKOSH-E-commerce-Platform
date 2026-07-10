@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Input } from '@/app/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { FaArrowLeft, FaUpload } from 'react-icons/fa6';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';

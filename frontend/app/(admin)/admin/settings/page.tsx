@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { FaSave, FaStore, FaPalette, FaShippingFast, FaCreditCard, FaEnvelope, FaGlobe } from 'react-icons/fa';
-import { Input } from '@/app/components/ui/Input';
+import { Input } from '@/components/ui/input';
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('general');
@@ -140,11 +140,10 @@ export default function SettingsPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-left ${
-                    activeTab === tab.id
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-left ${activeTab === tab.id
                       ? 'bg-primary-700 text-white'
                       : 'text-text-mid hover:bg-primary-50 hover:text-primary-700'
-                  }`}
+                    }`}
                 >
                   <Icon />
                   {tab.label}

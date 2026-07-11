@@ -1,4 +1,4 @@
-
+/*
 import { error } from "console";
 import mongoose from "mongoose";
 import config from "./config.js";
@@ -14,7 +14,7 @@ function connectDB() {
     });
 }
 
-export default connectDB;
+export default connectDB;*/
 
 import mongoose from "mongoose";
 

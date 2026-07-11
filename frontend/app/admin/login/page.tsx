@@ -197,42 +197,34 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const cleanEmail = email.trim();
-      const cleanPassword = password.trim();
+      const res = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), password: password.trim() }),
+      });
 
-      if (cleanEmail === 'admin@kalakosh.com' && cleanPassword === 'admin123') {
-        const newLogin = {
-          id: loginHistoryData.length + 1,
-          timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
-          ip: '192.168.1.100',
-          location: 'Kathmandu, Nepal',
-          device: 'Desktop - Chrome',
-          status: 'Success' as const,
-          browser: 'Chrome 122',
-          city: 'Kathmandu'
-        };
-        loginHistoryData.unshift(newLogin);
-        
-        localStorage.setItem('adminAuth', 'true');
-        router.push('/admin');
-      } else {
-        const failedLogin = {
-          id: loginHistoryData.length + 1,
-          timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
-          ip: '192.168.1.100',
-          location: 'Kathmandu, Nepal',
-          device: 'Desktop - Chrome',
-          status: 'Failed' as const,
-          browser: 'Chrome 122',
-          city: 'Kathmandu'
-        };
-        loginHistoryData.unshift(failedLogin);
-        
-        setError('Invalid email or password. Please try again.');
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || 'Invalid email or password. Please try again.');
         setLoading(false);
+        return;
       }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
+
+      // Ensure the authenticated user is an admin
+      if (data.user?.role !== 'admin') {
+        setError('Access denied. Admin privileges required.');
+        setLoading(false);
+        return;
+      }
+
+      // Store JWT token for subsequent API calls
+      localStorage.setItem('adminToken', data.token);
+      localStorage.setItem('adminUser', JSON.stringify(data.user));
+
+      router.push('/admin');
+    } catch {
+      setError('Unable to connect to server. Please ensure the backend is running.');
       setLoading(false);
     }
   };

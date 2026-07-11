@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Input } from '@/app/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { FaArrowLeft, FaUpload } from 'react-icons/fa6';
 import Image from 'next/image';
-import { Button } from '@/app/components/ui/Button';
+import { Button } from '@/components/ui/button';
 
 export default function CreateProductPage() {
   const router = useRouter();
@@ -169,9 +169,8 @@ export default function CreateProductPage() {
           <div className="bg-[#F7F2EA] border border-border rounded-2xl p-7 sticky top-4">
             <h3 className="font-serif text-primary-700 text-2xl mb-4">Product Image</h3>
             <div
-              className={`border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors ${
-                imagePreview ? 'border-primary-400' : 'hover:border-primary-400'
-              }`}
+              className={`border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors ${imagePreview ? 'border-primary-400' : 'hover:border-primary-400'
+                }`}
             >
               {imagePreview ? (
                 <div className="space-y-4">

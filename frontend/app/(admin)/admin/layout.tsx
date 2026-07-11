@@ -3,23 +3,23 @@
 import { useState } from 'react';
 import Link from 'next/link';
 // import Image from 'next/image';
-// import { Button } from '@/app/components/ui/Button';
+// import { Button } from '@/components/ui/button';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   FaBorderAll,
   FaRegUser,
-//   FaStore,
+    FaStore,
   FaCube,
   FaTags,
   FaRegClipboard,
-//   FaTicket,
+  //   FaTicket,
   FaRegStar,
-//   FaRegFileLines,
+  //   FaRegFileLines,
   FaGear,
   FaArrowRightFromBracket,
-//   FaTag,
-//   FaTruckFast,
-//   FaRegCircleQuestion,
+  //   FaTag,
+  //   FaTruckFast,
+  //   FaRegCircleQuestion,
   FaImage,        // ✅ For Banners
   FaUsers,        // ✅ For Customers
 } from 'react-icons/fa6';
@@ -29,7 +29,7 @@ const menuItems = [
   { href: '/admin', label: 'Dashboard', icon: FaBorderAll },
   { href: '/admin/users', label: 'Users', icon: FaRegUser },
   { href: '/admin/customers', label: 'Customers', icon: FaUsers },   // ✅ NEW
-//   { href: '/admin/vendors', label: 'Vendors', icon: FaStore },
+    { href: '/admin/vendors', label: 'Vendors', icon: FaStore },
   { href: '/admin/products', label: 'Products', icon: FaCube },
   { href: '/admin/categories', label: 'Categories', icon: FaTags },
   { href: '/admin/orders', label: 'Orders', icon: FaRegClipboard },
@@ -48,43 +48,21 @@ export default function AdminLayout({
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
-    console.log('🔴 Logout button clicked');
-    
-    if (!confirm('Are you sure you want to logout?')) {
-      console.log('❌ Logout cancelled by user');
-      return;
-    }
-
-    console.log('✅ Logout confirmed');
+    if (!confirm('Are you sure you want to logout?')) return;
     setIsLoggingOut(true);
 
     try {
-      console.log('📤 Attempting API logout...');
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        console.log('✅ API logout successful');
-      } else {
-        console.log('❌ API logout failed with status:', response.status);
-      }
-    } catch (error) {
-      console.error('💥 API logout error:', error);
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch {
+      // ignore logout API errors
     }
 
-    // ALWAYS clear client-side storage
-    console.log('🧹 Clearing localStorage...');
-    localStorage.clear();
+    // Clear all stored auth data
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
     sessionStorage.clear();
-    
-    console.log('🧹 Clearing cookies...');
     document.cookie = 'adminAuth=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-    
-    console.log('🔄 Redirecting to login...');
+
     router.push('/admin/login');
   };
 
@@ -148,7 +126,7 @@ export default function AdminLayout({
 
       {/* Dashboard Layout */}
       <div className="grid grid-cols-1 md:grid-cols-[290px_1fr] gap-8 p-4 md:p-8 pb-20 min-h-screen bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIiIGhlaWdodD0iMjIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSIyMiIgaGVpZ2h0PSIyMiIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMSAxIEwgMTEgMjEgTSAxIDExIEwgMjEgMTEiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgwLDAsMCwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')]">
-        
+
         {/* Sidebar */}
         <aside className="bg-[#F7F2EA] border border-border rounded-2xl p-6 h-fit sticky top-4">
           <div>
@@ -159,16 +137,15 @@ export default function AdminLayout({
           <ul className="list-none mt-7">
             {/* Menu Items */}
             {menuItems.map((item) => {
-              const isActive = pathname === item.href || 
-                              (item.href !== '/admin' && pathname.startsWith(item.href));
+              const isActive = pathname === item.href ||
+                (item.href !== '/admin' && pathname.startsWith(item.href));
               const Icon = item.icon;
               return (
                 <li key={item.href} className={`rounded-2xl cursor-pointer mb-2 transition-colors ${isActive ? 'bg-primary-700' : 'hover:bg-primary-700/10'}`}>
                   <Link
                     href={item.href}
-                    className={`h-13 flex items-center gap-3.5 px-4 rounded-2xl no-underline w-full transition-colors ${
-                      isActive ? 'text-white' : 'text-text-dark hover:text-primary-700'
-                    }`}
+                    className={`h-13 flex items-center gap-3.5 px-4 rounded-2xl no-underline w-full transition-colors ${isActive ? 'text-white' : 'text-text-dark hover:text-primary-700'
+                      }`}
                   >
                     <Icon className={isActive ? 'text-white' : ''} />
                     {item.label}
@@ -176,10 +153,10 @@ export default function AdminLayout({
                 </li>
               );
             })}
-            
+
             {/* Divider */}
             <li className="mt-4 border-t border-border pt-4"></li>
-            
+
             {/* Logout Button */}
             <li className="rounded-2xl cursor-pointer mb-2 transition-colors hover:bg-red-50">
               <button

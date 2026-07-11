@@ -1,0 +1,6 @@
+node_modules/
+.env
+<<<<<<<< HEAD:backend/.gitignore
+========
+*.env
+>>>>>>>> main:.gitignore

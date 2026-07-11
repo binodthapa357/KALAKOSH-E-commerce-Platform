@@ -4,19 +4,9 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft, FaUpload } from 'react-icons/fa6';
-import { Input } from '@/app/components/ui/Input';
-
-// Mock product data for demo
-const mockProduct = {
-  id: 1,
-  name: 'Sacred Tara Thangka',
-  category: 'Paintings',
-  price: '$299',
-  stock: 45,
-  description: 'A beautiful hand-painted Thangka depicting Tara, the mother of all Buddhas. Created by master artisans of the Kathmandu Valley.',
-  status: 'In Stock',
-  image: '/images/thangka.jpg',
-};
+import { Input } from '@/components/ui/input';
+import { fetchApi } from '@/lib/api';
+import { toast } from 'sonner';
 
 export default function EditProductPage() {
   const router = useRouter();
@@ -29,25 +19,50 @@ export default function EditProductPage() {
     price: '',
     stock: '',
     description: '',
-    status: 'In Stock',
+    status: 'pending',
   });
+  const [categories, setCategories] = useState<{ _id: string; name: string }[]>([]);
+  const [images, setImages] = useState<string[]>([]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading product data
-    setTimeout(() => {
-      setFormData({
-        name: mockProduct.name,
-        category: mockProduct.category,
-        price: mockProduct.price,
-        stock: mockProduct.stock.toString(),
-        description: mockProduct.description,
-        status: mockProduct.status,
-      });
-      setImagePreview(mockProduct.image);
-      setLoading(false);
-    }, 500);
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        // Load categories list
+        const catData = await fetchApi('/categories');
+        if (catData && catData.categories) {
+          setCategories(catData.categories);
+        }
+
+        // Load product data
+        const product = await fetchApi(`/products/${productId}`);
+        if (product) {
+          setFormData({
+            name: product.name || '',
+            category: product.category_id?._id || product.category_id || '',
+            price: product.price?.toString() || '',
+            stock: product.stock?.toString() || '',
+            description: product.description || '',
+            status: product.status || 'pending',
+          });
+          setImages(product.images || []);
+          if (product.images && product.images.length > 0) {
+            setImagePreview(product.images[0]);
+          }
+        }
+      } catch (err: any) {
+        console.error(err);
+        toast.error(err.message || 'Failed to load product or categories');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (productId) {
+      loadData();
+    }
   }, [productId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -66,10 +81,27 @@ export default function EditProductPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Updating product:', productId, formData);
-    router.push('/admin/products');
+    try {
+      const body = {
+        name: formData.name,
+        category: formData.category,
+        price: Number(formData.price),
+        stock: Number(formData.stock),
+        description: formData.description,
+        status: formData.status,
+        images: imagePreview ? (imagePreview.startsWith('data:') ? [imagePreview] : images) : [],
+      };
+      await fetchApi(`/products/${productId}`, {
+        method: 'PUT',
+        body: JSON.stringify(body),
+      });
+      toast.success('Product updated successfully');
+      router.push('/admin/products');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update product');
+    }
   };
 
   if (loading) {
@@ -122,15 +154,20 @@ export default function EditProductPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-text-dark text-sm font-medium mb-2">Category *</label>
-                  <input
-                    type="text"
+                  <select
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
-                    placeholder="e.g., Paintings"
-                  />
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map((cat) => (
+                      <option key={cat._id} value={cat._id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-text-dark text-sm font-medium mb-2">Price *</label>
@@ -166,11 +203,11 @@ export default function EditProductPage() {
                     name="status"
                     value={formData.status}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
+                    className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400 capitalize"
                   >
-                    <option value="In Stock">In Stock</option>
-                    <option value="Low Stock">Low Stock</option>
-                    <option value="Out of Stock">Out of Stock</option>
+                    <option value="active">Active</option>
+                    <option value="pending">Pending</option>
+                    <option value="inactive">Inactive</option>
                   </select>
                 </div>
               </div>
@@ -210,9 +247,8 @@ export default function EditProductPage() {
           <div className="bg-[#F7F2EA] border border-border rounded-2xl p-7 sticky top-4">
             <h3 className="font-serif text-primary-700 text-2xl mb-4">Product Image</h3>
             <div
-              className={`border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors ${
-                imagePreview ? 'border-primary-400' : 'hover:border-primary-400'
-              }`}
+              className={`border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors relative ${imagePreview ? 'border-primary-400' : 'hover:border-primary-400'
+                }`}
             >
               {imagePreview ? (
                 <div className="space-y-4">
@@ -224,7 +260,7 @@ export default function EditProductPage() {
                   <button
                     type="button"
                     onClick={() => setImagePreview(null)}
-                    className="text-red-600 hover:text-red-700 text-sm"
+                    className="text-red-600 hover:text-red-700 text-sm relative z-10"
                   >
                     Remove Image
                   </button>

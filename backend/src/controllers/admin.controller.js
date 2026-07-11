@@ -4,29 +4,50 @@ import Vendor from "../models/Vendor.model.js";
 import Order from "../models/Order.model.js";
 
 /**
- * @desc    Get Admin Dashboard Stats (counts by status)
+ * @desc    Get Admin Dashboard Stats (counts by status + revenue)
  * @route   GET /api/admin/stats
  * @access  Private (Admin Only)
  */
 export const getDashboardStats = async (req, res, next) => {
   try {
-    const userActiveCount = await User.countDocuments({ is_active: true });
-    const userInactiveCount = await User.countDocuments({ is_active: false });
+    const [
+      userActiveCount,
+      userInactiveCount,
+      productActiveCount,
+      productPendingCount,
+      productInactiveCount,
+      vendorActiveCount,
+      vendorPendingCount,
+      vendorSuspendedCount,
+      vendorRejectedCount,
+      orderPendingCount,
+      orderProcessingCount,
+      orderShippedCount,
+      orderDeliveredCount,
+      orderCancelledCount,
+      revenueResult,
+    ] = await Promise.all([
+      User.countDocuments({ is_active: true }),
+      User.countDocuments({ is_active: false }),
+      Product.countDocuments({ status: "active" }),
+      Product.countDocuments({ status: "pending" }),
+      Product.countDocuments({ status: "inactive" }),
+      Vendor.countDocuments({ status: "active" }),
+      Vendor.countDocuments({ status: "pending" }),
+      Vendor.countDocuments({ status: "suspended" }),
+      Vendor.countDocuments({ status: "rejected" }),
+      Order.countDocuments({ order_status: "pending" }),
+      Order.countDocuments({ order_status: "processing" }),
+      Order.countDocuments({ order_status: "shipped" }),
+      Order.countDocuments({ order_status: "delivered" }),
+      Order.countDocuments({ order_status: "cancelled" }),
+      Order.aggregate([
+        { $match: { payment_status: "paid" } },
+        { $group: { _id: null, total: { $sum: "$total_amount" } } },
+      ]),
+    ]);
 
-    const productActiveCount = await Product.countDocuments({ status: "active" });
-    const productPendingCount = await Product.countDocuments({ status: "pending" });
-    const productInactiveCount = await Product.countDocuments({ status: "inactive" });
-
-    const vendorActiveCount = await Vendor.countDocuments({ status: "active" });
-    const vendorPendingCount = await Vendor.countDocuments({ status: "pending" });
-    const vendorSuspendedCount = await Vendor.countDocuments({ status: "suspended" });
-    const vendorRejectedCount = await Vendor.countDocuments({ status: "rejected" });
-
-    const orderPendingCount = await Order.countDocuments({ order_status: "pending" });
-    const orderProcessingCount = await Order.countDocuments({ order_status: "processing" });
-    const orderShippedCount = await Order.countDocuments({ order_status: "shipped" });
-    const orderDeliveredCount = await Order.countDocuments({ order_status: "delivered" });
-    const orderCancelledCount = await Order.countDocuments({ order_status: "cancelled" });
+    const totalRevenue = revenueResult.length > 0 ? revenueResult[0].total : 0;
 
     res.status(200).json({
       success: true,
@@ -56,6 +77,9 @@ export const getDashboardStats = async (req, res, next) => {
           delivered: orderDeliveredCount,
           cancelled: orderCancelledCount,
           total: orderPendingCount + orderProcessingCount + orderShippedCount + orderDeliveredCount + orderCancelledCount,
+        },
+        revenue: {
+          total: totalRevenue,
         },
       },
     });
@@ -87,6 +111,31 @@ export const getUsersList = async (req, res, next) => {
       success: true,
       count: users.length,
       users,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Toggle user active status (suspend / activate)
+ * @route   PATCH /api/admin/users/:id/toggle-status
+ * @access  Private (Admin Only)
+ */
+export const toggleUserStatus = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.is_active = !user.is_active;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: `User ${user.is_active ? "activated" : "suspended"} successfully`,
+      user,
     });
   } catch (error) {
     next(error);
@@ -150,9 +199,79 @@ export const getVendorsList = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Update vendor status (active / suspended / rejected)
+ * @route   PATCH /api/admin/vendors/:id/status
+ * @access  Private (Admin Only)
+ */
+export const updateVendorStatus = async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    const allowed = ["active", "pending", "suspended", "rejected"];
+    if (!allowed.includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    const vendor = await Vendor.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    ).populate("user_id", "name email");
+
+    if (!vendor) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+
+    res.status(200).json({ success: true, vendor });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Get paginated list of all orders
+ * @route   GET /api/admin/orders
+ * @access  Private (Admin Only)
+ */
+export const getOrdersList = async (req, res, next) => {
+  try {
+    const { order_status, page = 1, limit = 20 } = req.query;
+    const filter = {};
+
+    if (order_status) {
+      filter.order_status = order_status;
+    }
+
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const [orders, total] = await Promise.all([
+      Order.find(filter)
+        .populate("user_id", "name email")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit)),
+      Order.countDocuments(filter),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      count: orders.length,
+      total,
+      page: Number(page),
+      pages: Math.ceil(total / Number(limit)),
+      orders,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getDashboardStats,
   getUsersList,
+  toggleUserStatus,
   getProductsList,
   getVendorsList,
+  updateVendorStatus,
+  getOrdersList,
 };

@@ -4,36 +4,89 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { 
-  Button, 
-//   Input, 
-//   Card, 
-//   CardTitle, 
-  Badge,
+import { motion, AnimatePresence } from 'framer-motion';
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   Table,
+  TableBody,
+  TableCell,
   TableHead,
   TableHeader,
-  TableBody,
   TableRow,
-  TableCell,
-  TablePagination
-} from '@/app/components/ui';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 import { 
   FaRegEnvelope, 
   FaLock, 
-  FaTag, 
-  FaTruckFast, 
-  FaRegCircleQuestion, 
-  FaStore,
   FaClock,
- 
   FaGlobe,
   FaDesktop,
   FaMobile,
-  FaTablet
-} from 'react-icons/fa6';
+  FaTablet,
+  FaEllipsisV,
+  FaShieldAlt,
+  FaUserLock,
+  FaHistory,
+  FaChevronRight,
+  FaChevronLeft,
+} from 'react-icons/fa';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { IoShieldCheckmarkSharp } from "react-icons/io5";
+// import { LuAlertCircle } from "react-icons/lu";
+import { CircleAlert } from "lucide-react";
+import { HiOutlineInformationCircle } from "react-icons/hi";
+import { TbDeviceDesktop, TbDeviceMobile, TbDeviceTablet } from "react-icons/tb";
 
 // Mock login history data
 const loginHistoryData = [
@@ -44,7 +97,8 @@ const loginHistoryData = [
     location: 'Kathmandu, Nepal',
     device: 'Desktop - Chrome',
     status: 'Success',
-    browser: 'Chrome 122'
+    browser: 'Chrome 122',
+    city: 'Kathmandu'
   },
   { 
     id: 2, 
@@ -53,7 +107,8 @@ const loginHistoryData = [
     location: 'Pokhara, Nepal',
     device: 'Mobile - Safari',
     status: 'Success',
-    browser: 'Safari 17'
+    browser: 'Safari 17',
+    city: 'Pokhara'
   },
   { 
     id: 3, 
@@ -62,7 +117,8 @@ const loginHistoryData = [
     location: 'Lalitpur, Nepal',
     device: 'Tablet - Chrome',
     status: 'Failed',
-    browser: 'Chrome 122'
+    browser: 'Chrome 122',
+    city: 'Lalitpur'
   },
   { 
     id: 4, 
@@ -71,7 +127,8 @@ const loginHistoryData = [
     location: 'Kathmandu, Nepal',
     device: 'Desktop - Firefox',
     status: 'Success',
-    browser: 'Firefox 123'
+    browser: 'Firefox 123',
+    city: 'Kathmandu'
   },
   { 
     id: 5, 
@@ -80,7 +137,8 @@ const loginHistoryData = [
     location: 'Bhaktapur, Nepal',
     device: 'Mobile - Chrome',
     status: 'Success',
-    browser: 'Chrome 122'
+    browser: 'Chrome 122',
+    city: 'Bhaktapur'
   },
   { 
     id: 6, 
@@ -89,7 +147,8 @@ const loginHistoryData = [
     location: 'Kathmandu, Nepal',
     device: 'Desktop - Edge',
     status: 'Failed',
-    browser: 'Edge 122'
+    browser: 'Edge 122',
+    city: 'Kathmandu'
   },
   { 
     id: 7, 
@@ -98,7 +157,8 @@ const loginHistoryData = [
     location: 'Pokhara, Nepal',
     device: 'Tablet - Safari',
     status: 'Success',
-    browser: 'Safari 17'
+    browser: 'Safari 17',
+    city: 'Pokhara'
   },
   { 
     id: 8, 
@@ -107,7 +167,8 @@ const loginHistoryData = [
     location: 'Lalitpur, Nepal',
     device: 'Desktop - Chrome',
     status: 'Success',
-    browser: 'Chrome 122'
+    browser: 'Chrome 122',
+    city: 'Lalitpur'
   },
 ];
 
@@ -136,405 +197,398 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const cleanEmail = email.trim();
-      const cleanPassword = password.trim();
+      const res = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), password: password.trim() }),
+      });
 
-      if (cleanEmail === 'admin@kalakosh.com' && cleanPassword === 'admin123') {
-        // Success - add to history
-        const newLogin = {
-          id: loginHistoryData.length + 1,
-          timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
-          ip: '192.168.1.100',
-          location: 'Kathmandu, Nepal',
-          device: 'Desktop - Chrome',
-          status: 'Success',
-          browser: 'Chrome 122'
-        };
-        loginHistoryData.unshift(newLogin);
-        
-        localStorage.setItem('adminAuth', 'true');
-        router.push('/admin');
-      } else {
-        // Failed - add to history
-        const failedLogin = {
-          id: loginHistoryData.length + 1,
-          timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
-          ip: '192.168.1.100',
-          location: 'Kathmandu, Nepal',
-          device: 'Desktop - Chrome',
-          status: 'Failed',
-          browser: 'Chrome 122'
-        };
-        loginHistoryData.unshift(failedLogin);
-        
-        setError('Invalid email or password. Please try again.');
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || 'Invalid email or password. Please try again.');
         setLoading(false);
+        return;
       }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
+
+      // Ensure the authenticated user is an admin
+      if (data.user?.role !== 'admin') {
+        setError('Access denied. Admin privileges required.');
+        setLoading(false);
+        return;
+      }
+
+      // Store JWT token for subsequent API calls
+      localStorage.setItem('adminToken', data.token);
+      localStorage.setItem('adminUser', JSON.stringify(data.user));
+
+      router.push('/admin');
+    } catch {
+      setError('Unable to connect to server. Please ensure the backend is running.');
       setLoading(false);
     }
   };
 
   const getDeviceIcon = (device: string) => {
-    if (device.includes('Desktop')) return <FaDesktop className="text-sm" />;
-    if (device.includes('Mobile')) return <FaMobile className="text-sm" />;
-    if (device.includes('Tablet')) return <FaTablet className="text-sm" />;
-    return <FaGlobe className="text-sm" />;
+    if (device.includes('Desktop')) return <TbDeviceDesktop className="h-4 w-4" />;
+    if (device.includes('Mobile')) return <TbDeviceMobile className="h-4 w-4" />;
+    if (device.includes('Tablet')) return <TbDeviceTablet className="h-4 w-4" />;
+    return <FaGlobe className="h-4 w-4" />;
   };
 
   const getStatusBadge = (status: string) => {
     if (status === 'Success') {
-      return <Badge variant="success"><FaCheckCircle className="mr-1" /> Success</Badge>;
+      return (
+        <Badge variant="default" className="bg-green-50 text-green-700 border-green-200 hover:bg-green-50">
+          <FaCheckCircle className="mr-1.5 h-3 w-3" />
+          Success
+        </Badge>
+      );
     }
-    return <Badge variant="danger"><FaTimesCircle className="mr-1" /> Failed</Badge>;
+    return (
+      <Badge variant="destructive" className="bg-red-50 text-red-700 border-red-200 hover:bg-red-50">
+        <FaTimesCircle className="mr-1.5 h-3 w-3" />
+        Failed
+      </Badge>
+    );
   };
 
   return (
-    <>
-      {/* Top Bar */}
-      <div className="bg-primary-700 text-white/90 text-xs tracking-wide py-2 px-4 md:px-10">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center gap-2.5">
-            <FaTag className="text-secondary-500" />
-            FREE SHIPPING on orders above Rs. 5000 within Nepal
-          </div>
-          <div className="hidden md:flex items-center gap-6">
-            <Link href="#" className="flex items-center gap-1.5 text-white/90 hover:text-white transition-colors">
-              <FaTruckFast /> Track Order
-            </Link>
-            <Link href="#" className="flex items-center gap-1.5 text-white/90 hover:text-white transition-colors">
-              <FaRegCircleQuestion /> Help & Support
-            </Link>
-            <Link href="#" className="flex items-center gap-1.5 text-white/90 hover:text-white transition-colors">
-              <FaStore /> Vendor
-            </Link>
-            <Link href="/admin/login" className="flex items-center gap-1.5 text-secondary-300 hover:text-secondary-200 transition-colors">
-              <IoShieldCheckmarkSharp /> Admin
-            </Link>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50/30 to-stone-50">
+      {/* Main Container */}
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="grid lg:grid-cols-[1.2fr_1fr] gap-8 max-w-7xl mx-auto">
+          
+          {/* Left Side - Hero Section */}
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="relative rounded-3xl overflow-hidden shadow-2xl hidden lg:block"
+          >
+            <div className="relative h-full min-h-[600px]">
+              <Image 
+                src="/images/artisan.jpg"
+                fill
+                className="object-cover"
+                alt="Artisan working on traditional craft"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary-900/90 via-primary-800/70 to-primary-700/50" />
+              
+              <div className="absolute inset-0 p-10 flex flex-col justify-between">
+                {/* Brand */}
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-amber-400 flex items-center justify-center text-primary-900 text-2xl font-bold shadow-lg">
+                    क
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-2xl text-white tracking-wide">KALAKOSH</h3>
+                    <p className="text-xs text-amber-200/80 tracking-[0.3em]">ADMIN CONSOLE</p>
+                  </div>
+                </div>
+
+                {/* Hero Text */}
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <Badge className="bg-amber-400/20 text-amber-100 border-amber-400/30 backdrop-blur-sm">
+                      <FaShieldAlt className="mr-2 h-3 w-3" />
+                      Secure Access
+                    </Badge>
+                  </div>
+                  <h2 className="text-6xl font-serif font-light leading-[1.1] text-white">
+                    Steward of
+                    <br />
+                    <span className="text-amber-300 font-medium italic">Heritage</span>
+                  </h2>
+                  <p className="max-w-sm text-white/80 text-lg leading-relaxed">
+                    Oversee artisans, curate the catalog, and protect the integrity of Nepal's living craft.
+                  </p>
+                </div>
+
+                {/* Footer */}
+                <div className="text-sm text-white/60 border-t border-white/10 pt-4">
+                  © KALAKOSH · कलाकोष — Authorized personnel only
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right Side - Login Form */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="flex items-center"
+          >
+            <div className="w-full max-w-lg mx-auto">
+              <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+                <CardHeader className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+                      <IoShieldCheckmarkSharp className="mr-1.5 h-3.5 w-3.5" />
+                      ADMIN PORTAL
+                    </Badge>
+                  </div>
+                  <CardTitle className="text-4xl font-serif text-primary-900">
+                    Sign in
+                  </CardTitle>
+                  <CardDescription className="text-sm text-muted-foreground">
+                    Restricted area. Authorized administrators only.
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent>
+                  {error && (
+                    <Alert variant="destructive" className="mb-6">
+                      <CircleAlert className="h-4 w-4" />
+                      <AlertTitle>Authentication Failed</AlertTitle>
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-sm font-medium">
+                        Admin Email
+                      </Label>
+                      <div className="relative">
+                        <FaRegEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="pl-10 h-11 rounded-xl"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="password" className="text-sm font-medium">
+                          Password
+                        </Label>
+                        <Link 
+                          href="#" 
+                          className="text-xs text-primary-600 hover:text-primary-700 hover:underline transition-colors"
+                        >
+                          Forgot password?
+                        </Link>
+                      </div>
+                      <div className="relative">
+                        <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                        <Input
+                          id="password"
+                          type="password"
+                          placeholder="Enter your password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="pl-10 h-11 rounded-xl"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-3">
+                      <Checkbox
+                        id="remember"
+                        checked={remember}
+                        onCheckedChange={(checked) => setRemember(checked as boolean)}
+                      />
+                      <Label 
+                        htmlFor="remember" 
+                        className="text-sm font-normal text-muted-foreground cursor-pointer"
+                      >
+                        Remember this device
+                      </Label>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      className="w-full h-12 rounded-xl bg-primary-900 hover:bg-primary-800 text-white font-medium transition-all duration-300"
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          Authenticating...
+                        </div>
+                      ) : (
+                        'Enter Admin Console'
+                      )}
+                    </Button>
+                  </form>
+
+                  <div className="mt-6 text-center">
+                    <p className="text-sm text-muted-foreground">
+                      Not an admin?
+                      <Link href="#" className="text-primary-600 hover:text-primary-700 font-medium ml-1 hover:underline">
+                        User login
+                      </Link>
+                    </p>
+                  </div>
+
+                  <Separator className="my-6" />
+
+                  <div className="bg-amber-50/80 rounded-xl p-4 border border-amber-100">
+                    <div className="flex items-center gap-2 text-amber-800 mb-2">
+                      <HiOutlineInformationCircle className="h-4 w-4" />
+                      <span className="text-sm font-medium">Demo credentials</span>
+                    </div>
+                    <div className="space-y-1 text-sm text-amber-700">
+                      <p>Email: <span className="font-mono bg-amber-100/50 px-2 py-0.5 rounded">admin@kalakosh.com</span></p>
+                      <p>Password: <span className="font-mono bg-amber-100/50 px-2 py-0.5 rounded">admin123</span></p>
+                    </div>
+                  </div>
+                </CardContent>
+
+                <CardFooter className="flex justify-center border-t border-border/50 pt-4">
+                  <Button
+                    variant="ghost"
+                    onClick={() => setShowHistory(!showHistory)}
+                    className="text-muted-foreground hover:text-primary-700 gap-2"
+                  >
+                    <FaClock className="h-4 w-4" />
+                    {showHistory ? 'Hide Login History' : 'View Login History'}
+                  </Button>
+                </CardFooter>
+              </Card>
+
+              {/* Login History Dialog */}
+              <AnimatePresence>
+                {showHistory && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="mt-6"
+                  >
+                    <Card className="border shadow-lg">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 bg-primary-50 rounded-xl">
+                              <FaHistory className="h-5 w-5 text-primary-700" />
+                            </div>
+                            <div>
+                              <CardTitle className="text-lg">Login History</CardTitle>
+                              <CardDescription className="text-xs">
+                                Recent login attempts
+                              </CardDescription>
+                            </div>
+                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {totalItems} entries
+                          </Badge>
+                        </div>
+                      </CardHeader>
+
+                      <CardContent className="p-0">
+                        <ScrollArea className="h-[300px]">
+                          <Table>
+                            <TableHeader>
+                              <TableRow className="bg-muted/50">
+                                <TableHead className="text-xs font-medium">Time</TableHead>
+                                <TableHead className="text-xs font-medium">Location</TableHead>
+                                <TableHead className="text-xs font-medium">Device</TableHead>
+                                <TableHead className="text-xs font-medium text-right">Status</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {paginatedHistory.length === 0 ? (
+                                <TableRow>
+                                  <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                                    No login history available
+                                  </TableCell>
+                                </TableRow>
+                              ) : (
+                                paginatedHistory.map((entry) => (
+                                  <TableRow key={entry.id} className="hover:bg-muted/30 transition-colors">
+                                    <TableCell>
+                                      <div className="text-xs">
+                                        <div className="font-medium">{entry.timestamp}</div>
+                                        <div className="text-muted-foreground text-[10px] font-mono">{entry.ip}</div>
+                                      </div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <div className="text-xs">
+                                        <div className="font-medium">{entry.location}</div>
+                                        <div className="text-muted-foreground text-[10px]">{entry.browser}</div>
+                                      </div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <div className="flex items-center gap-2 text-xs">
+                                        <span className="text-muted-foreground">
+                                          {getDeviceIcon(entry.device)}
+                                        </span>
+                                        <span>{entry.device}</span>
+                                      </div>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                      {getStatusBadge(entry.status)}
+                                    </TableCell>
+                                  </TableRow>
+                                ))
+                              )}
+                            </TableBody>
+                          </Table>
+                        </ScrollArea>
+                      </CardContent>
+
+                      {totalPages > 1 && (
+                        <CardFooter className="border-t py-3">
+                          <Pagination>
+                            <PaginationContent>
+                              <PaginationItem>
+                                <PaginationPrevious 
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setCurrentPage(prev => Math.max(prev - 1, 1));
+                                  }}
+                                  className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                                />
+                              </PaginationItem>
+                              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                <PaginationItem key={page}>
+                                  <PaginationLink
+                                    href="#"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      setCurrentPage(page);
+                                    }}
+                                    isActive={currentPage === page}
+                                  >
+                                    {page}
+                                  </PaginationLink>
+                                </PaginationItem>
+                              ))}
+                              <PaginationItem>
+                                <PaginationNext
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+                                  }}
+                                  className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                                />
+                              </PaginationItem>
+                            </PaginationContent>
+                          </Pagination>
+                        </CardFooter>
+                      )}
+                    </Card>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
         </div>
       </div>
-
-      {/* Header */}
-      <header className="bg-warm-white border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <div className="flex items-center justify-between h-20">
-            <Link href="/" className="flex items-center gap-3.5 no-underline">
-              <div className="w-12 h-12 rounded-full bg-secondary-500 flex items-center justify-center overflow-hidden">
-                <Image src="/images/logo.png" alt="Logo" className="w-full h-full object-cover" />
-              </div>
-              <div className="flex flex-col justify-center">
-                <h2 className="text-xl text-primary-700 font-bold uppercase leading-tight font-sans">KALAKOSH</h2>
-                <p className="text-sm text-text-light leading-tight font-sans">कलाकोष</p>
-              </div>
-            </Link>
-
-            <nav className="hidden lg:block">
-              <ul className="flex gap-11 list-none">
-                <li><Link href="#" className="text-text-mid text-sm font-medium hover:text-primary-700 transition-colors">Home</Link></li>
-                <li><Link href="#" className="text-text-mid text-sm font-medium hover:text-primary-700 transition-colors">Shop</Link></li>
-                <li><Link href="#" className="text-text-mid text-sm font-medium hover:text-primary-700 transition-colors">Categories</Link></li>
-                <li><Link href="#" className="text-text-mid text-sm font-medium hover:text-primary-700 transition-colors">About</Link></li>
-                <li><Link href="#" className="text-text-mid text-sm font-medium hover:text-primary-700 transition-colors">Contact</Link></li>
-              </ul>
-            </nav>
-
-            <div className="flex items-center gap-4">
-              <Button className="border-none bg-transparent text-xl cursor-pointer text-text-dark hover:text-primary-700 transition-colors">
-                <i className="fa-regular fa-heart"></i>
-              </Button>
-              <Button className="border-none bg-transparent text-xl cursor-pointer text-text-dark hover:text-primary-700 transition-colors">
-                <i className="fa-solid fa-bag-shopping"></i>
-              </Button>
-              <Button className="border-none bg-transparent text-xl cursor-pointer text-text-dark hover:text-primary-700 transition-colors">
-                <i className="fa-regular fa-user"></i>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Login */}
-      <main className="grid md:grid-cols-[1.08fr_1fr] min-h-190">
-        {/* Left Side - Hero */}
-        <div className="relative overflow-hidden hidden md:block">
-          <Image src="/images/artisian1.jpg" alt="artisan image" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-b from-primary-700/82 to-primary-700/88 z-10"></div>
-          <div className="absolute inset-0 z-20 p-12 flex flex-col justify-between text-white">
-            <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-full bg-secondary-500 flex items-center justify-center text-primary-700 text-2xl font-bold">क</div>
-              <div>
-                <h3 className="font-serif text-3xl tracking-wide">KALAKOSH</h3>
-                <span className="text-xs tracking-[0.3em]">ADMIN CONSOLE</span>
-              </div>
-            </div>
-            <div className="mt-auto mb-[270px]">
-              <h2 className="text-7xl font-serif leading-[0.95] font-medium mb-7">
-                Steward of <br />
-                <span className="text-secondary-300 italic">Heritage</span>
-              </h2>
-              <p className="max-w-130 leading-relaxed text-white/90 text-xl">
-                Oversee artisans, curate the catalog, and protect the integrity of Nepal's living craft.
-              </p>
-            </div>
-            <div className="text-sm text-white/80">© KALAKOSH · कलाकोष — Authorized personnel only</div>
-          </div>
-        </div>
-
-        {/* Right Side - Login Form */}
-        <div className="bg-[#FBF7F0] flex items-start justify-center relative p-5 overflow-y-auto">
-          <div className="absolute inset-0 bg-[radial-gradient(rgba(0,0,0,0.05)_1px,transparent_1px)] bg-[length:22px_22px] opacity-30"></div>
-          
-          <div className="w-full max-w-[470px] relative z-10 py-8">
-            {/* Login Form */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg mb-6">
-              <div className="inline-flex items-center gap-2 bg-[#EBD7B4] text-primary-700 px-4 py-2 rounded-full text-xs tracking-[0.18em] mb-6">
-                <IoShieldCheckmarkSharp /> ADMIN PORTAL
-              </div>
-              <h1 className="font-serif text-5xl text-primary-700 font-medium mb-2">Sign in</h1>
-              <p className="text-text-light mb-6 text-sm">Restricted area. Authorized administrators only.</p>
-
-              {/* Error Message */}
-              {error && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
-                  {error}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                  <label className="block mb-2 text-text-dark text-sm font-medium">Admin Email</label>
-                  <div className="h-12 border border-border bg-white rounded-[18px] px-4 flex items-center gap-3 transition-all focus-within:ring-2 focus-within:ring-primary-400 focus-within:border-primary-400">
-                    <FaRegEnvelope className="text-text-light" />
-                    <input
-                      type="email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="border-none outline-none w-full text-sm text-text-mid bg-transparent"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label className="block mb-2 text-text-dark text-sm font-medium">Password</label>
-                  <div className="h-12 border border-border bg-white rounded-[18px] px-4 flex items-center gap-3 transition-all focus-within:ring-2 focus-within:ring-primary-400 focus-within:border-primary-400">
-                    <FaLock className="text-text-light" />
-                    <input
-                      type="password"
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="border-none outline-none w-full text-sm text-text-mid bg-transparent"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between mb-6">
-                  <label className="flex items-center gap-2 text-sm text-text-light cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={remember}
-                      onChange={(e) => setRemember(e.target.checked)}
-                      className="accent-primary-700"
-                    />
-                    Remember this device
-                  </label>
-                  <Link href="#" className="text-primary-700 text-sm hover:underline">Forgot password?</Link>
-                </div>
-
-                <Button
-                  type="submit"
-                  fullWidth
-                  isLoading={loading}
-                  className="h-12 text-base"
-                >
-                  Enter Admin Console
-                </Button>
-              </form>
-
-              <div className="text-center mt-4 text-text-light text-sm">
-                Not an admin?
-                <Link href="#" className="text-primary-700 font-semibold hover:underline ml-1">User login</Link>
-              </div>
-
-              <div className="mt-4 p-3 bg-[#F3E7D3] rounded-xl">
-                <h4 className="text-primary-700 font-semibold text-sm">Demo credentials</h4>
-                <p className="text-xs text-text-mid mt-1">Email: admin@kalakosh.com</p>
-                <p className="text-xs text-text-mid">Password: admin123</p>
-              </div>
-            </div>
-
-            {/* View History Button */}
-            <button
-              onClick={() => setShowHistory(!showHistory)}
-              className="w-full flex items-center justify-center gap-2 text-text-light hover:text-primary-700 transition-colors text-sm py-2"
-            >
-              <FaClock />
-              {showHistory ? 'Hide Login History' : 'View Login History'}
-            </button>
-
-            {/* Login History Table */}
-            {showHistory && (
-              <div className="mt-4 bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div className="p-4 border-b border-border">
-                  <h3 className="font-serif text-xl text-primary-700">Login History</h3>
-                  <p className="text-text-light text-xs">Recent login attempts</p>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHead>
-                      <tr>
-                        <TableHeader>Time</TableHeader>
-                        <TableHeader>Location</TableHeader>
-                        <TableHeader>Device</TableHeader>
-                        <TableHeader>Status</TableHeader>
-                      </tr>
-                    </TableHead>
-                    <TableBody>
-                      {paginatedHistory.length === 0 ? (
-                        <tr>
-                          <td colSpan={4} className="text-center py-8 text-text-light">
-                            No login history available
-                          </td>
-                        </tr>
-                      ) : (
-                        paginatedHistory.map((entry, index) => (
-                          <TableRow key={entry.id} striped hover index={index}>
-                            <TableCell>
-                              <div className="text-xs">
-                                <div className="font-medium text-text-dark">{entry.timestamp}</div>
-                                <div className="text-text-light text-xs">{entry.ip}</div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="text-sm">
-                                <div>{entry.location}</div>
-                                <div className="text-text-light text-xs">{entry.browser}</div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2 text-sm">
-                                {getDeviceIcon(entry.device)}
-                                <span>{entry.device}</span>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              {getStatusBadge(entry.status)}
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-
-                <TablePagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                  totalItems={totalItems}
-                  itemsPerPage={itemsPerPage}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-primary-700 text-white pt-[72px] relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 pb-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
-          <div className="lg:col-span-1.5">
-            <div className="flex items-center gap-3.5 mb-6">
-              <div className="w-10 h-10 rounded-full bg-secondary-500 flex items-center justify-center text-primary-700 text-xl font-bold">क</div>
-              <div>
-                <h3 className="font-serif text-4xl">KALAKOSH</h3>
-                <span className="text-sm opacity-80">कला कोष</span>
-              </div>
-            </div>
-            <p className="leading-relaxed text-white/80 max-w-[300px]">
-              A platform dedicated to preserving and promoting authentic Nepali handicrafts worldwide.
-            </p>
-            <div className="flex gap-3.5 mt-6">
-              <Link href="#" className="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/10 transition-colors">
-                <i className="fa-brands fa-facebook-f"></i>
-              </Link>
-              <Link href="#" className="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/10 transition-colors">
-                <i className="fa-brands fa-instagram"></i>
-              </Link>
-              <Link href="#" className="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/10 transition-colors">
-                <i className="fa-brands fa-youtube"></i>
-              </Link>
-              <Link href="#" className="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/10 transition-colors">
-                <i className="fa-brands fa-twitter"></i>
-              </Link>
-            </div>
-          </div>
-
-          <div>
-            <h4 className="text-secondary-300 font-serif text-3xl mb-5 font-medium">Categories</h4>
-            <ul className="list-none space-y-3.5">
-              <li className="text-white/90 cursor-pointer hover:text-white transition-colors">Paintings</li>
-              <li className="text-white/90 cursor-pointer hover:text-white transition-colors">Textiles</li>
-              <li className="text-white/90 cursor-pointer hover:text-white transition-colors">Pottery</li>
-              <li className="text-white/90 cursor-pointer hover:text-white transition-colors">Jewelry</li>
-              <li className="text-white/90 cursor-pointer hover:text-white transition-colors">Wood Crafts</li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-secondary-300 font-serif text-3xl mb-5 font-medium">Customer Service</h4>
-            <ul className="list-none space-y-3.5">
-              <li className="text-white/90 cursor-pointer hover:text-white transition-colors">About Us</li>
-              <li className="text-white/90 cursor-pointer hover:text-white transition-colors">Contact Us</li>
-              <li className="text-white/90 cursor-pointer hover:text-white transition-colors">Track Order</li>
-              <li className="text-white/90 cursor-pointer hover:text-white transition-colors">Shipping & Delivery</li>
-              <li className="text-white/90 cursor-pointer hover:text-white transition-colors">Returns & Refunds</li>
-              <li className="text-white/90 cursor-pointer hover:text-white transition-colors">FAQ</li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-secondary-300 font-serif text-3xl mb-5 font-medium">Quick Links</h4>
-            <ul className="list-none space-y-3.5">
-              <li className="text-white/90 cursor-pointer hover:text-white transition-colors">My Account</li>
-              <li className="text-white/90 cursor-pointer hover:text-white transition-colors">Wishlist</li>
-              <li className="text-white/90 cursor-pointer hover:text-white transition-colors">Cart</li>
-              <li className="text-white/90 cursor-pointer hover:text-white transition-colors">Terms & Conditions</li>
-              <li className="text-white/90 cursor-pointer hover:text-white transition-colors">Privacy Policy</li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-secondary-300 font-serif text-3xl mb-5 font-medium">Contact Us</h4>
-            <ul className="list-none space-y-3.5">
-              <li className="flex items-center gap-3 text-white/90">
-                <i className="fa-solid fa-phone"></i> +977 1 1234567
-              </li>
-              <li className="flex items-center gap-3 text-white/90">
-                <i className="fa-regular fa-envelope"></i> info@kalakosh.com
-              </li>
-              <li className="flex items-center gap-3 text-white/90">
-                <i className="fa-solid fa-location-dot"></i> Kathmandu, Nepal
-              </li>
-            </ul>
-            <div className="flex gap-2.5 mt-7 flex-wrap">
-              <span className="bg-white text-primary-700 text-xs font-bold px-3 py-1.5 rounded-full">eSewa</span>
-              <span className="bg-white text-primary-700 text-xs font-bold px-3 py-1.5 rounded-full">Khalti</span>
-              <span className="bg-white text-primary-700 text-xs font-bold px-3 py-1.5 rounded-full">VISA</span>
-              <span className="bg-white text-primary-700 text-xs font-bold px-3 py-1.5 rounded-full">MC</span>
-            </div>
-          </div>
-        </div>
-        <div className="border-t border-white/10 text-center py-6 text-sm text-white/70">
-          © 2024 KALAKOSH. All rights reserved.
-        </div>
-      </footer>
-    </>
+    </div>
   );
 }

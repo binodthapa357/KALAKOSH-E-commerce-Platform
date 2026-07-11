@@ -37,7 +37,7 @@ export default function Shop() {
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <div className="shop-page">
         {/* HERO */}
         <section className="shop-hero">
@@ -129,7 +129,7 @@ export default function Shop() {
           </main>
         </section>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }

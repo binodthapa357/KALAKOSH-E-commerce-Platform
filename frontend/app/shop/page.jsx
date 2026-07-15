@@ -1,39 +1,73 @@
 "use client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import "./shop.css";
 import ProductCard from "@/components/ProductCard";
+
+const CATEGORIES = ["Paintings", "Textiles", "Pottery", "Jewelry", "Wood Crafts"];
+const REGIONS = ["Kathmandu", "Patan", "Bhaktapur", "Lalitpur"];
+const MATERIALS = ["Cotton Canvas", "Brass Alloy", "Pashmina Wool", "Sterling Silver", "Clay"];
+const SORT_OPTIONS = [
+  { label: "Sort by: Featured", value: "" },
+  { label: "Newest", value: "newest" },
+  { label: "Price: Low to High", value: "price" },
+  { label: "Price: High to Low", value: "-price" },
+];
 
 export default function Shop() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState("");
+  const [selectedMaterial, setSelectedMaterial] = useState("");
   const [maxPrice, setMaxPrice] = useState(5000);
+  const [sort, setSort] = useState("");
+
+  const buildQuery = useCallback(() => {
+    const params = new URLSearchParams();
+    if (selectedCategory) params.set("category", selectedCategory);
+    if (selectedRegion) params.set("region", selectedRegion);
+    if (selectedMaterial) params.set("material", selectedMaterial);
+    if (maxPrice < 5000) params.set("maxPrice", String(maxPrice));
+    if (sort) params.set("sort", sort);
+    return params.toString();
+  }, [selectedCategory, selectedRegion, selectedMaterial, maxPrice, sort]);
+
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const qs = buildQuery();
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/products${qs ? "?" + qs : ""}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to load products");
+      const data = await res.json();
+      setProducts(data.products ?? data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }, [buildQuery]);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`);
-        if (!res.ok) throw new Error("Failed to load products");
-        const data = await res.json();
-        setProducts(data.products ?? data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProducts();
-  }, []);
+  }, [fetchProducts]);
 
-  const visibleProducts = products.filter((item) => {
-    const price = item.discount_price ?? item.price;
-    return price <= maxPrice;
-  });
+  const clearFilters = () => {
+    setSelectedCategory("");
+    setSelectedRegion("");
+    setSelectedMaterial("");
+    setMaxPrice(5000);
+    setSort("");
+  };
+
+  const toggleFilter = (value, current, setter) => {
+    setter(value === current ? "" : value);
+  };
 
   return (
     <>
@@ -54,14 +88,20 @@ export default function Shop() {
           <aside className="sidebar">
             <div className="filter-top">
               <h3>Filters</h3>
-              <button onClick={() => setMaxPrice(5000)}>Clear All</button>
+              <button onClick={clearFilters}>Clear All</button>
             </div>
             <hr />
 
             <div className="filter-group">
               <h4>CATEGORY</h4>
-              {["Paintings", "Textiles", "Pottery", "Jewelry", "Wood Crafts"].map((c) => (
-                <label key={c}><input type="checkbox" /> {c}</label>
+              {CATEGORIES.map((c) => (
+                <label key={c}>
+                  <input
+                    type="checkbox"
+                    checked={selectedCategory === c}
+                    onChange={() => toggleFilter(c, selectedCategory, setSelectedCategory)}
+                  /> {c}
+                </label>
               ))}
             </div>
             <hr />
@@ -82,16 +122,28 @@ export default function Shop() {
 
             <div className="filter-group">
               <h4>REGION</h4>
-              {["Kathmandu", "Patan", "Bhaktapur", "Lalitpur"].map((c) => (
-                <label key={c}><input type="checkbox" /> {c}</label>
+              {REGIONS.map((r) => (
+                <label key={r}>
+                  <input
+                    type="checkbox"
+                    checked={selectedRegion === r}
+                    onChange={() => toggleFilter(r, selectedRegion, setSelectedRegion)}
+                  /> {r}
+                </label>
               ))}
             </div>
             <hr />
 
             <div className="filter-group">
               <h4>MATERIAL</h4>
-              {["Cotton Canvas", "Brass Alloy", "Pashmina Wool", "Sterling Silver", "Clay"].map((c) => (
-                <label key={c}><input type="checkbox" /> {c}</label>
+              {MATERIALS.map((m) => (
+                <label key={m}>
+                  <input
+                    type="checkbox"
+                    checked={selectedMaterial === m}
+                    onChange={() => toggleFilter(m, selectedMaterial, setSelectedMaterial)}
+                  /> {m}
+                </label>
               ))}
             </div>
           </aside>
@@ -102,26 +154,25 @@ export default function Shop() {
               <div>
                 <h2>Featured Products</h2>
                 <p className="results">
-                  {loading ? "Loading..." : `Showing ${visibleProducts.length} of ${products.length} treasures`}
+                  {loading ? "Loading..." : `Showing ${products.length} treasures`}
                 </p>
               </div>
-              <select>
-                <option>Sort by: Featured</option>
-                <option>Newest</option>
-                <option>Price: Low to High</option>
-                <option>Price: High to Low</option>
+              <select value={sort} onChange={(e) => setSort(e.target.value)}>
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
               </select>
             </div>
 
             {loading && <p className="results">Loading products...</p>}
             {error && <p className="results">{error}</p>}
-            {!loading && !error && visibleProducts.length === 0 && (
+            {!loading && !error && products.length === 0 && (
               <p className="results">No products match your filters.</p>
             )}
 
-            {!loading && !error && visibleProducts.length > 0 && (
+            {!loading && !error && products.length > 0 && (
               <div className="product-grid">
-                {visibleProducts.map((item) => (
+                {products.map((item) => (
                   <ProductCard key={item._id} product={item} />
                 ))}
               </div>

@@ -7,22 +7,22 @@ export const metadata = {
 
 export default function ContactPage() {
   return (
-    <>
-      
-
+    <div className="contact-page">
       {/* HERO */}
       <section className="contact-hero">
-        <p>GET IN TOUCH</p>
-        <h1>Contact Us</h1>
-        <span>
-          We&apos;d love to hear from you — about products, partnerships, or
-          just to say नमस्ते.
-        </span>
+        <div className="contact-container">
+          <p>GET IN TOUCH</p>
+          <h1>Contact Us</h1>
+          <span>
+            We&apos;d love to hear from you — about products, partnerships, or
+            just to say नमस्ते.
+          </span>
+        </div>
       </section>
 
       {/* CONTACT */}
       <section className="contact-section">
-        <div className="container">
+        <div className="contact-container">
           <div className="contact-grid">
             {/* FORM */}
             <div className="form-card">
@@ -90,8 +90,6 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-
-      
-    </>
+    </div>
   );
 }

@@ -27,10 +27,10 @@ const artisans = [
 
 export default function AboutPage() {
   return (
-    <>
+    <div className="about-page">
       {/* HERO */}
       <section className="about-hero">
-        <div className="container">
+        <div className="about-container">
           <p className="subtitle">कलाकोष</p>
           <h2>About KALAKOSH</h2>
           <p className="hero-text">
@@ -42,7 +42,7 @@ export default function AboutPage() {
 
       {/* STORY */}
       <section className="story-section">
-        <div className="container">
+        <div className="about-container">
           <div className="story-grid">
             <div className="story-left">
               <h3>OUR STORY</h3>
@@ -96,7 +96,7 @@ export default function AboutPage() {
 
       {/* ARTISANS */}
       <section className="artisan-section">
-        <div className="container">
+        <div className="about-container">
           <div className="section-title">
             <p>MEET THE ARTISANS</p>
             <h2>The hands behind the craft</h2>
@@ -117,7 +117,7 @@ export default function AboutPage() {
 
       {/* CTA */}
       <section className="cta-section">
-        <div className="container">
+        <div className="about-container">
           <div className="cta-box">
             <h2>Bring a piece of Nepal home</h2>
             <p>Every order weaves you into a story centuries in the making</p>
@@ -125,6 +125,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

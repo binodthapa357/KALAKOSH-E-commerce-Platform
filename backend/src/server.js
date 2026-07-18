@@ -9,7 +9,7 @@ const app = express();
 
 connectDB();
 
-app.get("/", (request, response) => {
+app.get("/", (request, response) => { 
   response.send("Home Page");
 });
 

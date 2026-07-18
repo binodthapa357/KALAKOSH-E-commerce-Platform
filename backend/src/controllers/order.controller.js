@@ -4,6 +4,7 @@ import OrderItem from "../models/OrderItem.model.js";
 import Cart from "../models/Cart.model.js";
 import Product from "../models/Product.model.js";
 import Vendor from "../models/Vendor.model.js";
+import User from "../models/User.model.js";
 
 /**
  * @desc    Create a new order from active user's cart
@@ -361,6 +362,57 @@ export const updateOrderItemStatus = async (req, res, next) => {
   }
 };
 
+export const trackOrder = async (req, res, next) => {
+  try {
+    const { orderNumber, email } = req.query;
+
+    if (!orderNumber || !email) {
+      return res.status(400).json({ message: "Order number and email are required to track an order" });
+    }
+
+    // Find the user by email
+    const user = await User.findOne({ email: email.trim().toLowerCase() });
+    if (!user) {
+      return res.status(404).json({ message: "No user found with that email address" });
+    }
+
+    // Find the order by order_number and user_id
+    const order = await Order.findOne({
+      order_number: orderNumber.trim().toUpperCase(),
+      user_id: user._id
+    });
+
+    if (!order) {
+      return res.status(404).json({ message: "No order found matching those details" });
+    }
+
+    // Get order items as well for detail display
+    const items = await OrderItem.find({ order_id: order._id })
+      .populate("product_id", "name price images region material");
+
+    res.status(200).json({
+      success: true,
+      order: {
+        _id: order._id,
+        order_number: order.order_number,
+        subtotal: order.subtotal,
+        shipping_cost: order.shipping_cost,
+        discount: order.discount,
+        total_amount: order.total_amount,
+        shipping_address: order.shipping_address,
+        payment_method: order.payment_method,
+        payment_status: order.payment_status,
+        order_status: order.order_status,
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt,
+      },
+      items
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export default {
   createOrder,
   getMyOrders,
@@ -368,4 +420,5 @@ export default {
   getAllOrders,
   updateOrderStatus,
   updateOrderItemStatus,
+  trackOrder,
 };

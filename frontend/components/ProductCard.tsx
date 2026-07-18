@@ -7,12 +7,15 @@ import WishlistButton from "./WishlistButton";
 interface Product {
     _id: string;
     name: string;
+    description?: string;
     price: number;
     discount_price?: number;
     images?: string[];
     avg_rating?: number;
     region?: string;
     material?: string;
+    stock?: number;
+    vendor_id?: { _id: string; shop_name: string };
 }
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -21,12 +24,14 @@ export default function ProductCard({ product }: { product: Product }) {
         product.discount_price < product.price;
 
     const metaParts = [product.region, product.material].filter(Boolean);
+    const mainImage = product.images?.[0] || "/images/placeholder.png";
+    const effectivePrice = product.discount_price ?? product.price;
 
     return (
         <Link href={`/product/${product._id}`} className="product-card">
             <div className="image-box">
                 <Image
-                    src={product.images?.[0] || "/images/placeholder.png"}
+                    src={mainImage}
                     alt={product.name}
                     fill
                     className="product-image"
@@ -53,7 +58,7 @@ export default function ProductCard({ product }: { product: Product }) {
                 <div className="card-footer">
                     <div className="price-group">
                         <span className="price-tag">
-                            Rs. {(product.discount_price ?? product.price).toLocaleString("en-IN")}
+                            Rs. {effectivePrice.toLocaleString("en-IN")}
                         </span>
                         {hasDiscount && (
                             <span className="price-compare">
@@ -61,7 +66,16 @@ export default function ProductCard({ product }: { product: Product }) {
                             </span>
                         )}
                     </div>
-                    <AddToCartButton productId={product._id} />
+                    <AddToCartButton
+                        productId={product._id}
+                        name={product.name}
+                        description={product.description}
+                        image={mainImage}
+                        price={effectivePrice}
+                        originalPrice={hasDiscount ? product.price : undefined}
+                        vendorName={product.vendor_id?.shop_name || "Kalakosh Artisan"}
+                        stock={product.stock ?? Infinity}
+                    />
                 </div>
             </div>
         </Link>

@@ -1,41 +1,65 @@
-import React from 'react';
-import Link from 'next/link';
-import {Button} from '@/components/ui/button';
-import {Heart, ShoppingBag, User} from 'lucide-react';
-import Image from 'next/image';
+"use client";
+
+import React from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Heart, ShoppingBag, User } from "lucide-react";
+import Image from "next/image";
+import { isLoggedIn, getRole } from "@/lib/auth";
 
 const navLinks = [
-  {
-    href: "/",
-    label: "Home",
-  },
-  {
-    href: "/shop",
-    label: "Shop",
-  },
-  {
-    href: "/categories",
-    label: "Categories",
-  },
-  {
-    href: "/about",
-    label: "About",
-  },
-  {
-    href: "/contact",
-    label: "Contact",
-  },
+  { href: "/", label: "Home" },
+  { href: "/shop", label: "Shop" },
+  { href: "/categories", label: "Categories" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
 ];
 
 const Navbar = () => {
+  const router = useRouter();
+
+  const handleAccountClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    if (!isLoggedIn()) {
+      router.push("/signin");
+      return;
+    }
+
+    const role = getRole();
+    router.push(role === "vendor" ? "/vendor/dashboard" : "/dashboard");
+  };
+
+  const handleWishlistClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!isLoggedIn()) {
+      router.push("/signin?redirect=/wishlist");
+      return;
+    }
+    router.push("/wishlist");
+  };
+
+  const handleCartClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!isLoggedIn()) {
+      router.push("/signin?redirect=/cart");
+      return;
+    }
+    router.push("/cart");
+  };
+
   return (
     <header className="w-full bg-white shadow-sm">
       {/* Top Banner */}
       <div className="w-full bg-[#5C1A1A] text-white text-[11px] py-2 px-4 sm:px-8 flex justify-between items-center tracking-wide">
         <div>FREE SHIPPING on orders above Rs. 5000 within Nepal.</div>
         <div className="flex gap-6 items-center">
-          <button className="hover:underline transition-all">📋 Track Order</button>
-          <button className="hover:underline transition-all">❓ Help & Support</button>
+          <Link href="/track-order" className="hover:underline transition-all">
+            📋 Track Order
+          </Link>
+          <Link href="/help" className="hover:underline transition-all">
+            ❓ Help & Support
+          </Link>
         </div>
       </div>
 
@@ -45,10 +69,10 @@ const Navbar = () => {
           <div className="relative h-9 w-9 overflow-hidden rounded-full">
             <Image
               src="/images/logo.png"
-              alt="Kalakosh logo"
+              alt="Logo"
               fill
-              sizes="36px"
-              className="object-cover"
+              sizes="(max-width:768px) 100px, 120px"
+              className="object-contain"
             />
           </div>
           <span className="text-lg font-serif uppercase tracking-[0.15em] text-[#5C2E2E]">
@@ -59,7 +83,10 @@ const Navbar = () => {
         <ul className="hidden gap-10 text-sm text-[#5C2E2E] md:flex">
           {navLinks.map((link) => (
             <li key={link.href}>
-              <Link href={link.href} className="transition hover:text-[#8B3232]">
+              <Link
+                href={link.href}
+                className="transition hover:text-[#8B3232]"
+              >
                 {link.label}
               </Link>
             </li>
@@ -67,13 +94,21 @@ const Navbar = () => {
         </ul>
 
         <div className="flex items-center gap-5 text-[#5C2E2E]">
-          <Link href="/wishlist" aria-label="Wishlist">
+          <Link
+            href="/wishlist"
+            aria-label="Wishlist"
+            onClick={handleWishlistClick}
+          >
             <Heart className="h-5 w-5 hover:text-[#8B3232]" />
           </Link>
-          <Link href="/cart" aria-label="Cart">
+          <Link href="/cart" aria-label="Cart" onClick={handleCartClick}>
             <ShoppingBag className="h-5 w-5 hover:text-[#8B3232]" />
           </Link>
-          <Link href="/user-profile" aria-label="Account">
+          <Link
+            href="/signin"
+            aria-label="Account"
+            onClick={handleAccountClick}
+          >
             <User className="h-5 w-5 hover:text-[#8B3232]" />
           </Link>
         </div>

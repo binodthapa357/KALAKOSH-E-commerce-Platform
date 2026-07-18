@@ -70,6 +70,18 @@ const vendorSchema = new mongoose.Schema(
       },
       default: "pending",
     },
+    bio: {
+      type: String,
+      trim: true,
+    },
+    story: {
+      type: String,
+      trim: true,
+    },
+    profile_image: {
+      type: String,
+      trim: true,
+    },
   },
   {
     timestamps: true,

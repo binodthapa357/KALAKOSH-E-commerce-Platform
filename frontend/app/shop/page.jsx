@@ -1,6 +1,4 @@
 "use client";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { useEffect, useState, useCallback } from "react";
 import "./shop.css";
 import ProductCard from "@/components/ProductCard";
@@ -15,6 +13,8 @@ const SORT_OPTIONS = [
   { label: "Price: High to Low", value: "-price" },
 ];
 
+const MAX_PRICE_LIMIT = 5000;
+
 export default function Shop() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,7 @@ export default function Shop() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedMaterial, setSelectedMaterial] = useState("");
-  const [maxPrice, setMaxPrice] = useState(5000);
+  const [maxPrice, setMaxPrice] = useState(MAX_PRICE_LIMIT);
   const [sort, setSort] = useState("");
 
   const buildQuery = useCallback(() => {
@@ -31,7 +31,7 @@ export default function Shop() {
     if (selectedCategory) params.set("category", selectedCategory);
     if (selectedRegion) params.set("region", selectedRegion);
     if (selectedMaterial) params.set("material", selectedMaterial);
-    if (maxPrice < 5000) params.set("maxPrice", String(maxPrice));
+    if (maxPrice < MAX_PRICE_LIMIT) params.set("maxPrice", String(maxPrice));
     if (sort) params.set("sort", sort);
     return params.toString();
   }, [selectedCategory, selectedRegion, selectedMaterial, maxPrice, sort]);
@@ -45,7 +45,12 @@ export default function Shop() {
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to load products");
       const data = await res.json();
-      setProducts(data.products ?? data);
+      const list = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.products)
+          ? data.products
+          : [];
+      setProducts(list);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -61,7 +66,7 @@ export default function Shop() {
     setSelectedCategory("");
     setSelectedRegion("");
     setSelectedMaterial("");
-    setMaxPrice(5000);
+    setMaxPrice(MAX_PRICE_LIMIT);
     setSort("");
   };
 
@@ -71,7 +76,6 @@ export default function Shop() {
 
   return (
     <>
-      {/* <Navbar /> */}
       <div className="shop-page">
         {/* HERO */}
         <section className="shop-hero">
@@ -111,7 +115,7 @@ export default function Shop() {
               <input
                 type="range"
                 min="0"
-                max="5000"
+                max={MAX_PRICE_LIMIT}
                 step="50"
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(Number(e.target.value))}
@@ -180,7 +184,6 @@ export default function Shop() {
           </main>
         </section>
       </div>
-      {/* <Footer /> */}
     </>
   );
 }

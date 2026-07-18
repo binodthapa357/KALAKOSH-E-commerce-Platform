@@ -1,6 +1,8 @@
 import Link from "next/link";
+import AddToCartButton from "@/components/AddToCartButton";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
 interface Review {
   _id: string;
@@ -52,7 +54,9 @@ export default async function ProductDetailPage({
   if (!product) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <h1 className="text-2xl font-bold text-primary-700">Product not found</h1>
+        <h1 className="text-2xl font-bold text-primary-700">
+          Product not found
+        </h1>
         <Link href="/shop" className="text-secondary-500 underline">
           Back to Shop
         </Link>
@@ -69,6 +73,7 @@ export default async function ProductDetailPage({
     ? Math.round(((product.price - discountPrice) / product.price) * 100)
     : 0;
   const reviews = product.reviews || [];
+  const effectivePrice = hasDiscount ? discountPrice! : product.price;
 
   return (
     <div className="min-h-screen bg-background">
@@ -147,10 +152,10 @@ export default async function ProductDetailPage({
               {hasDiscount ? (
                 <div className="flex items-center gap-3">
                   <span className="text-3xl font-bold text-primary-700">
-                    ${discountPrice}
+                    Rs. {discountPrice.toLocaleString("en-IN")}
                   </span>
                   <span className="text-xl text-muted-foreground line-through">
-                    ${product.price}
+                    Rs. {product.price.toLocaleString("en-IN")}
                   </span>
                   <span className="bg-red-100 text-red-600 text-sm font-semibold px-2 py-0.5 rounded">
                     -{discountPercent}%
@@ -158,7 +163,7 @@ export default async function ProductDetailPage({
                 </div>
               ) : (
                 <span className="text-3xl font-bold text-primary-700">
-                  ${product.price}
+                  Rs. {product.price.toLocaleString("en-IN")}
                 </span>
               )}
             </div>
@@ -218,11 +223,18 @@ export default async function ProductDetailPage({
               </div>
             </div>
 
-            {/* Action Buttons (non-functional) */}
+            {/* Action Buttons */}
             <div className="flex gap-4">
-              <button className="flex-1 bg-primary-700 hover:bg-primary-800 text-white font-semibold py-3 px-6 rounded-full transition-colors cursor-pointer">
-                Add to Cart
-              </button>
+              <AddToCartButton
+                productId={product._id}
+                name={product.name}
+                description={product.description}
+                image={mainImage}
+                price={effectivePrice}
+                originalPrice={hasDiscount ? product.price : undefined}
+                vendorName={product.vendor_id?.shop_name || "Kalakosh Artisan"}
+                stock={product.stock}
+              />
               <button className="flex-1 border-2 border-primary-700 text-primary-700 hover:bg-primary-700 hover:text-white font-semibold py-3 px-6 rounded-full transition-colors cursor-pointer">
                 Add to Wishlist
               </button>
@@ -257,17 +269,13 @@ export default async function ProductDetailPage({
                           {review.user_id?.name || "Anonymous"}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {new Date(
-                            review.createdAt
-                          ).toLocaleDateString()}
+                          {new Date(review.createdAt).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-1 text-secondary-500">
                       {Array.from({ length: 5 }).map((_, i) => (
-                        <span key={i}>
-                          {i < review.rating ? "★" : "☆"}
-                        </span>
+                        <span key={i}>{i < review.rating ? "★" : "☆"}</span>
                       ))}
                     </div>
                   </div>

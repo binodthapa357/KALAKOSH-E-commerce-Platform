@@ -1,92 +1,92 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { 
-  FaTruck, 
-  // FaLink, 
-  FaRegCircleQuestion, 
-  // FaStore, 
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+  FaTruck,
+  // FaLink,
+  FaRegCircleQuestion,
+  // FaStore,
   // FaShield,
   FaRegHeart,
   FaBagShopping,
   FaUsers,
   FaShieldHeart,
- 
-  
-  FaRegStar
-} from 'react-icons/fa6';
+  FaRegStar,
+} from "react-icons/fa6";
 
-import { FaStar as FaStarSolid ,FaStarHalfAlt} from 'react-icons/fa';
+import { FaStar as FaStarSolid, FaStarHalfAlt } from "react-icons/fa";
 
 export default function Home() {
+  const router = useRouter();
   const categories = [
-    { name: 'Paintings', image: '/images/painting.jpg' },
-    { name: 'Textiles', image: '/images/textile.jpg' },
-    { name: 'Pottery', image: '/images/pottery.jpg' },
-    { name: 'Jewelry', image: '/images/jewlery.jpg' },
-    { name: 'Wood Crafts', image: '/images/wood.jpg' },
+    { name: "Paintings", slug: "paintings", image: "/images/painting.jpg" },
+    { name: "Textiles", slug: "textiles", image: "/images/textile.jpg" },
+    { name: "Pottery", slug: "pottery", image: "/images/pottery.jpg" },
+    { name: "Jewelry", slug: "jewelry", image: "/images/jewlery.jpg" },
+    { name: "Wood Crafts", slug: "wood-crafts", image: "/images/wood.jpg" },
   ];
 
   const products = [
     {
       id: 1,
-      name: 'Sacred Tara Thangka',
-      price: '$189',
+      name: "Sacred Tara Thangka",
+      price: "Rs.189",
       rating: 4.9,
       reviews: 124,
-      location: 'Kathmandu · Cotton Canvas',
-      image: '/images/sacredthanka.jpg',
+      location: "Kathmandu · Cotton Canvas",
+      image: "/images/sacredthanka.jpg",
     },
     {
       id: 2,
-      name: 'Tibetan Singing Bowl',
-      price: '$79',
+      name: "Tibetan Singing Bowl",
+      price: "Rs.799",
       rating: 4.8,
       reviews: 312,
-      location: 'Patan · Brass Alloy',
-      image: '/images/bowl.jpg',
+      location: "Patan · Brass Alloy",
+      image: "/images/bowl.jpg",
     },
     {
       id: 3,
-      name: 'Pashmina Shawl',
-      price: '$124',
+      name: "Pashmina Shawl",
+      price: "Rs.124",
       rating: 4.9,
       reviews: 87,
-      location: 'Kathmandu Valley · 100% Pashmina Wool',
-      image: '/images/pashmina.jpg',
+      location: "Kathmandu Valley · 100% Pashmina Wool",
+      image: "/images/pashmina.jpg",
     },
     {
       id: 4,
-      name: 'Filigree Turquoise Necklace',
-      price: '$156',
+      name: "Filigree Turquoise Necklace",
+      price: "Rs.156",
       rating: 4.7,
       reviews: 56,
-      location: 'Patan · Sterling Silver',
-      image: '/images/necklace.jpg',
+      location: "Patan · Sterling Silver",
+      image: "/images/necklace.jpg",
     },
   ];
 
   const features = [
     {
       icon: <FaRegCircleQuestion className="text-xl" />,
-      title: 'Authentic Products',
-      description: '100% authentic handmade Nepali products',
+      title: "Authentic Products",
+      description: "100% authentic handmade Nepali products",
     },
     {
       icon: <FaUsers className="text-xl" />,
-      title: 'Direct from Artisans',
-      description: 'Supporting local artisans and communities',
+      title: "Direct from Artisans",
+      description: "Supporting local artisans and communities",
     },
     {
       icon: <FaShieldHeart className="text-xl" />,
-      title: 'Secure Payments',
-      description: 'Safe & secure payments via eSewa, Khalti & more',
+      title: "Secure Payments",
+      description: "Safe & secure payments via eSewa, Khalti & more",
     },
     {
       icon: <FaTruck className="text-xl" />,
-      title: 'Fast Delivery',
-      description: 'Quick delivery across Nepal',
+      title: "Fast Delivery",
+      description: "Quick delivery across Nepal",
     },
   ];
 
@@ -112,15 +112,16 @@ export default function Home() {
     <main className="bg-[#f5efe7] font-sans text-[#2d1a16]">
       {/* HERO SECTION */}
       <section className="relative w-[calc(100%-70px)] h-[500px] mx-[35px] my-[55px] rounded-[28px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.08)]">
-        <div 
-          className="absolute inset-0 bg-gradient-to-r from-[#f5efe7]/96 via-[#f5efe7]/70 to-transparent z-10"
-        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#f5efe7]/96 via-[#f5efe7]/70 to-transparent z-10" />
         <div className="relative z-10 h-full flex items-center pl-[50px]">
           <div className="max-w-[430px]">
             <h1 className="font-serif text-[72px] leading-[0.95] font-medium text-[#2c1612]">
               Discover <br />
               Authentic <br />
-              <span className="text-[#7d1d1d] italic">Nepali <br />Handicrafts</span>
+              <span className="text-[#7d1d1d] italic">
+                Nepali <br />
+                Handicrafts
+              </span>
             </h1>
 
             <div className="flex items-center gap-2.5 my-[26px]">
@@ -130,17 +131,23 @@ export default function Home() {
             </div>
 
             <p className="text-[#5f4f47] leading-relaxed text-base mb-[30px]">
-              Connecting local artisans with the world — every
-              piece tells a story of Himalayan heritage.
+              Connecting local artisans with the world — every piece tells a
+              story of Himalayan heritage.
             </p>
 
             <div className="flex gap-3.5">
-              <button className="bg-primary-700 text-white border-none px-7 py-4 rounded-[10px] text-sm font-semibold cursor-pointer hover:bg-primary-800 transition-colors">
+              <Link
+                href="/shop"
+                className="bg-primary-700 text-white border-none px-7 py-4 rounded-[10px] text-sm font-semibold cursor-pointer hover:bg-primary-800 transition-colors inline-block text-center"
+              >
                 SHOP NOW
-              </button>
-              <button className="bg-transparent border-2 border-primary-700 text-primary-700 px-7 py-[15px] rounded-[10px] text-sm tracking-[1px] cursor-pointer hover:bg-primary-700/10 transition-colors">
+              </Link>
+              <Link
+                href="/categories"
+                className="bg-transparent border-2 border-primary-700 text-primary-700 px-7 py-[15px] rounded-[10px] text-sm tracking-[1px] cursor-pointer hover:bg-primary-700/10 transition-colors inline-block text-center"
+              >
                 EXPLORE CATEGORIES
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -165,18 +172,24 @@ export default function Home() {
 
         <div className="relative z-10 flex justify-center items-center flex-wrap gap-[42px]">
           {categories.map((category) => (
-            <div key={category.name} className="text-center">
-              <div className="w-[250px] h-[250px] rounded-full overflow-hidden bg-[#ead7bf] transition-transform duration-300 hover:translate-y-[-8px] hover:scale-105 cursor-pointer">
+            <Link
+              key={category.name}
+              href={`/category/${category.slug}`}
+              className="text-center"
+            >
+              <div className="relative w-[250px] h-[250px] rounded-full overflow-hidden bg-[#ead7bf] transition-transform duration-300 hover:translate-y-[-8px] hover:scale-105 cursor-pointer">
                 <Image
                   src={category.image}
                   alt={category.name}
-                  width={250}
-                  height={250}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="250px"
+                  className="object-cover"
                 />
               </div>
-              <p className="mt-[18px] text-lg text-[#2b1713]">• {category.name}</p>
-            </div>
+              <p className="mt-[18px] text-lg text-[#2b1713]">
+                • {category.name}
+              </p>
+            </Link>
           ))}
         </div>
       </section>
@@ -196,7 +209,10 @@ export default function Home() {
               <div className="w-[45px] h-[2px] bg-secondary-500" />
             </div>
           </div>
-          <Link href="/shop" className="text-primary-700 text-sm hover:underline">
+          <Link
+            href="/shop"
+            className="text-primary-700 text-sm hover:underline"
+          >
             View All Products →
           </Link>
         </div>
@@ -205,36 +221,58 @@ export default function Home() {
           {products.map((product) => (
             <div
               key={product.id}
-              className="bg-[#fdf9f4] rounded-[22px] overflow-hidden border border-[#e7ddd1] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_25px_rgba(0,0,0,0.08)]"
+              onClick={() => router.push(`/product/${product.id}`)}
+              className="bg-[#fdf9f4] rounded-[22px] overflow-hidden border border-[#e7ddd1] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_25px_rgba(0,0,0,0.08)] cursor-pointer"
             >
-              <div className="h-[320px] relative bg-[#efe4d3]">
+              {/* IMAGE */}
+              <div className="relative h-[320px] bg-[#efe4d3]">
                 <Image
                   src={product.image}
                   alt={product.name}
-                  width={300}
-                  height={320}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 25vw"
+                  className="object-cover"
                 />
-                <div className="absolute top-3.5 right-3.5 w-[38px] h-[38px] rounded-full bg-white/90 flex justify-center items-center text-[#6e2b22] cursor-pointer hover:bg-red-50 transition-colors">
+
+                <button
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute top-3.5 right-3.5 w-[38px] h-[38px] rounded-full bg-white/90 flex justify-center items-center text-[#6e2b22] hover:bg-red-50 transition-colors"
+                >
                   <FaRegHeart />
-                </div>
+                </button>
               </div>
 
+              {/* BODY */}
               <div className="p-[18px_18px_20px]">
                 <div className="text-[13px] text-[#7a5b3d] mb-2.5 flex items-center gap-1">
-                  {renderStars(product.rating)} {product.rating} ({product.reviews})
+                  {renderStars(product.rating)}
+                  <span>
+                    {product.rating} ({product.reviews})
+                  </span>
                 </div>
+
                 <h3 className="font-serif text-[34px] leading-[1.05] text-[#2d1a16] mb-1.5">
                   {product.name}
                 </h3>
-                <p className="text-[#7d6d66] text-sm mb-[18px]">{product.location}</p>
+
+                <p className="text-[#7d6d66] text-sm mb-[18px]">
+                  {product.location}
+                </p>
 
                 <div className="flex justify-between items-center">
                   <span className="text-[34px] font-serif font-bold text-primary-700">
                     {product.price}
                   </span>
-                  <button className="bg-primary-700 text-white border-none px-[18px] py-[11px] rounded-full text-xs font-medium flex items-center gap-2 cursor-pointer hover:bg-primary-800 transition-colors">
-                    <FaBagShopping /> Add
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/product/${product.id}`);
+                    }}
+                    className="bg-primary-700 hover:bg-primary-800 text-white rounded-full px-5 py-3 text-sm font-semibold flex items-center gap-2 transition"
+                  >
+                    <FaBagShopping />
+                    Add
                   </button>
                 </div>
               </div>
@@ -249,10 +287,8 @@ export default function Home() {
 
         {/* Banner */}
         <div className="relative h-[325px] rounded-[28px] overflow-hidden border border-[#d8cdbf] flex items-center pl-[65px]">
-          <div 
-            className="absolute inset-0 bg-gradient-to-r from-[#f7f0e6]/92 via-[#f7f0e6]/78 to-transparent z-10"
-          />
-          <div 
+          <div className="absolute inset-0 bg-gradient-to-r from-[#f7f0e6]/92 via-[#f7f0e6]/78 to-transparent z-10" />
+          <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: "url('/images/artisan.jpg')" }}
           />
@@ -261,8 +297,8 @@ export default function Home() {
               Support Local Artisans
             </h2>
             <p className="text-[17px] leading-relaxed text-[#5f4f47] mb-7">
-              Every purchase helps preserve our rich cultural
-              heritage and empowers Nepali craftspeople.
+              Every purchase helps preserve our rich cultural heritage and
+              empowers Nepali craftspeople.
             </p>
             <button className="bg-primary-700 text-white border-none px-6 py-3.5 rounded-xl text-sm font-semibold tracking-[0.5px] cursor-pointer hover:bg-primary-800 transition-colors">
               EXPLORE NOW
@@ -298,13 +334,13 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-gradient(#d9c8b3_0.7px,transparent_0.7px)] bg-[length:22px_22px] opacity-25 pointer-events-none" />
 
         {/* Image */}
-        <div className="h-full">
+        <div className="relative h-full min-h-[500px]">
           <Image
             src="/images/artist.jpg"
             alt="Artisan"
-            width={400}
-            height={500}
-            className="w-full h-full object-cover"
+            fill
+            sizes="33vw"
+            className="object-cover"
           />
         </div>
 
@@ -319,9 +355,9 @@ export default function Home() {
             <div className="w-[42px] h-[2px] bg-secondary-500" />
           </div>
           <p className="text-base leading-relaxed text-[#5f4f47] max-w-[430px] mb-[34px]">
-            Our artisans pour their heart and soul into every piece they
-            create. By buying from us, you are supporting their dreams
-            and preserving centuries-old traditions.
+            Our artisans pour their heart and soul into every piece they create.
+            By buying from us, you are supporting their dreams and preserving
+            centuries-old traditions.
           </p>
           <button className="bg-primary-700 text-white border-none px-6 py-3.5 rounded-xl text-sm font-semibold tracking-[0.5px] cursor-pointer hover:bg-primary-800 transition-colors">
             VIEW THEIR STORIES
@@ -339,8 +375,8 @@ export default function Home() {
             <div className="w-[42px] h-[2px] bg-secondary-500" />
           </div>
           <p className="text-base leading-relaxed text-[#5f4f47] max-w-[430px] mb-[34px]">
-            Subscribe to our newsletter for updates on new arrivals,
-            offers and more.
+            Subscribe to our newsletter for updates on new arrivals, offers and
+            more.
           </p>
           <div className="flex items-center gap-3.5">
             <input

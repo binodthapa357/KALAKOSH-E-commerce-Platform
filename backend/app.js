@@ -10,6 +10,7 @@ import orderRoutes from "./src/routes/order.route.js";
 import shippingRoutes from "./src/routes/shipping.route.js";
 import paymentRoutes from "./src/routes/payment.route.js";
 import adminRoutes from "./src/routes/admin.route.js";
+import vendorRoutes from "./src/routes/vendor.route.js";
 
 import errorMiddleware from "./src/middleware/error.middleware.js";
 
@@ -33,6 +34,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/shipping", shippingRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/vendors", vendorRoutes);
 
 /* ========================
    Health Check

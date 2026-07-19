@@ -14,20 +14,30 @@ export default function SignInPage() {
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        setForm({
+            ...form,
+            [e.target.name]: e.target.value,
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
         setError(null);
         setLoading(true);
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form),
-            });
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(form),
+                }
+            );
+
             const data = await res.json();
 
             if (!res.ok) {
@@ -41,7 +51,11 @@ export default function SignInPage() {
             
             router.push("/");
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Something went wrong");
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "Something went wrong"
+            );
         } finally {
             setLoading(false);
         }

@@ -45,4 +45,25 @@ export const protect = async (req, res, next) => {
   }
 };
 
+/**
+ * Role Guard Middleware Factory.
+ * Use after `protect` to restrict a route to specific roles.
+ * Example: router.get("/", protect, authorize("vendor"), handler)
+ */
+export const authorize = (...allowedRoles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Not authorized to access this route" });
+    }
+
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({
+        message: `Access denied. Requires role: ${allowedRoles.join(" or ")}`,
+      });
+    }
+
+    next();
+  };
+};
+
 export default protect;

@@ -1,8 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Phone, Mail, MapPin } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 const Footer = () => {
+  const pathname = usePathname();
+  const hideFooter = pathname?.startsWith('/signin') || pathname?.startsWith('/signup') || pathname?.startsWith('/admin');
+  
+  if (hideFooter) return null;
+
   return (
     <footer className="bg-[#5C1A1A] px-6 pt-12 pb-6 text-white sm:px-10">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 border-b border-white/15 pb-10 sm:grid-cols-2 md:grid-cols-5">

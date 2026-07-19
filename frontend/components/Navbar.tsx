@@ -1,8 +1,11 @@
+"use client";
+
 import React from 'react';
 import Link from 'next/link';
 import {Button} from '@/components/ui/button';
 import {Heart, ShoppingBag, User} from 'lucide-react';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 const navLinks = [
   {
@@ -29,6 +32,11 @@ const navLinks = [
 ];
 
 const Navbar = () => {
+  const pathname = usePathname();
+  const hideNavbar = pathname?.startsWith('/signin') || pathname?.startsWith('/signup') || pathname?.startsWith('/admin');
+  
+  if (hideNavbar) return null;
+
   return (
     <header className="w-full bg-white shadow-sm">
       {/* Top Banner */}

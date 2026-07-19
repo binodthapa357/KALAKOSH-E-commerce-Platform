@@ -130,7 +130,7 @@ export default function UsersPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-[#F7F2EA] border border-border rounded-2xl p-7 overflow-x-auto">
+      <div className="bg-card border border-border rounded-2xl p-7 overflow-x-auto shadow-sm">
         {loading ? (
           <div className="space-y-3">
             {Array.from({ length: 6 }).map((_, i) => (

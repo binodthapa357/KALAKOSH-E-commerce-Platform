@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 @import "tailwindcss";
 /* @import "tw-animate-css"; */
 /* @import "shadcn/tailwind.css"; */
@@ -57,45 +58,45 @@
   /* ========================================
      SHADCN UI VARIABLES
      ======================================== */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(42, 68%, 14%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(42, 68%, 14%);
 
   /* Override with your colors */
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: var(--primary-500);
+  --primary-foreground: var(--white);
 
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --secondary: var(--secondary-500);
+  --secondary-foreground: var(--white);
 
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --muted: hsl(33, 20%, 90%);
+  --muted-foreground: hsl(42, 20%, 40%);
+  --accent: hsl(33, 20%, 90%);
+  --accent-foreground: var(--primary-500);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: hsl(223.8136 -172.5242% 100.0000%);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: hsl(33, 20%, 85%);
+  --input: hsl(33, 20%, 85%);
+  --ring: var(--primary-300);
 
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --chart-1: var(--primary-500);
+  --chart-2: var(--secondary-500);
+  --chart-3: var(--brown-500);
+  --chart-4: var(--primary-300);
+  --chart-5: var(--secondary-300);
 
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: hsl(33, 30%, 96%);
+  --sidebar-foreground: hsl(42, 68%, 14%);
+  --sidebar-primary: var(--primary-500);
+  --sidebar-primary-foreground: var(--white);
+  --sidebar-accent: hsl(33, 20%, 90%);
+  --sidebar-accent-foreground: var(--primary-500);
+  --sidebar-border: hsl(33, 20%, 85%);
+  --sidebar-ring: var(--primary-300);
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-serif: 'Cormorant Garamond', ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --radius: 0.625rem;
   --shadow-x: 0;
@@ -114,9 +115,17 @@
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: hsl(33, 30%, 96%); /* Cream/Warm warm-white */
+  --foreground: hsl(42, 68%, 14%); /* Dark Brown */
+
+  /* Legacy variables for Custom Stylesheets */
+  --crimson: var(--primary-500);
+  --gold: var(--secondary-500);
+  --warm: hsl(33, 30%, 96%);
+  --text-mid: hsl(42, 20%, 40%);
+  --shadow-legacy: rgba(0, 0, 0, 0.04);
 }
+
 
 .dark {
   /* ========================================

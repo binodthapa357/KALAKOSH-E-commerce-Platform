@@ -131,7 +131,7 @@ const getProductByID = async (req, res) => {
  */
 const createProduct = async (req, res) => {
   try {
-    const { name, description, price, stock, category, region, material, craft_type } = req.body;
+    const { name, description, price, stock, category, region, material, craft_type, images } = req.body;
 
     if (!name || !description || !price || !stock || !category) {
       return res.status(400).json({ message: "Missing required fields (name, description, price, stock, category)" });
@@ -166,6 +166,7 @@ const createProduct = async (req, res) => {
       stock: Number(stock),
       category_id: categoryDoc._id,
       vendor_id: vendorId,
+      images: images || [],
       region: region || "Unknown",
       material: material || "Handmade",
       craft_type: craft_type || "Nepalese Handicraft"

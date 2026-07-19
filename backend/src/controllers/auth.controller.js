@@ -4,6 +4,7 @@ import User from "../models/User.model.js";
 import Vendor from "../models/Vendor.model.js";
 import generateToken from "../utils/generateToken.js";
 import sendEmail from "../utils/sendEmail.js";
+import { uploadImageToCloudinary } from "../config/cloudinary.config.js";
 
 
 
@@ -26,6 +27,24 @@ export const register = async (req, res, next) => {
       return res.status(400).json({ message: "Email is already registered" });
     }
 
+    // If role is vendor, validate vendor details first before user creation
+    if (role === "vendor") {
+      const { shop_name, pan_number, bank_details, pan_photo } = req.body;
+      if (!shop_name || !pan_number || !bank_details || !pan_photo) {
+        return res.status(400).json({ message: "Vendor accounts require shop_name, pan_number, bank_details, and pan_photo" });
+      }
+      
+      const existingShop = await Vendor.findOne({ shop_name });
+      if (existingShop) {
+        return res.status(400).json({ message: "Shop name is already registered" });
+      }
+      
+      const existingPan = await Vendor.findOne({ pan_number });
+      if (existingPan) {
+        return res.status(400).json({ message: "PAN number is already registered" });
+      }
+    }
+
     // Create user (password is automatically hashed by Mongoose hook)
     const user = await User.create({
       name,
@@ -33,6 +52,33 @@ export const register = async (req, res, next) => {
       password,
       role: role || "user",
     });
+
+    if (role === "vendor") {
+      const { shop_name, pan_number, bank_details, pan_photo } = req.body;
+      
+      // Upload the PAN photo to Cloudinary first
+      let panPhotoUrl = "";
+      try {
+        const base64Data = pan_photo.replace(/^data:image\/\w+;base64,/, "");
+        const buffer = Buffer.from(base64Data, "base64");
+        const uploadResult = await uploadImageToCloudinary(buffer, "vendors");
+        panPhotoUrl = uploadResult.secure_url;
+      } catch (uploadError) {
+        console.error("Error uploading PAN photo during registration:", uploadError);
+        // Clean up user account if profile creation failed
+        await User.findByIdAndDelete(user._id);
+        return res.status(400).json({ message: "Failed to upload PAN photo. Please try again." });
+      }
+
+      await Vendor.create({
+        user_id: user._id,
+        shop_name,
+        pan_number,
+        pan_photo: panPhotoUrl,
+        bank_details,
+        status: "pending", // pending approval
+      });
+    }
 
     const token = generateToken(user._id);
 

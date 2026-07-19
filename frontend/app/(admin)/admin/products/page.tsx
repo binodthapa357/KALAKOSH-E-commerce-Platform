@@ -91,7 +91,7 @@ export default function ProductsPage() {
       {!loading && (
         <div className="flex flex-wrap gap-3 mb-6">
           {[
-            { label: 'Total', value: products.length, cls: 'bg-[#F7F2EA] border-border text-text-dark' },
+            { label: 'Total', value: products.length, cls: 'bg-card border-border text-text-dark' },
             { label: 'Active', value: products.filter((p) => p.status === 'active').length, cls: 'bg-green-50 border-green-200 text-green-700' },
             { label: 'Pending', value: products.filter((p) => p.status === 'pending').length, cls: 'bg-yellow-50 border-yellow-200 text-yellow-700' },
             { label: 'Inactive', value: products.filter((p) => p.status === 'inactive').length, cls: 'bg-gray-50 border-gray-200 text-gray-700' },
@@ -134,7 +134,7 @@ export default function ProductsPage() {
       </div>
 
       {/* Products Table */}
-      <div className="bg-[#F7F2EA] border border-border rounded-2xl p-7 overflow-x-auto">
+      <div className="bg-card border border-border rounded-2xl p-7 overflow-x-auto shadow-sm">
         {loading ? (
           <div className="space-y-3">
             {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-14" />)}

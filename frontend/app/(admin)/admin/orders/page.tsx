@@ -89,7 +89,7 @@ export default function OrdersPage() {
             Orders
           </h1>
           {!loading && (
-            <span className="bg-[#F7F2EA] border border-border rounded-full px-5 py-2 text-sm text-text-mid">
+            <span className="bg-card border border-border rounded-full px-5 py-2 text-sm text-text-mid shadow-2xs">
               Total: <strong className="text-primary-700">{total}</strong>
             </span>
           )}
@@ -130,7 +130,7 @@ export default function OrdersPage() {
       </div>
 
       {/* Orders Table */}
-      <div className="bg-[#F7F2EA] border border-border rounded-2xl p-7 overflow-x-auto">
+      <div className="bg-card border border-border rounded-2xl p-7 overflow-x-auto shadow-sm">
         {loading ? (
           <div className="space-y-3">
             {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-14" />)}

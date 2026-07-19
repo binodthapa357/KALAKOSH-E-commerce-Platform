@@ -13,6 +13,7 @@ interface AddToCartButtonProps {
   originalPrice?: number;
   vendorName: string;
   stock: number;
+  className?: string;
 }
 
 export default function AddToCartButton({
@@ -24,6 +25,7 @@ export default function AddToCartButton({
   originalPrice,
   vendorName,
   stock,
+  className = '',
 }: AddToCartButtonProps) {
   const router = useRouter();
   const [adding, setAdding] = useState(false);
@@ -44,7 +46,7 @@ export default function AddToCartButton({
     <button
       onClick={handleAddToCart}
       disabled={stock <= 0 || adding}
-      className="flex-1 bg-primary-700 hover:bg-primary-800 text-white font-semibold py-3 px-6 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+      className={className || "flex-1 bg-primary-700 hover:bg-primary-800 text-white font-semibold py-3 px-6 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"}
     >
       {stock <= 0 ? "Out of Stock" : adding ? "Adding..." : "Add to Cart"}
     </button>

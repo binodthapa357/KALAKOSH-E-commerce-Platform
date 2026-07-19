@@ -7,9 +7,13 @@ import {
   getVendorsList,
   updateVendorStatus,
   getOrdersList,
+  getReviewsList,
+  deleteReviewAdmin,
+  uploadImageAdmin,
 } from "../controllers/admin.controller.js";
 import protect from "../middleware/auth.middleware.js";
 import authorize from "../middleware/role.middleware.js";
+import { upload } from "../middleware/product.middleware.js";
 
 const router = express.Router();
 
@@ -27,5 +31,10 @@ router.get("/vendors", getVendorsList);
 router.patch("/vendors/:id/status", updateVendorStatus);
 
 router.get("/orders", getOrdersList);
+
+router.get("/reviews", getReviewsList);
+router.delete("/reviews/:id", deleteReviewAdmin);
+
+router.post("/upload", upload.single("image"), uploadImageAdmin);
 
 export default router;

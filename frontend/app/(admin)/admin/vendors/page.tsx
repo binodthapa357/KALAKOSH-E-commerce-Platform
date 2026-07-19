@@ -23,6 +23,7 @@ export default function VendorsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [selectedVendor, setSelectedVendor] = useState<AdminVendor | null>(null);
 
   const fetchVendors = async () => {
     try {
@@ -90,7 +91,7 @@ export default function VendorsPage() {
         ].map((card) => {
           const Icon = card.icon;
           return (
-            <div key={card.label} className="bg-[#F7F2EA] border border-border rounded-2xl p-5">
+            <div key={card.label} className="bg-card border border-border rounded-2xl p-5 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className={`p-3 rounded-xl ${card.bg}`}>
                   <Icon className={`text-lg ${card.color}`} />
@@ -141,7 +142,7 @@ export default function VendorsPage() {
       </div>
 
       {/* Vendors Table */}
-      <div className="bg-[#F7F2EA] border border-border rounded-2xl p-7 overflow-x-auto">
+      <div className="bg-card border border-border rounded-2xl p-7 overflow-x-auto shadow-sm">
         {loading ? (
           <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-16" />)}
@@ -191,22 +192,28 @@ export default function VendorsPage() {
                       })}
                     </td>
                     <td className="py-4 border-t border-black/5 text-right">
-                      {updatingId === vendor._id ? (
-                        <div className="flex justify-end">
-                          <div className="w-5 h-5 border-2 border-primary-400 border-t-transparent rounded-full animate-spin" />
-                        </div>
-                      ) : (
-                        <select
-                          value={vendor.status}
-                          onChange={(e) => handleStatusChange(vendor, e.target.value as AdminVendor['status'])}
-                          className="text-xs border border-border rounded-full px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-primary-400 cursor-pointer"
+                      <div className="flex items-center justify-end gap-2.5">
+                        <button
+                          onClick={() => setSelectedVendor(vendor)}
+                          className="text-xs font-semibold text-primary-600 hover:text-primary-700 hover:underline px-3 py-1.5 rounded-full bg-primary-100/50 hover:bg-primary-100 transition"
                         >
-                          <option value="active">Activate</option>
-                          <option value="pending">Pending</option>
-                          <option value="suspended">Suspend</option>
-                          <option value="rejected">Reject</option>
-                        </select>
-                      )}
+                          Review PAN
+                        </button>
+                        {updatingId === vendor._id ? (
+                          <div className="w-5 h-5 border-2 border-primary-400 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <select
+                            value={vendor.status}
+                            onChange={(e) => handleStatusChange(vendor, e.target.value as AdminVendor['status'])}
+                            className="text-xs border border-border rounded-full px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-primary-400 cursor-pointer"
+                          >
+                            <option value="active">Activate</option>
+                            <option value="pending">Pending</option>
+                            <option value="suspended">Suspend</option>
+                            <option value="rejected">Reject</option>
+                          </select>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
@@ -220,6 +227,122 @@ export default function VendorsPage() {
           </div>
         )}
       </div>
+
+      {/* Detailed Review Modal */}
+      {selectedVendor && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white border border-[#EADCC9] rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl p-8 relative flex flex-col justify-between">
+            {/* Modal Header */}
+            <div className="flex justify-between items-start border-b border-stone-100 pb-4 mb-6">
+              <div>
+                <span className="text-xs font-semibold tracking-wider text-text-light uppercase">VENDOR VERIFICATION PROFILE</span>
+                <h2 className="text-2xl font-serif font-bold text-primary-700 mt-1">{selectedVendor.shop_name}</h2>
+              </div>
+              <button 
+                onClick={() => setSelectedVendor(null)}
+                className="text-stone-400 hover:text-stone-600 font-bold text-lg"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="space-y-6 flex-1">
+              {/* Profile details */}
+              <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
+                <div>
+                  <span className="block text-xs font-semibold uppercase tracking-wider text-stone-400">Shop Name</span>
+                  <span className="font-semibold text-stone-800">{selectedVendor.shop_name}</span>
+                </div>
+                <div>
+                  <span className="block text-xs font-semibold uppercase tracking-wider text-stone-400">Owner Name</span>
+                  <span className="font-semibold text-stone-800">{selectedVendor.user_id?.name ?? '—'}</span>
+                </div>
+                <div>
+                  <span className="block text-xs font-semibold uppercase tracking-wider text-stone-400">Email Address</span>
+                  <span className="font-semibold text-stone-800">{selectedVendor.user_id?.email ?? '—'}</span>
+                </div>
+                <div>
+                  <span className="block text-xs font-semibold uppercase tracking-wider text-stone-400">9-Digit PAN Number</span>
+                  <span className="font-mono font-semibold text-stone-800">{selectedVendor.pan_number}</span>
+                </div>
+              </div>
+
+              {/* Bank payout details */}
+              <div className="pt-4 border-t border-stone-100">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">Bank Details</h3>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm bg-stone-50 p-4 rounded-xl">
+                  <div>
+                    <span className="block text-xs text-stone-450">Bank Name</span>
+                    <span className="font-semibold text-stone-800">{selectedVendor.bank_details?.bank_name}</span>
+                  </div>
+                  <div>
+                    <span className="block text-xs text-stone-450">Account Name</span>
+                    <span className="font-semibold text-stone-800">{selectedVendor.bank_details?.account_name}</span>
+                  </div>
+                  <div>
+                    <span className="block text-xs text-stone-450">Account Number</span>
+                    <span className="font-mono font-semibold text-stone-800">{selectedVendor.bank_details?.account_number}</span>
+                  </div>
+                  <div>
+                    <span className="block text-xs text-stone-450">Branch</span>
+                    <span className="font-semibold text-stone-800">{selectedVendor.bank_details?.branch || 'Main Branch'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* PAN Photo Preview */}
+              <div className="pt-4 border-t border-stone-100">
+                <span className="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">PAN Uploaded Document</span>
+                {selectedVendor.pan_photo ? (
+                  <div className="relative w-full h-80 rounded-2xl overflow-hidden border border-stone-200 bg-stone-50 flex items-center justify-center p-2 shadow-inner">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img 
+                      src={selectedVendor.pan_photo} 
+                      alt={`${selectedVendor.shop_name} PAN Card`} 
+                      className="max-w-full max-h-full object-contain rounded-xl"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full py-8 text-center border border-dashed border-stone-200 rounded-2xl text-stone-400 text-xs">
+                    No PAN card photo uploaded.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Footer / Actions */}
+            <div className="flex gap-4 border-t border-stone-100 pt-6 mt-6">
+              <button
+                onClick={async () => {
+                  await handleStatusChange(selectedVendor, 'active');
+                  setSelectedVendor(null);
+                }}
+                disabled={updatingId === selectedVendor._id}
+                className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-xl transition disabled:opacity-50"
+              >
+                Approve (Activate)
+              </button>
+              <button
+                onClick={async () => {
+                  await handleStatusChange(selectedVendor, 'rejected');
+                  setSelectedVendor(null);
+                }}
+                disabled={updatingId === selectedVendor._id}
+                className="flex-1 py-3 px-4 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-xl transition disabled:opacity-50"
+              >
+                Reject Profile
+              </button>
+              <button
+                onClick={() => setSelectedVendor(null)}
+                className="py-3 px-5 border border-stone-200 hover:bg-stone-50 text-stone-600 text-sm font-medium rounded-xl transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

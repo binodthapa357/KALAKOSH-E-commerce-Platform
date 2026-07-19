@@ -452,6 +452,7 @@ async function seed() {
         user_id: user._id,
         shop_name: vData.shop_name,
         pan_number: vData.pan_number,
+        pan_photo: 'https://picsum.photos/seed/pan_photo_mock/600/400',
         bank_details: {
           bank_name: 'Nabil Bank',
           account_name: vData.name,

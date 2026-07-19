@@ -12,7 +12,7 @@
 /* HERO */
 
 .contact-hero {
-  background: #f5eee4;
+  background: var(--background);
   text-align: center;
   padding: 80px 0;
 }
@@ -27,7 +27,7 @@
 .contact-hero h1 {
   font-size: 64px;
   color: var(--crimson);
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   margin-bottom: 18px;
 }
 
@@ -56,7 +56,7 @@
 /* FORM CARD */
 
 .form-card {
-  background: #f9f6f1;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 28px;
   padding: 36px;
@@ -67,7 +67,7 @@
   color: var(--crimson);
   font-size: 42px;
   margin-bottom: 34px;
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
 }
 
 .form-row {
@@ -129,7 +129,7 @@
 
 .contact-card,
 .map-card {
-  background: #f9f6f1;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 26px;
   padding: 28px;
@@ -140,7 +140,7 @@
   color: var(--crimson);
   font-size: 34px;
   margin-bottom: 28px;
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
 }
 
 .contact-info {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 // import Image from 'next/image';
 // import { Button } from '@/components/ui/button';
@@ -46,6 +46,16 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+      router.push('/admin/login');
+    } else {
+      setCheckingAuth(false);
+    }
+  }, [router]);
 
   const handleLogout = async () => {
     if (!confirm('Are you sure you want to logout?')) return;
@@ -65,6 +75,17 @@ export default function AdminLayout({
 
     router.push('/admin/login');
   };
+
+  if (checkingAuth) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary-700 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-text-light">Verifying credentials...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -128,7 +149,7 @@ export default function AdminLayout({
       <div className="grid grid-cols-1 md:grid-cols-[290px_1fr] gap-8 p-4 md:p-8 pb-20 min-h-screen bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIiIGhlaWdodD0iMjIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSIyMiIgaGVpZ2h0PSIyMiIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMSAxIEwgMTEgMjEgTSAxIDExIEwgMjEgMTEiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgwLDAsMCwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')]">
 
         {/* Sidebar */}
-        <aside className="bg-[#F7F2EA] border border-border rounded-2xl p-6 h-fit sticky top-4">
+        <aside className="bg-card border border-border rounded-2xl p-6 h-fit sticky top-4 shadow-sm">
           <div>
             <span className="text-text-light text-xs tracking-[0.2em]">CONTROL CENTER</span>
             <h2 className="font-serif text-primary-700 text-[44px] mt-1.5 font-semibold">Admin</h2>

@@ -23,20 +23,20 @@ export default function EditProductPage() {
   });
   const [categories, setCategories] = useState<{ _id: string; name: string }[]>([]);
   const [images, setImages] = useState<string[]>([]);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
-        // Load categories list
         const catData = await fetchApi('/categories');
         if (catData && catData.categories) {
           setCategories(catData.categories);
         }
 
-        // Load product data
         const product = await fetchApi(`/products/${productId}`);
         if (product) {
           setFormData({
@@ -70,9 +70,10 @@ export default function EditProductPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -83,7 +84,25 @@ export default function EditProductPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitting(true);
     try {
+      let finalImages = [...images];
+      if (imageFile) {
+        const formDataUpload = new FormData();
+        formDataUpload.append('image', imageFile);
+
+        const uploadRes = await fetchApi('/admin/upload?folder=products', {
+          method: 'POST',
+          body: formDataUpload,
+        });
+
+        if (uploadRes && uploadRes.url) {
+          finalImages = [uploadRes.url];
+        }
+      } else if (!imagePreview) {
+        finalImages = [];
+      }
+
       const body = {
         name: formData.name,
         category: formData.category,
@@ -91,16 +110,20 @@ export default function EditProductPage() {
         stock: Number(formData.stock),
         description: formData.description,
         status: formData.status,
-        images: imagePreview ? (imagePreview.startsWith('data:') ? [imagePreview] : images) : [],
+        images: finalImages,
       };
+
       await fetchApi(`/products/${productId}`, {
         method: 'PUT',
         body: JSON.stringify(body),
       });
+
       toast.success('Product updated successfully');
       router.push('/admin/products');
     } catch (err: any) {
       toast.error(err.message || 'Failed to update product');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -136,7 +159,7 @@ export default function EditProductPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Form */}
         <div className="lg:col-span-2">
-          <form onSubmit={handleSubmit} className="bg-[#F7F2EA] border border-border rounded-2xl p-7">
+          <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-7 shadow-sm">
             <div className="space-y-6">
               <div>
                 <label className="block text-text-dark text-sm font-medium mb-2">Product Name *</label>
@@ -172,13 +195,14 @@ export default function EditProductPage() {
                 <div>
                   <label className="block text-text-dark text-sm font-medium mb-2">Price *</label>
                   <input
-                    type="text"
+                    type="number"
                     name="price"
                     value={formData.price}
                     onChange={handleChange}
                     required
+                    min="0"
                     className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
-                    placeholder="$299"
+                    placeholder="299"
                   />
                 </div>
               </div>
@@ -219,6 +243,7 @@ export default function EditProductPage() {
                   value={formData.description}
                   onChange={handleChange}
                   rows={5}
+                  required
                   className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none"
                   placeholder="Describe the product..."
                 />
@@ -227,9 +252,10 @@ export default function EditProductPage() {
               <div className="flex gap-4 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors shadow-lg hover:shadow-xl font-semibold"
+                  disabled={submitting}
+                  className="flex-1 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors shadow-lg hover:shadow-xl font-semibold disabled:opacity-50"
                 >
-                  Update Product
+                  {submitting ? 'Updating...' : 'Update Product'}
                 </button>
                 <Link
                   href="/admin/products"
@@ -244,7 +270,7 @@ export default function EditProductPage() {
 
         {/* Image Upload Sidebar */}
         <div className="lg:col-span-1">
-          <div className="bg-[#F7F2EA] border border-border rounded-2xl p-7 sticky top-4">
+          <div className="bg-card border border-border rounded-2xl p-7 sticky top-4 shadow-sm">
             <h3 className="font-serif text-primary-700 text-2xl mb-4">Product Image</h3>
             <div
               className={`border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors relative ${imagePreview ? 'border-primary-400' : 'hover:border-primary-400'
@@ -259,7 +285,10 @@ export default function EditProductPage() {
                   />
                   <button
                     type="button"
-                    onClick={() => setImagePreview(null)}
+                    onClick={() => {
+                      setImagePreview(null);
+                      setImageFile(null);
+                    }}
                     className="text-red-600 hover:text-red-700 text-sm relative z-10"
                   >
                     Remove Image
@@ -270,14 +299,14 @@ export default function EditProductPage() {
                   <div className="w-16 h-16 mx-auto rounded-full bg-primary-100 flex items-center justify-center">
                     <FaUpload className="text-primary-700 text-2xl" />
                   </div>
-                  <p className="text-text-mid">Click to upload</p>
+                  <p className="text-text-mid font-medium">Click to upload</p>
                   <p className="text-text-light text-sm">PNG, JPG up to 5MB</p>
                 </div>
               )}
               <Input
                 type="file"
                 accept="image/*"
-                onChange={handleImageUpload}
+                onChange={handleImageChange}
                 className="absolute inset-0 opacity-0 cursor-pointer"
               />
             </div>

@@ -132,7 +132,7 @@ export default function SettingsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
         {/* Tabs */}
-        <div className="bg-[#F7F2EA] border border-border rounded-2xl p-4 h-fit sticky top-4">
+        <div className="bg-card border border-border rounded-2xl p-4 h-fit sticky top-4 shadow-sm">
           <nav className="space-y-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -154,7 +154,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Content */}
-        <div className="bg-[#F7F2EA] border border-border rounded-2xl p-7">
+        <div className="bg-card border border-border rounded-2xl p-7 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-serif text-3xl text-primary-700 capitalize">{activeTab} Settings</h2>
             <button className="flex items-center gap-2 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors shadow-lg hover:shadow-xl">

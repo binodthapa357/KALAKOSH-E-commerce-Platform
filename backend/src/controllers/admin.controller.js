@@ -2,6 +2,8 @@ import User from "../models/User.model.js";
 import Product from "../models/Product.model.js";
 import Vendor from "../models/Vendor.model.js";
 import Order from "../models/Order.model.js";
+import Review from "../models/Review.model.js";
+import { uploadImageToCloudinary } from "../config/cloudinary.config.js";
 
 /**
  * @desc    Get Admin Dashboard Stats (counts by status + revenue)
@@ -212,17 +214,22 @@ export const updateVendorStatus = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid status value" });
     }
 
-    const vendor = await Vendor.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true }
-    ).populate("user_id", "name email");
-
+    const vendor = await Vendor.findById(req.params.id);
     if (!vendor) {
       return res.status(404).json({ message: "Vendor not found" });
     }
 
-    res.status(200).json({ success: true, vendor });
+    vendor.status = status;
+    await vendor.save();
+
+    // If approved, ensure user has the vendor role
+    if (status === "active") {
+      await User.findByIdAndUpdate(vendor.user_id, { role: "vendor" });
+    }
+
+    const populatedVendor = await Vendor.findById(vendor._id).populate("user_id", "name email");
+
+    res.status(200).json({ success: true, vendor: populatedVendor });
   } catch (error) {
     next(error);
   }
@@ -266,6 +273,75 @@ export const getOrdersList = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Get detailed list of reviews
+ * @route   GET /api/admin/reviews
+ * @access  Private (Admin Only)
+ */
+export const getReviewsList = async (req, res, next) => {
+  try {
+    const reviews = await Review.find()
+      .populate("user_id", "name email")
+      .populate("product_id", "name")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: reviews.length,
+      reviews,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Delete a review as admin
+ * @route   DELETE /api/admin/reviews/:id
+ * @access  Private (Admin Only)
+ */
+export const deleteReviewAdmin = async (req, res, next) => {
+  try {
+    const review = await Review.findById(req.params.id);
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    await Review.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      message: "Review deleted successfully by Admin",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Upload an image to Cloudinary (General purpose)
+ * @route   POST /api/admin/upload
+ * @access  Private (Admin Only)
+ */
+export const uploadImageAdmin = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No image file provided" });
+    }
+
+    const folder = req.query.folder || "general";
+    const result = await uploadImageToCloudinary(req.file.buffer, folder);
+
+    res.status(200).json({
+      success: true,
+      url: result.secure_url,
+      public_id: result.public_id,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getDashboardStats,
   getUsersList,
@@ -274,4 +350,7 @@ export default {
   getVendorsList,
   updateVendorStatus,
   getOrdersList,
+  getReviewsList,
+  deleteReviewAdmin,
+  uploadImageAdmin,
 };

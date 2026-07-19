@@ -1,7 +1,7 @@
 /* HERO */
 
 .category-hero {
-  background: #f5eee4;
+  background: var(--background);
   text-align: center;
   padding: 70px 20px 50px;
 }
@@ -17,21 +17,21 @@
 .category-hero h1 {
   font-size: 40px;
   color: var(--primary-500);
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   text-transform: capitalize;
 }
 
 /* PAGE + CONTENT */
 
 .category-page {
-  background: #f5eee4;
+  background: var(--background);
 }
 
 .category-content {
   max-width: 1200px;
   margin: 0 auto;
   padding: 50px 24px 90px;
-  background: #f5eee4;
+  background: var(--background);
 }
 
 /* EMPTY STATE */

@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import Image from "next/image";
-import { Phone, Mail, MapPin } from "lucide-react";
-import { usePathname } from "next/navigation";
+import Link from 'next/link';
+import Image from 'next/image';
+import { Phone, Mail, MapPin } from 'lucide-react';
+import { FaFacebookF, FaInstagram, FaXTwitter, FaYoutube } from 'react-icons/fa6';
+import { usePathname } from 'next/navigation';
 
 const Footer = () => {
   const pathname = usePathname();
@@ -17,23 +18,43 @@ const Footer = () => {
         {/* Brand */}
         <div>
           <div className="flex items-center gap-3">
-            <div className="relative h-9 w-9 overflow-hidden rounded-full">
+            <div className="relative h-11 w-11 overflow-hidden rounded-full">
               <Image src="/images/logo.png" alt="Kalakosh logo" fill className="object-cover" />
             </div>
-            <span className="text-lg font-serif uppercase tracking-[0.15em]">Kalakosh</span>
+            <span className="text-xl font-serif uppercase tracking-[0.15em]">Kalakosh</span>
           </div>
           <p className="mt-4 text-xs leading-relaxed text-[#E3D4C4]">
             A platform dedicated to preserving and promoting authentic Nepali handicrafts worldwide.
           </p>
           <div className="mt-4 flex gap-3">
-            {["facebook-f", "instagram", "x-twitter", "youtube"].map((icon) => (
-              <div
-                key={icon}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 text-xs hover:bg-white/10"
-              >
-                <i className={`fa-brands fa-${icon}`}></i>
-              </div>
-            ))}
+            <Link
+              href="https://facebook.com"
+              target="_blank"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 text-white transition-colors hover:bg-white/10"
+            >
+              <FaFacebookF className="h-3.5 w-3.5" />
+            </Link>
+            <Link
+              href="https://instagram.com"
+              target="_blank"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 text-white transition-colors hover:bg-white/10"
+            >
+              <FaInstagram className="h-3.5 w-3.5" />
+            </Link>
+            <Link
+              href="https://twitter.com"
+              target="_blank"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 text-white transition-colors hover:bg-white/10"
+            >
+              <FaXTwitter className="h-3.5 w-3.5" />
+            </Link>
+            <Link
+              href="https://youtube.com"
+              target="_blank"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 text-white transition-colors hover:bg-white/10"
+            >
+              <FaYoutube className="h-3.5 w-3.5" />
+            </Link>
           </div>
         </div>
 
@@ -41,7 +62,7 @@ const Footer = () => {
         <div>
           <h5 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#E8B84B]">Categories</h5>
           <ul className="flex flex-col gap-2.5 text-xs text-[#E3D4C4]">
-            {["Paintings", "Textiles", "Pottery", "Jewelry", "Wood Crafts"].map((c) => (
+            {['Paintings', 'Textiles', 'Pottery', 'Jewelry', 'Wood Crafts'].map((c) => (
               <li key={c} className="cursor-pointer hover:text-white">{c}</li>
             ))}
           </ul>
@@ -51,7 +72,7 @@ const Footer = () => {
         <div>
           <h5 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#E8B84B]">Customer Service</h5>
           <ul className="flex flex-col gap-2.5 text-xs text-[#E3D4C4]">
-            {["About Us", "Contact Us", "Track Order", "Shipping & Delivery", "Returns & Refunds", "FAQ"].map((c) => (
+            {['About Us', 'Contact Us', 'Track Order', 'Shipping & Delivery', 'Returns & Refunds', 'FAQ'].map((c) => (
               <li key={c} className="cursor-pointer hover:text-white">{c}</li>
             ))}
           </ul>
@@ -61,7 +82,7 @@ const Footer = () => {
         <div>
           <h5 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#E8B84B]">Quick Links</h5>
           <ul className="flex flex-col gap-2.5 text-xs text-[#E3D4C4]">
-            {["My Account", "Wishlist", "Cart", "Terms & Conditions", "Privacy Policy"].map((c) => (
+            {['My Account', 'Wishlist', 'Cart', 'Terms & Conditions', 'Privacy Policy'].map((c) => (
               <li key={c} className="cursor-pointer hover:text-white">{c}</li>
             ))}
           </ul>
@@ -76,10 +97,19 @@ const Footer = () => {
             <li className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5" /> Kathmandu, Nepal</li>
           </ul>
           <p className="mt-4 text-[10px] uppercase tracking-wider text-[#C4A3A3]">We accept</p>
-          <div className="mt-2 flex gap-3 text-xs">
-            <div className="flex h-6 w-9 items-center justify-center rounded border border-white/40"><i className="fa-brands fa-cc-mastercard"></i></div>
-            <div className="flex h-6 w-9 items-center justify-center rounded border border-white/40"><i className="fa-brands fa-cc-paypal"></i></div>
-            <div className="flex h-6 w-9 items-center justify-center rounded border border-white/40 text-[9px] font-semibold">VISA</div>
+          <div className="mt-2 flex gap-3 text-xs items-center">
+            {/* eSewa */}
+            <div className="flex h-6 px-2.5 items-center justify-center rounded border border-white/20 bg-[#60BB46] text-[10px] font-bold text-white tracking-tighter" title="eSewa">
+              eSewa
+            </div>
+            {/* Khalti */}
+            <div className="flex h-6 px-2.5 items-center justify-center rounded border border-white/20 bg-[#5C2D91] text-[10px] font-bold text-white tracking-tighter" title="Khalti">
+              Khalti
+            </div>
+            {/* VISA */}
+            <div className="flex h-6 px-2.5 items-center justify-center rounded border border-white/20 bg-[#1A1F71] text-[10px] font-bold text-white" title="VISA">
+              VISA
+            </div>
           </div>
         </div>
       </div>

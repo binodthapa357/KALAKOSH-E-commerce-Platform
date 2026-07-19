@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FaPlus, FaEdit, FaTrash, FaGripVertical } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaGripVertical, FaUpload } from 'react-icons/fa';
 import { fetchApi } from '@/lib/api';
 import { toast } from 'sonner';
 
@@ -10,15 +10,25 @@ interface Category {
   name: string;
   productCount: number;
   status: 'Active' | 'Inactive';
+  image?: string;
 }
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
   const [newCategory, setNewCategory] = useState({ name: '', status: 'Active' });
+  const [addImgFile, setAddImgFile] = useState<File | null>(null);
+  const [addImgPreview, setAddImgPreview] = useState<string | null>(null);
+
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<{ id: string; name: string; status: 'Active' | 'Inactive' } | null>(null);
+  const [editingCategory, setEditingCategory] = useState<{ id: string; name: string; status: 'Active' | 'Inactive'; image?: string } | null>(null);
+  const [editImgFile, setEditImgFile] = useState<File | null>(null);
+  const [editImgPreview, setEditImgPreview] = useState<string | null>(null);
+
+  const [submitting, setSubmitting] = useState(false);
 
   const fetchCategories = async () => {
     try {
@@ -45,6 +55,7 @@ export default function CategoriesPage() {
         name: c.name,
         productCount: counts[c._id] || 0,
         status: c.status === 'active' ? 'Active' : 'Inactive',
+        image: c.image || '',
       }));
       
       setCategories(mapped);
@@ -60,25 +71,115 @@ export default function CategoriesPage() {
     fetchCategories();
   }, []);
 
+  const handleAddImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAddImgFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAddImgPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleEditImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setEditImgFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditImgPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleAddCategory = async () => {
-    if (newCategory.name.trim()) {
-      try {
-        const response = await fetchApi('/categories', {
+    if (!newCategory.name.trim()) {
+      toast.error('Category name is required');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      let imageUrl = '';
+      if (addImgFile) {
+        const fd = new FormData();
+        fd.append('image', addImgFile);
+        const uploadRes = await fetchApi('/admin/upload?folder=categories', {
           method: 'POST',
-          body: JSON.stringify({
-            name: newCategory.name,
-            status: newCategory.status.toLowerCase(),
-          }),
+          body: fd,
         });
-        if (response.success) {
-          toast.success('Category added successfully');
-          fetchCategories();
-          setNewCategory({ name: '', status: 'Active' });
-          setShowAddModal(false);
+        if (uploadRes && uploadRes.url) {
+          imageUrl = uploadRes.url;
         }
-      } catch (err: any) {
-        toast.error(err.message || 'Failed to add category');
       }
+
+      const response = await fetchApi('/categories', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: newCategory.name,
+          status: newCategory.status.toLowerCase(),
+          image: imageUrl,
+        }),
+      });
+
+      if (response.success) {
+        toast.success('Category added successfully');
+        fetchCategories();
+        setNewCategory({ name: '', status: 'Active' });
+        setAddImgFile(null);
+        setAddImgPreview(null);
+        setShowAddModal(false);
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to add category');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleEditCategory = async () => {
+    if (!editingCategory || !editingCategory.name.trim()) {
+      toast.error('Category name is required');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      let imageUrl = editingCategory.image || '';
+      if (editImgFile) {
+        const fd = new FormData();
+        fd.append('image', editImgFile);
+        const uploadRes = await fetchApi('/admin/upload?folder=categories', {
+          method: 'POST',
+          body: fd,
+        });
+        if (uploadRes && uploadRes.url) {
+          imageUrl = uploadRes.url;
+        }
+      }
+
+      const response = await fetchApi(`/categories/${editingCategory.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          name: editingCategory.name,
+          status: editingCategory.status.toLowerCase(),
+          image: imageUrl,
+        }),
+      });
+
+      if (response.success) {
+        toast.success('Category updated successfully');
+        fetchCategories();
+        setEditingCategory(null);
+        setEditImgFile(null);
+        setEditImgPreview(null);
+        setShowEditModal(false);
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update category');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -109,6 +210,7 @@ export default function CategoriesPage() {
         body: JSON.stringify({
           name: category.name,
           status: nextStatus,
+          image: category.image || '',
         }),
       });
       if (response.success) {
@@ -117,28 +219,6 @@ export default function CategoriesPage() {
       }
     } catch (err: any) {
       toast.error(err.message || 'Failed to update status');
-    }
-  };
-
-  const handleEditCategory = async () => {
-    if (editingCategory && editingCategory.name.trim()) {
-      try {
-        const response = await fetchApi(`/categories/${editingCategory.id}`, {
-          method: 'PUT',
-          body: JSON.stringify({
-            name: editingCategory.name,
-            status: editingCategory.status.toLowerCase(),
-          }),
-        });
-        if (response.success) {
-          toast.success('Category updated successfully');
-          fetchCategories();
-          setShowEditModal(false);
-          setEditingCategory(null);
-        }
-      } catch (err: any) {
-        toast.error(err.message || 'Failed to update category');
-      }
     }
   };
 
@@ -164,7 +244,7 @@ export default function CategoriesPage() {
           </h1>
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors shadow-lg hover:shadow-xl"
+            className="flex items-center gap-2 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors shadow-lg hover:shadow-xl font-semibold"
           >
             <FaPlus /> Add Category
           </button>
@@ -176,12 +256,16 @@ export default function CategoriesPage() {
         {categories.map((category) => (
           <div
             key={category.id}
-            className="bg-[#F7F2EA] border border-border rounded-2xl p-6 hover:shadow-lg transition-shadow"
+            className="bg-card border border-border rounded-2xl p-6 hover:shadow-lg transition-shadow shadow-sm"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-primary-100 text-primary-700 flex items-center justify-center">
-                  <FaGripVertical className="text-primary-400" />
+                <div className="w-12 h-12 rounded-xl overflow-hidden bg-primary-100 text-primary-700 flex items-center justify-center shrink-0">
+                  {category.image ? (
+                    <img src={category.image} alt={category.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <FaGripVertical className="text-primary-400" />
+                  )}
                 </div>
                 <div>
                   <h3 className="font-serif text-2xl text-primary-700">{category.name}</h3>
@@ -208,7 +292,9 @@ export default function CategoriesPage() {
                     id: category.id,
                     name: category.name,
                     status: category.status,
+                    image: category.image,
                   });
+                  setEditImgPreview(category.image || null);
                   setShowEditModal(true);
                 }}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white border border-border hover:bg-primary-50 hover:border-primary-300 transition-colors text-text-mid hover:text-primary-700"
@@ -259,16 +345,53 @@ export default function CategoriesPage() {
                   <option value="Inactive">Inactive</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-text-dark text-sm font-medium mb-2">Category Image</label>
+                <div className="border-2 border-dashed border-border rounded-xl p-4 text-center relative cursor-pointer hover:border-primary-400 transition-colors">
+                  {addImgPreview ? (
+                    <div className="space-y-2">
+                      <img src={addImgPreview} alt="Preview" className="max-h-32 mx-auto object-contain rounded-lg" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAddImgFile(null);
+                          setAddImgPreview(null);
+                        }}
+                        className="text-xs text-red-600 hover:text-red-700 relative z-10"
+                      >
+                        Remove Image
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 text-text-mid">
+                      <FaUpload className="text-xl mx-auto text-text-light" />
+                      <p className="text-xs font-semibold">Click to upload image</p>
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAddImageChange}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                </div>
+              </div>
             </div>
             <div className="flex gap-4 mt-8">
               <button
                 onClick={handleAddCategory}
-                className="flex-1 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors font-semibold"
+                disabled={submitting}
+                className="flex-1 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors font-semibold disabled:opacity-50"
               >
-                Add Category
+                {submitting ? 'Adding...' : 'Add Category'}
               </button>
               <button
-                onClick={() => setShowAddModal(false)}
+                onClick={() => {
+                  setShowAddModal(false);
+                  setNewCategory({ name: '', status: 'Active' });
+                  setAddImgFile(null);
+                  setAddImgPreview(null);
+                }}
                 className="flex-1 border border-border bg-white text-text-mid px-6 py-3 rounded-full hover:bg-gray-50 transition-colors font-medium"
               >
                 Cancel
@@ -305,18 +428,53 @@ export default function CategoriesPage() {
                   <option value="Inactive">Inactive</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-text-dark text-sm font-medium mb-2">Category Image</label>
+                <div className="border-2 border-dashed border-border rounded-xl p-4 text-center relative cursor-pointer hover:border-primary-400 transition-colors">
+                  {editImgPreview ? (
+                    <div className="space-y-2">
+                      <img src={editImgPreview} alt="Preview" className="max-h-32 mx-auto object-contain rounded-lg" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditImgFile(null);
+                          setEditImgPreview(null);
+                          setEditingCategory({ ...editingCategory, image: '' });
+                        }}
+                        className="text-xs text-red-600 hover:text-red-700 relative z-10"
+                      >
+                        Remove Image
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 text-text-mid">
+                      <FaUpload className="text-xl mx-auto text-text-light" />
+                      <p className="text-xs font-semibold">Click to upload image</p>
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleEditImageChange}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                </div>
+              </div>
             </div>
             <div className="flex gap-4 mt-8">
               <button
                 onClick={handleEditCategory}
-                className="flex-1 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors font-semibold"
+                disabled={submitting}
+                className="flex-1 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors font-semibold disabled:opacity-50"
               >
-                Save Changes
+                {submitting ? 'Saving...' : 'Save Changes'}
               </button>
               <button
                 onClick={() => {
                   setShowEditModal(false);
                   setEditingCategory(null);
+                  setEditImgFile(null);
+                  setEditImgPreview(null);
                 }}
                 className="flex-1 border border-border bg-white text-text-mid px-6 py-3 rounded-full hover:bg-gray-50 transition-colors font-medium"
               >

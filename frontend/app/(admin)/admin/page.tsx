@@ -18,7 +18,7 @@ const getStatusColor = (status: string) => {
 
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
-    <div className="bg-[#F7F2EA] border border-border rounded-2xl p-6">
+    <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
       <span className="text-text-light text-xs">{label}</span>
       <h2 className="font-serif text-primary-700 text-[48px] font-semibold mt-2 leading-none">
         {value}
@@ -110,7 +110,7 @@ export default function AdminDashboard() {
       {/* Bottom Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
         {/* Recent Orders Table */}
-        <div className="bg-[#F7F2EA] border border-border rounded-2xl p-7">
+        <div className="bg-card border border-border rounded-2xl p-7 shadow-sm">
           <h2 className="font-serif text-primary-700 text-5xl mb-7">Recent Orders</h2>
           {loading ? (
             <div className="space-y-3">
@@ -157,7 +157,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Stats Breakdown */}
-        <div className="bg-[#F7F2EA] border border-border rounded-2xl p-7">
+        <div className="bg-card border border-border rounded-2xl p-7 shadow-sm">
           <h2 className="font-serif text-primary-700 text-5xl mb-7">Order Status</h2>
           {loading ? (
             <div className="space-y-3">

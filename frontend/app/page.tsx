@@ -111,48 +111,64 @@ export default function Home() {
   return (
     <main className="bg-[#f5efe7] font-sans text-[#2d1a16]">
       {/* HERO SECTION */}
-      <section className="relative w-[calc(100%-70px)] h-[500px] mx-[35px] my-[55px] rounded-[28px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.08)]">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#f5efe7]/96 via-[#f5efe7]/70 to-transparent z-10" />
-        <div className="relative z-10 h-full flex items-center pl-[50px]">
-          <div className="max-w-[430px]">
-            <h1 className="font-serif text-[72px] leading-[0.95] font-medium text-[#2c1612]">
+      <section className="relative w-[calc(100%-70px)] h-[500px] mx-[35px] my-[55px] rounded-[28px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.08)] bg-[#f4ece1]">
+        {/* Background Image */}
+        <Image
+          src="/images/hero-arrangement.jpg"
+          alt="Authentic Nepali Handicrafts"
+          fill
+          priority
+          sizes="100vw"
+          className="absolute inset-0 object-cover object-center z-0"
+        />
+        {/* Soft Golden/Cream Mask */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#f4ece1]/98 via-[#f4ece1]/80 to-transparent z-10" />
+
+        <div className="relative z-20 h-full flex items-center pl-[50px]">
+          <div className="max-w-[480px]">
+            <h1 className="font-serif text-[56px] md:text-[62px] leading-[1.0] font-medium text-[#3d271f]">
               Discover <br />
               Authentic <br />
-              <span className="text-[#7d1d1d] italic">
+              <span className="text-[#7d1d1d]">
                 Nepali <br />
                 Handicrafts
               </span>
             </h1>
 
-            <div className="flex items-center gap-2.5 my-[26px]">
-              <div className="w-[45px] h-[2px] bg-secondary-500" />
-              <span className="text-secondary-500">✦</span>
-              <div className="w-[45px] h-[2px] bg-secondary-500" />
+            {/* Custom Divider from Screenshot */}
+            <div className="flex items-center gap-2.5 my-6">
+              <div className="w-[45px] h-[1.5px] bg-[#c9974a]" />
+              <div className="w-1 h-3 bg-[#c9974a]" />
+              <div className="w-[45px] h-[1.5px] bg-[#c9974a]" />
             </div>
 
-            <p className="text-[#5f4f47] leading-relaxed text-base mb-[30px]">
-              Connecting local artisans with the world — every piece tells a
-              story of Himalayan heritage.
+            <p className="text-[#6b5544] leading-relaxed text-sm md:text-base mb-8 max-w-[380px]">
+              Connecting local artisans with the world — every piece tells a story of Himalayan heritage.
             </p>
 
-            <div className="flex gap-3.5">
+            <div className="flex gap-4">
               <Link
                 href="/shop"
-                className="bg-primary-700 text-white border-none px-7 py-4 rounded-[10px] text-sm font-semibold cursor-pointer hover:bg-primary-800 transition-colors inline-block text-center"
+                className="bg-[#7d1d1d] hover:bg-[#651515] text-white px-8 py-3.5 rounded-[8px] text-[11px] font-bold tracking-wider uppercase transition-colors inline-block text-center"
               >
                 SHOP NOW
               </Link>
               <Link
                 href="/categories"
-                className="bg-transparent border-2 border-primary-700 text-primary-700 px-7 py-[15px] rounded-[10px] text-sm tracking-[1px] cursor-pointer hover:bg-primary-700/10 transition-colors inline-block text-center"
+                className="bg-transparent border border-[#7d1d1d] text-[#6b5544] hover:bg-[#7d1d1d]/5 px-8 py-[13px] rounded-[8px] text-[11px] font-bold tracking-wider transition-colors inline-block text-center"
               >
-                EXPLORE CATEGORIES
+                Explore Categories
               </Link>
             </div>
           </div>
         </div>
 
-        <div className="w-[22px] h-[6px] bg-primary-700 rounded-[30px] absolute left-1/2 bottom-[18px] -translate-x-1/2" />
+        {/* Custom Pagination Indicator from Screenshot */}
+        <div className="flex items-center gap-2 absolute left-1/2 bottom-5 -translate-x-1/2 z-20">
+          <div className="w-6 h-1.5 bg-[#7d1d1d] rounded-full" />
+          <div className="w-1.5 h-1.5 bg-[#7d1d1d]/30 rounded-full" />
+          <div className="w-1.5 h-1.5 bg-[#7d1d1d]/30 rounded-full" />
+        </div>
       </section>
 
       {/* CATEGORIES SECTION */}

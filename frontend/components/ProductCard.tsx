@@ -75,6 +75,7 @@ export default function ProductCard({ product }: { product: Product }) {
                         originalPrice={hasDiscount ? product.price : undefined}
                         vendorName={product.vendor_id?.shop_name || "Kalakosh Artisan"}
                         stock={product.stock ?? Infinity}
+                        className="add-btn"
                     />
                 </div>
             </div>

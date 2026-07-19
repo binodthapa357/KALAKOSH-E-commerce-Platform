@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FaCloudUploadAlt, FaTrash } from "react-icons/fa";
 import { isLoggedIn, getRole } from "@/lib/auth";
+import { toast } from "sonner";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 interface Category {
   _id: string;
@@ -38,17 +39,42 @@ export default function NewProductPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  // ---- Auth guard: only logged-in vendors may access this page ----
+  // ---- Auth guard: only logged-in active vendors may access this page ----
   useEffect(() => {
     if (!isLoggedIn()) {
-      router.push("/signin?redirect=/vendor/products/new");
+      router.push("/signin?redirect=/vendor/products");
       return;
     }
     if (getRole() !== "vendor") {
       router.push("/dashboard");
       return;
     }
-    setCheckingAuth(false);
+
+    const checkVendorStatus = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${BACKEND_URL}/api/vendor/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) {
+          router.push("/vendor/dashboard");
+          return;
+        }
+        const data = await res.json();
+        if (data.status !== "active") {
+          toast.error(`Your vendor account status is '${data.status}'. Access denied.`);
+          router.push("/vendor/dashboard");
+          return;
+        }
+        setCheckingAuth(false);
+      } catch {
+        router.push("/vendor/dashboard");
+      }
+    };
+
+    checkVendorStatus();
   }, [router]);
 
   // ---- Load categories for the dropdown ----

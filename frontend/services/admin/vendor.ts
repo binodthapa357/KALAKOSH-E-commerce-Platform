@@ -4,6 +4,7 @@ export interface AdminVendor {
   _id: string;
   shop_name: string;
   pan_number: string;
+  pan_photo?: string;
   commission_rate: number;
   status: 'pending' | 'active' | 'suspended' | 'rejected';
   user_id: { _id: string; name: string; email: string } | null;

@@ -2,9 +2,13 @@
 * { box-sizing: border-box; }
 
 .shop-page {
-  background: #fdf8f4;
-  color: #2a1a10;
-  font-family: 'Georgia', serif;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+.shop-page h1, .shop-page h2, .shop-page h3, .shop-page h4 {
+  font-family: var(--font-serif);
 }
 
 /* ---------- TOP BAR ---------- */
@@ -160,7 +164,7 @@
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 25px;
 }
 
@@ -323,7 +327,7 @@
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 1100px) {
-  .product-grid { grid-template-columns: repeat(3, 1fr); }
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
   .footer-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 850px) {

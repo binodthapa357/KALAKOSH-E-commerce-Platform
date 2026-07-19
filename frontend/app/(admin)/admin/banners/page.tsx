@@ -69,7 +69,7 @@ export default function BannersPage() {
         {banners.map((banner) => (
           <div
             key={banner.id}
-            className="bg-[#F7F2EA] border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-shadow"
+            className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-shadow shadow-sm"
           >
             <div className="relative h-48 bg-gray-200 flex items-center justify-center">
               {banner.image ? (

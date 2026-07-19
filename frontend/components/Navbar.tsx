@@ -71,7 +71,7 @@ const Navbar = () => {
       {/* Main nav */}
       <div className="flex items-center justify-between bg-[#FBF3E7] px-6 py-4 sm:px-10">
         <Link href="/" className="flex items-center gap-3">
-          <div className="relative h-9 w-9 overflow-hidden rounded-full">
+          <div className="relative h-11 w-11 overflow-hidden rounded-full">
             <Image
               src="/images/logo.png"
               alt="Logo"
@@ -80,7 +80,7 @@ const Navbar = () => {
               className="object-contain"
             />
           </div>
-          <span className="text-lg font-serif uppercase tracking-[0.15em] text-[#5C2E2E]">
+          <span className="text-xl font-serif uppercase tracking-[0.15em] text-[#5C2E2E]">
             Kalakosh
           </span>
         </Link>

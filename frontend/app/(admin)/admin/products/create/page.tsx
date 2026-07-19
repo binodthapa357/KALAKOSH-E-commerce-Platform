@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { FaArrowLeft, FaUpload } from 'react-icons/fa6';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { fetchApi } from '@/lib/api';
+import { toast } from 'sonner';
 
 export default function CreateProductPage() {
   const router = useRouter();
@@ -16,18 +17,39 @@ export default function CreateProductPage() {
     price: '',
     stock: '',
     description: '',
-    status: 'In Stock',
+    status: 'active',
   });
+  const [categories, setCategories] = useState<{ _id: string; name: string }[]>([]);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [loadingCats, setLoadingCats] = useState(true);
+
+  useEffect(() => {
+    const fetchCats = async () => {
+      try {
+        const data = await fetchApi('/categories');
+        if (data && data.categories) {
+          setCategories(data.categories);
+        }
+      } catch (err: any) {
+        console.error('Failed to load categories', err);
+      } finally {
+        setLoadingCats(false);
+      }
+    };
+    fetchCats();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -36,10 +58,47 @@ export default function CreateProductPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Creating product:', formData);
-    router.push('/admin/products');
+    setSubmitting(true);
+    try {
+      let imageUrl = '';
+      if (imageFile) {
+        const formDataUpload = new FormData();
+        formDataUpload.append('image', imageFile);
+
+        const uploadRes = await fetchApi('/admin/upload?folder=products', {
+          method: 'POST',
+          body: formDataUpload,
+        });
+
+        if (uploadRes && uploadRes.url) {
+          imageUrl = uploadRes.url;
+        }
+      }
+
+      const body = {
+        name: formData.name,
+        category: formData.category,
+        price: Number(formData.price),
+        stock: Number(formData.stock),
+        description: formData.description,
+        status: formData.status,
+        images: imageUrl ? [imageUrl] : [],
+      };
+
+      await fetchApi('/products', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+
+      toast.success('Product created successfully');
+      router.push('/admin/products');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to create product');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -63,7 +122,7 @@ export default function CreateProductPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Form */}
         <div className="lg:col-span-2">
-          <form onSubmit={handleSubmit} className="bg-[#F7F2EA] border border-border rounded-2xl p-7">
+          <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-7 shadow-sm">
             <div className="space-y-6">
               <div>
                 <label className="block text-text-dark text-sm font-medium mb-2">Product Name *</label>
@@ -81,26 +140,33 @@ export default function CreateProductPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-text-dark text-sm font-medium mb-2">Category *</label>
-                  <input
-                    type="text"
+                  <select
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
                     required
+                    disabled={loadingCats}
                     className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
-                    placeholder="e.g., Paintings"
-                  />
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map((cat) => (
+                      <option key={cat._id} value={cat._id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-text-dark text-sm font-medium mb-2">Price *</label>
                   <input
-                    type="text"
+                    type="number"
                     name="price"
                     value={formData.price}
                     onChange={handleChange}
                     required
+                    min="0"
                     className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
-                    placeholder="$299"
+                    placeholder="299"
                   />
                 </div>
               </div>
@@ -116,7 +182,7 @@ export default function CreateProductPage() {
                     required
                     min="0"
                     className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
-                    placeholder="0"
+                    placeholder="10"
                   />
                 </div>
                 <div>
@@ -127,9 +193,9 @@ export default function CreateProductPage() {
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
                   >
-                    <option value="In Stock">In Stock</option>
-                    <option value="Low Stock">Low Stock</option>
-                    <option value="Out of Stock">Out of Stock</option>
+                    <option value="active">Active</option>
+                    <option value="pending">Pending</option>
+                    <option value="inactive">Inactive</option>
                   </select>
                 </div>
               </div>
@@ -141,6 +207,7 @@ export default function CreateProductPage() {
                   value={formData.description}
                   onChange={handleChange}
                   rows={5}
+                  required
                   className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none"
                   placeholder="Describe the product..."
                 />
@@ -149,9 +216,10 @@ export default function CreateProductPage() {
               <div className="flex gap-4 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors shadow-lg hover:shadow-xl font-semibold"
+                  disabled={submitting}
+                  className="flex-1 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors shadow-lg hover:shadow-xl font-semibold disabled:opacity-50"
                 >
-                  Create Product
+                  {submitting ? 'Creating...' : 'Create Product'}
                 </button>
                 <Link
                   href="/admin/products"
@@ -166,40 +234,43 @@ export default function CreateProductPage() {
 
         {/* Image Upload Sidebar */}
         <div className="lg:col-span-1">
-          <div className="bg-[#F7F2EA] border border-border rounded-2xl p-7 sticky top-4">
+          <div className="bg-card border border-border rounded-2xl p-7 sticky top-4 shadow-sm">
             <h3 className="font-serif text-primary-700 text-2xl mb-4">Product Image</h3>
             <div
-              className={`border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors ${imagePreview ? 'border-primary-400' : 'hover:border-primary-400'
+              className={`border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors relative ${imagePreview ? 'border-primary-400' : 'hover:border-primary-400'
                 }`}
             >
               {imagePreview ? (
                 <div className="space-y-4">
-                  <Image
+                  <img
                     src={imagePreview}
                     alt="Preview"
                     className="w-full max-h-50 object-contain rounded-lg"
                   />
-                  <Button
+                  <button
                     type="button"
-                    onClick={() => setImagePreview(null)}
-                    className="text-red-600 hover:text-red-700 text-sm"
+                    onClick={() => {
+                      setImagePreview(null);
+                      setImageFile(null);
+                    }}
+                    className="text-red-600 hover:text-red-700 text-sm relative z-10"
                   >
                     Remove Image
-                  </Button>
+                  </button>
                 </div>
               ) : (
                 <div className="space-y-3">
                   <div className="w-16 h-16 mx-auto rounded-full bg-primary-100 flex items-center justify-center">
                     <FaUpload className="text-primary-700 text-2xl" />
                   </div>
-                  <p className="text-text-mid">Click to upload</p>
+                  <p className="text-text-mid font-medium">Click to upload</p>
                   <p className="text-text-light text-sm">PNG, JPG up to 5MB</p>
                 </div>
               )}
               <Input
                 type="file"
                 accept="image/*"
-                onChange={handleImageUpload}
+                onChange={handleImageChange}
                 className="absolute inset-0 opacity-0 cursor-pointer"
               />
             </div>

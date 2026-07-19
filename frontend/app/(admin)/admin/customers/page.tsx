@@ -1,26 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { FaSearch, FaEnvelope, FaPhone, FaMapPin } from 'react-icons/fa';
-// import { FaRegEdit } from "react-icons/fa";
-// Mock customers data
-const mockCustomers = [
-  { id: 1, name: 'Diya R.', email: 'diya@example.com', phone: '+977 9841234567', location: 'Kathmandu', orders: 12, spent: '$1,234', joined: '2023-06-15' },
-  { id: 2, name: 'Aarav K.', email: 'aarav@example.com', phone: '+977 9842345678', location: 'Pokhara', orders: 8, spent: '$876', joined: '2023-08-22' },
-  { id: 3, name: 'Maya L.', email: 'maya@example.com', phone: '+977 9843456789', location: 'Lalitpur', orders: 5, spent: '$543', joined: '2023-10-01' },
-  { id: 4, name: 'Bikash T.', email: 'bikash@example.com', phone: '+977 9844567890', location: 'Bhaktapur', orders: 15, spent: '$1,987', joined: '2023-05-10' },
-  { id: 5, name: 'Sita P.', email: 'sita@example.com', phone: '+977 9845678901', location: 'Kathmandu', orders: 3, spent: '$234', joined: '2024-01-20' },
-];
+import { getCustomers, type CustomerData } from '@/services/admin/customer';
+
+function Skeleton({ className = '' }: { className?: string }) {
+  return <div className={`animate-pulse bg-primary-100 rounded-2xl ${className}`} />;
+}
 
 export default function CustomersPage() {
+  const [customers, setCustomers] = useState<CustomerData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCustomer, setSelectedCustomer] = useState<typeof mockCustomers[0] | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerData | null>(null);
 
-  const filteredCustomers = mockCustomers.filter(customer =>
-    customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.phone.includes(searchTerm)
-  );
+  const fetchCustomerList = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const data = await getCustomers();
+      setCustomers(data);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load customers');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCustomerList();
+  }, []);
+
+  const filteredCustomers = useMemo(() => {
+    return customers.filter((customer) => {
+      const term = searchTerm.toLowerCase();
+      return (
+        customer.name.toLowerCase().includes(term) ||
+        customer.email.toLowerCase().includes(term) ||
+        customer.phone.includes(term)
+      );
+    });
+  }, [customers, searchTerm]);
 
   return (
     <div>
@@ -32,13 +53,19 @@ export default function CustomersPage() {
         </h1>
       </div>
 
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-sm">
+          ⚠ {error}
+        </div>
+      )}
+
       {/* Search */}
       <div className="flex flex-wrap items-center gap-4 mb-6">
         <div className="relative flex-1 min-w-50">
           <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-text-light" />
           <input
             type="text"
-            placeholder="Search customers..."
+            placeholder="Search customers by name, email, or phone..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-11 pr-4 py-3 border border-border rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
@@ -48,35 +75,43 @@ export default function CustomersPage() {
 
       {/* Customers Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCustomers.map((customer) => (
-          <div
-            key={customer.id}
-            className="bg-[#F7F2EA] border border-border rounded-2xl p-6 hover:shadow-lg transition-shadow cursor-pointer"
-            onClick={() => setSelectedCustomer(customer)}
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 className="font-serif text-2xl text-primary-700">{customer.name}</h3>
-                <p className="text-text-light text-sm flex items-center gap-1.5">
-                  <FaEnvelope className="text-xs" /> {customer.email}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-text-dark font-bold">{customer.spent}</p>
-                <p className="text-text-light text-xs">{customer.orders} orders</p>
-              </div>
-            </div>
-            <div className="space-y-1.5 text-sm">
-              <p className="text-text-mid flex items-center gap-2">
-                <FaPhone className="text-text-light" /> {customer.phone}
-              </p>
-              <p className="text-text-mid flex items-center gap-2">
-                <FaMapPin className="text-text-light" /> {customer.location}
-              </p>
-              <p className="text-text-light text-xs">Joined: {customer.joined}</p>
-            </div>
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-48" />)
+        ) : filteredCustomers.length === 0 ? (
+          <div className="col-span-full text-center py-12 text-text-light">
+            No customers found.
           </div>
-        ))}
+        ) : (
+          filteredCustomers.map((customer) => (
+            <div
+              key={customer._id}
+              className="bg-card border border-border rounded-2xl p-6 hover:shadow-lg transition-shadow cursor-pointer shadow-sm"
+              onClick={() => setSelectedCustomer(customer)}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="font-serif text-2xl text-primary-700">{customer.name}</h3>
+                  <p className="text-text-light text-sm flex items-center gap-1.5 mt-1">
+                    <FaEnvelope className="text-xs shrink-0" /> <span className="truncate max-w-[150px]">{customer.email}</span>
+                  </p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-primary-700 font-bold text-lg">{customer.spent}</p>
+                  <p className="text-text-light text-xs mt-0.5">{customer.orders} orders</p>
+                </div>
+              </div>
+              <div className="space-y-1.5 text-sm border-t border-black/5 pt-4 mt-2">
+                <p className="text-text-mid flex items-center gap-2">
+                  <FaPhone className="text-text-light" /> {customer.phone}
+                </p>
+                <p className="text-text-mid flex items-center gap-2">
+                  <FaMapPin className="text-text-light" /> {customer.location}
+                </p>
+                <p className="text-text-light text-xs mt-3 pt-1">Joined: {customer.joined}</p>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {/* Customer Detail Modal */}
@@ -98,35 +133,35 @@ export default function CustomersPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-text-light text-sm">Email</p>
-                  <p className="text-text-dark">{selectedCustomer.email}</p>
+                  <p className="text-text-dark font-medium">{selectedCustomer.email}</p>
                 </div>
                 <div>
                   <p className="text-text-light text-sm">Phone</p>
-                  <p className="text-text-dark">{selectedCustomer.phone}</p>
+                  <p className="text-text-dark font-medium">{selectedCustomer.phone}</p>
                 </div>
                 <div>
                   <p className="text-text-light text-sm">Location</p>
-                  <p className="text-text-dark">{selectedCustomer.location}</p>
+                  <p className="text-text-dark font-medium">{selectedCustomer.location}</p>
                 </div>
                 <div>
                   <p className="text-text-light text-sm">Joined</p>
-                  <p className="text-text-dark">{selectedCustomer.joined}</p>
+                  <p className="text-text-dark font-medium">{selectedCustomer.joined}</p>
                 </div>
                 <div>
                   <p className="text-text-light text-sm">Total Orders</p>
-                  <p className="text-text-dark">{selectedCustomer.orders}</p>
+                  <p className="text-text-dark font-medium">{selectedCustomer.orders}</p>
                 </div>
                 <div>
                   <p className="text-text-light text-sm">Total Spent</p>
-                  <p className="text-text-dark font-bold text-xl">{selectedCustomer.spent}</p>
+                  <p className="text-primary-700 font-bold text-xl">{selectedCustomer.spent}</p>
                 </div>
               </div>
-              <div className="flex gap-4 pt-4 border-t border-border">
-                <button className="flex-1 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors">
-                  View Orders
-                </button>
-                <button className="flex-1 border border-border bg-white text-text-mid px-6 py-3 rounded-full hover:bg-gray-50 transition-colors">
-                  Contact
+              <div className="flex gap-4 pt-6 border-t border-border mt-4">
+                <button
+                  onClick={() => setSelectedCustomer(null)}
+                  className="flex-1 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors font-semibold"
+                >
+                  Close
                 </button>
               </div>
             </div>

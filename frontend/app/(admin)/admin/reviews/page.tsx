@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -12,13 +12,10 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,7 +27,6 @@ import {
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -43,108 +39,89 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import {
   Search,
   MoreHorizontal,
-  Eye,
-  Edit,
   Trash2,
   Star,
-  StarHalf,
   StarOff,
-  Filter,
   ChevronDown,
   MessageSquare,
-  User,
   Calendar,
-  TrendingUp,
 } from 'lucide-react';
-
-// Mock reviews data
-const mockReviews = [
-  {
-    id: 1,
-    product: 'Sacred Tara Thangka',
-    user: 'Diya R.',
-    rating: 5,
-    comment: 'Beautiful craftsmanship! The colors are vibrant and the details are incredible.',
-    date: '2024-03-15',
-    status: 'Approved',
-    avatar: 'DR',
-    helpful: 24,
-  },
-  {
-    id: 2,
-    product: 'Tibetan Singing Bowl',
-    user: 'Aarav K.',
-    rating: 4,
-    comment: 'Great quality, produces a beautiful sound. Shipping was fast.',
-    date: '2024-03-14',
-    status: 'Approved',
-    avatar: 'AK',
-    helpful: 18,
-  },
-  {
-    id: 3,
-    product: 'Maroon Pashmina Shawl',
-    user: 'Maya L.',
-    rating: 3,
-    comment: 'Soft and warm but color is slightly different from the picture.',
-    date: '2024-03-13',
-    status: 'Pending',
-    avatar: 'ML',
-    helpful: 7,
-  },
-  {
-    id: 4,
-    product: 'Khukuri Heritage Knife',
-    user: 'Bikash T.',
-    rating: 5,
-    comment: 'Excellent quality! The blade is sharp and the handle is beautifully carved.',
-    date: '2024-03-12',
-    status: 'Approved',
-    avatar: 'BT',
-    helpful: 32,
-  },
-];
+import { getReviews, deleteReview, type AdminReview } from '@/services/admin/review';
+import { toast } from 'sonner';
 
 export default function ReviewsPage() {
+  const [reviews, setReviews] = useState<AdminReview[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filterStatus, setFilterStatus] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
-  const itemsPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const itemsPerPage = 8;
 
-  const filteredReviews = mockReviews.filter((review) => {
-    const matchesSearch =
-      review.product.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      review.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      review.comment.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === 'all' || review.status.toLowerCase() === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
+  const fetchAllReviews = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const data = await getReviews();
+      setReviews(data);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch reviews');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllReviews();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this review?')) return;
+    setDeletingId(id);
+    try {
+      const res = await deleteReview(id);
+      if (res.success) {
+        toast.success(res.message || 'Review deleted successfully');
+        setReviews((prev) => prev.filter((r) => r._id !== id));
+      }
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to delete review');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  // Filter reviews
+  const filteredReviews = useMemo(() => {
+    return reviews.filter((review) => {
+      const term = searchTerm.toLowerCase();
+      const productName = (review.product_id?.name || '').toLowerCase();
+      const userName = (review.user_id?.name || '').toLowerCase();
+      const comment = (review.comment || '').toLowerCase();
+      return productName.includes(term) || userName.includes(term) || comment.includes(term);
+    });
+  }, [reviews, searchTerm]);
 
   // Sort reviews
-  const sortedReviews = [...filteredReviews].sort((a, b) => {
-    if (sortBy === 'newest') return new Date(b.date).getTime() - new Date(a.date).getTime();
-    if (sortBy === 'oldest') return new Date(a.date).getTime() - new Date(b.date).getTime();
-    if (sortBy === 'highest') return b.rating - a.rating;
-    if (sortBy === 'lowest') return a.rating - b.rating;
-    return 0;
-  });
+  const sortedReviews = useMemo(() => {
+    return [...filteredReviews].sort((a, b) => {
+      if (sortBy === 'newest') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      if (sortBy === 'oldest') return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      if (sortBy === 'highest') return b.rating - a.rating;
+      if (sortBy === 'lowest') return a.rating - b.rating;
+      return 0;
+    });
+  }, [filteredReviews, sortBy]);
 
-  const paginatedReviews = sortedReviews.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // Paginated reviews
+  const paginatedReviews = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return sortedReviews.slice(start, start + itemsPerPage);
+  }, [sortedReviews, currentPage]);
 
   const totalPages = Math.ceil(sortedReviews.length / itemsPerPage);
 
@@ -152,9 +129,7 @@ export default function ReviewsPage() {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       if (i <= rating) {
-        stars.push(<Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />);
-      } else if (i - 0.5 === rating) {
-        stars.push(<StarHalf key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />);
+        stars.push(<Star key={i} className="w-4 h-4 fill-yellow-500 text-yellow-500" />);
       } else {
         stars.push(<StarOff key={i} className="w-4 h-4 text-gray-300" />);
       }
@@ -162,365 +137,222 @@ export default function ReviewsPage() {
     return stars;
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Approved':
-        return 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100';
-      case 'Pending':
-        return 'bg-amber-100 text-amber-700 hover:bg-amber-100';
-      case 'Rejected':
-        return 'bg-rose-100 text-rose-700 hover:bg-rose-100';
-      default:
-        return 'bg-gray-100 text-gray-700 hover:bg-gray-100';
-    }
-  };
-
-  const averageRating = mockReviews.reduce((acc, rev) => acc + rev.rating, 0) / mockReviews.length;
-  const totalReviews = mockReviews.length;
-  const pendingReviews = mockReviews.filter((r) => r.status === 'Pending').length;
-  const approvedReviews = mockReviews.filter((r) => r.status === 'Approved').length;
+  const averageRating = useMemo(() => {
+    if (reviews.length === 0) return 0;
+    return reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length;
+  }, [reviews]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-50/30">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Header Section */}
-        <div className="mb-8">
-          <div className="flex flex-col gap-2">
-            <p className="text-sm font-medium text-amber-600 tracking-wider uppercase">
-              Customer Feedback
-            </p>
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">
-                  Reviews
-                </h1>
-                <p className="text-gray-500 mt-1">
-                  Manage and moderate customer reviews
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <Button variant="outline" className="gap-2">
-                  <TrendingUp className="w-4 h-4" />
-                  Export Report
-                </Button>
-                <Button className="gap-2 bg-amber-600 hover:bg-amber-700">
-                  <MessageSquare className="w-4 h-4" />
-                  Review Settings
-                </Button>
-              </div>
-            </div>
+    <div>
+      {/* Header Section */}
+      <div className="mb-8">
+        <span className="text-text-light text-xs tracking-[0.2em]">FEEDBACK</span>
+        <div className="flex items-center justify-between">
+          <h1 className="font-serif text-primary-700 text-[70px] font-semibold leading-none mt-2.5">
+            Reviews
+          </h1>
+          <div className="flex items-center gap-3 text-sm text-text-mid">
+            <span className="bg-card border border-border rounded-full px-4 py-2 shadow-2xs">
+              Total: <strong className="text-primary-700">{reviews.length}</strong>
+            </span>
+            <span className="bg-green-50 border border-green-200 rounded-full px-4 py-2 text-green-700">
+              Avg Rating: <strong>{averageRating.toFixed(1)} ★</strong>
+            </span>
           </div>
         </div>
+      </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <Card className="border-amber-200/50 bg-white/80 backdrop-blur-sm">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Total Reviews</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-1">{totalReviews}</p>
-                </div>
-                <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-                  <MessageSquare className="w-6 h-6 text-amber-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-amber-200/50 bg-white/80 backdrop-blur-sm">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Average Rating</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-1">
-                    {averageRating.toFixed(1)}
-                  </p>
-                </div>
-                <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
-                  <Star className="w-6 h-6 text-yellow-600 fill-yellow-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-amber-200/50 bg-white/80 backdrop-blur-sm">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Approved</p>
-                  <p className="text-3xl font-bold text-emerald-600 mt-1">{approvedReviews}</p>
-                </div>
-                <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
-                  <Badge className="bg-emerald-600">✓</Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-amber-200/50 bg-white/80 backdrop-blur-sm">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Pending Review</p>
-                  <p className="text-3xl font-bold text-amber-600 mt-1">{pendingReviews}</p>
-                </div>
-                <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-                  <Badge className="bg-amber-600">⏳</Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-sm">
+          ⚠ {error}
         </div>
+      )}
 
-        {/* Filters Section */}
-        <Card className="border-amber-200/50 bg-white/80 backdrop-blur-sm mb-6">
-          <CardContent className="pt-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <Input
-                  placeholder="Search reviews by product, user, or comment..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 border-amber-200/50 focus-visible:ring-amber-500"
-                />
-              </div>
-              <div className="flex gap-3">
-                <Select value={filterStatus} onValueChange={setFilterStatus}>
-                  <SelectTrigger className="w-[160px] border-amber-200/50 focus:ring-amber-500">
-                    <Filter className="w-4 h-4 mr-2" />
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="approved">Approved</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="rejected">Rejected</SelectItem>
-                  </SelectContent>
-                </Select>
+      {/* Filters Section */}
+      <div className="flex flex-wrap items-center gap-4 mb-6">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-light" />
+          <Input
+            placeholder="Search reviews by product, customer, or keyword…"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-11 pr-4 py-3 border border-border rounded-full bg-white focus-visible:ring-primary-400"
+          />
+        </div>
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="w-[180px] border border-border rounded-full bg-white text-sm focus:ring-primary-400">
+            <ChevronDown className="w-4 h-4 mr-2" />
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="newest">Newest First</SelectItem>
+            <SelectItem value="oldest">Oldest First</SelectItem>
+            <SelectItem value="highest">Highest Rating</SelectItem>
+            <SelectItem value="lowest">Lowest Rating</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-[160px] border-amber-200/50 focus:ring-amber-500">
-                    <ChevronDown className="w-4 h-4 mr-2" />
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">Newest First</SelectItem>
-                    <SelectItem value="oldest">Oldest First</SelectItem>
-                    <SelectItem value="highest">Highest Rated</SelectItem>
-                    <SelectItem value="lowest">Lowest Rated</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Reviews Table */}
-        <Card className="border-amber-200/50 bg-white/80 backdrop-blur-sm">
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-amber-200/50 bg-amber-50/50">
-                    <TableHead className="font-semibold text-gray-700">Product</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Customer</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Rating</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Review</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Date</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Status</TableHead>
-                    <TableHead className="font-semibold text-gray-700 text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedReviews.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center py-12">
-                        <div className="flex flex-col items-center gap-2">
-                          <MessageSquare className="w-12 h-12 text-gray-300" />
-                          <p className="text-gray-500 font-medium">No reviews found</p>
-                          <p className="text-sm text-gray-400">
-                            Try adjusting your search or filter criteria
-                          </p>
-                        </div>
+      {/* Reviews Table Card */}
+      <Card className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-[#F7F2EA]/40">
+                  <TableHead className="font-semibold text-text-mid pb-4 pl-6 pt-4">PRODUCT</TableHead>
+                  <TableHead className="font-semibold text-text-mid pb-4 pt-4">CUSTOMER</TableHead>
+                  <TableHead className="font-semibold text-text-mid pb-4 pt-4">RATING</TableHead>
+                  <TableHead className="font-semibold text-text-mid pb-4 pt-4">COMMENT</TableHead>
+                  <TableHead className="font-semibold text-text-mid pb-4 pt-4">DATE</TableHead>
+                  <TableHead className="font-semibold text-text-mid text-right pb-4 pr-6 pt-4">ACTIONS</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell colSpan={6} className="py-6 text-center">
+                        <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto" />
                       </TableCell>
                     </TableRow>
-                  ) : (
-                    paginatedReviews.map((review) => (
-                      <TableRow
-                        key={review.id}
-                        className="border-amber-200/30 hover:bg-amber-50/50 transition-colors"
+                  ))
+                ) : paginatedReviews.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-12">
+                      <div className="flex flex-col items-center gap-2">
+                        <MessageSquare className="w-12 h-12 text-text-light" />
+                        <p className="text-text-mid font-medium">No reviews found</p>
+                        <p className="text-sm text-text-light">
+                          Customer feedback will appear here once submitted.
+                        </p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedReviews.map((review) => (
+                    <TableRow
+                      key={review._id}
+                      className="border-t border-black/5 hover:bg-black/5/5 transition-colors"
+                    >
+                      <td className="py-4 pl-6 text-text-dark text-sm font-medium">
+                        {review.product_id?.name || 'Deleted Product'}
+                      </td>
+                      <td className="py-4 text-text-dark text-sm">
+                        <div className="flex items-center gap-2.5">
+                          <Avatar className="w-8 h-8 bg-primary-100">
+                            <AvatarFallback className="text-primary-700 text-xs font-semibold">
+                              {(review.user_id?.name || 'U').substring(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="font-medium">{review.user_id?.name || 'Unknown User'}</div>
+                            <div className="text-text-light text-xs">{review.user_id?.email || ''}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-4 text-text-dark text-sm">
+                        <div className="flex items-center gap-1">
+                          {renderStars(review.rating)}
+                          <span className="text-xs text-text-mid ml-1">({review.rating})</span>
+                        </div>
+                      </td>
+                      <td className="py-4 text-text-mid text-sm max-w-xs truncate" title={review.comment}>
+                        {review.comment}
+                      </td>
+                      <td className="py-4 text-text-dark text-sm">
+                        <div className="flex items-center gap-1 text-text-mid">
+                          <Calendar className="w-3.5 h-3.5" />
+                          {new Date(review.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric', month: 'short', day: 'numeric',
+                          })}
+                        </div>
+                      </td>
+                      <td className="py-4 pr-6 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 hover:bg-primary-100 hover:text-primary-700 transition-colors"
+                              >
+                                <MoreHorizontal className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-48 bg-white border border-border rounded-xl shadow-lg">
+                              <DropdownMenuLabel className="text-text-mid">Moderate Review</DropdownMenuLabel>
+                              <DropdownMenuSeparator className="bg-border/60" />
+                              <DropdownMenuItem
+                                onClick={() => handleDelete(review._id)}
+                                disabled={deletingId === review._id}
+                                className="gap-2 text-red-600 focus:text-red-700 cursor-pointer"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                Delete Review
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </td>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Pagination */}
+          {!loading && totalPages > 1 && (
+            <div className="flex items-center justify-between px-6 py-4 border-t border-black/5">
+              <p className="text-sm text-text-mid">
+                Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
+                {Math.min(currentPage * itemsPerPage, filteredReviews.length)} of{' '}
+                {filteredReviews.length} reviews
+              </p>
+              <Pagination>
+                <PaginationContent className="flex gap-1.5">
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage((p) => Math.max(1, p - 1));
+                      }}
+                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    />
+                  </PaginationItem>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setCurrentPage(page);
+                        }}
+                        isActive={currentPage === page}
+                        className="cursor-pointer"
                       >
-                        <TableCell>
-                          <div className="font-medium text-gray-900">{review.product}</div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Avatar className="w-8 h-8 bg-amber-100">
-                              <AvatarFallback className="text-amber-700 text-xs font-medium">
-                                {review.avatar}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="text-sm font-medium text-gray-700">{review.user}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            {renderStars(review.rating)}
-                            <span className="text-xs text-gray-500 ml-1">({review.rating})</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <p className="max-w-xs truncate text-sm text-gray-600 cursor-help">
-                                  {review.comment}
-                                </p>
-                              </TooltipTrigger>
-                              <TooltipContent className="max-w-sm">
-                                <p>{review.comment}</p>
-                                <p className="text-xs text-gray-500 mt-1">
-                                  Helpful: {review.helpful} people
-                                </p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1 text-sm text-gray-500">
-                            <Calendar className="w-3 h-3" />
-                            {review.date}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={`${getStatusColor(review.status)} font-medium`}>
-                            {review.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center justify-end gap-1">
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 hover:bg-amber-100 hover:text-amber-700"
-                                  >
-                                    <Eye className="w-4 h-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>View review</TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 hover:bg-amber-100 hover:text-amber-700"
-                                  >
-                                    <Edit className="w-4 h-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>Edit review</TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 hover:bg-amber-100 hover:text-amber-700"
-                                >
-                                  <MoreHorizontal className="w-4 h-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-48">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="gap-2">
-                                  <Eye className="w-4 h-4" />
-                                  View Details
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="gap-2">
-                                  <Edit className="w-4 h-4" />
-                                  Edit Review
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="gap-2 text-rose-600 focus:text-rose-600">
-                                  <Trash2 className="w-4 h-4" />
-                                  Delete Review
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage((p) => Math.min(totalPages, p + 1));
+                      }}
+                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
             </div>
-
-            {/* Pagination */}
-            {filteredReviews.length > 0 && (
-              <div className="flex items-center justify-between px-6 py-4 border-t border-amber-200/50">
-                <p className="text-sm text-gray-500">
-                  Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
-                  {Math.min(currentPage * itemsPerPage, filteredReviews.length)} of{' '}
-                  {filteredReviews.length} reviews
-                </p>
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setCurrentPage(Math.max(1, currentPage - 1));
-                        }}
-                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
-                      />
-                    </PaginationItem>
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setCurrentPage(page);
-                          }}
-                          isActive={currentPage === page}
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-                    <PaginationItem>
-                      <PaginationNext
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setCurrentPage(Math.min(totalPages, currentPage + 1));
-                        }}
-                        className={
-                          currentPage === totalPages ? 'pointer-events-none opacity-50' : ''
-                        }
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

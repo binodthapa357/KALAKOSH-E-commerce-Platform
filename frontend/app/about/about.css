@@ -12,7 +12,7 @@
 /* HERO */
 
 .about-hero {
-  background: #f5eee4;
+  background: var(--background);
   text-align: center;
   padding: 80px 0;
 }
@@ -28,7 +28,7 @@
 .about-hero h2 {
   font-size: 52px;
   color: var(--crimson);
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   margin-bottom: 18px;
 }
 
@@ -62,7 +62,7 @@
 }
 
 .story-left h2 {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   color: var(--crimson);
   font-size: 36px;
   margin-bottom: 22px;
@@ -90,7 +90,7 @@
 }
 
 .info-card {
-  background: #f9f6f1;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 22px;
   padding: 32px 28px;
@@ -99,7 +99,7 @@
 
 .info-card h4 {
   color: var(--crimson);
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 20px;
   margin-bottom: 12px;
 }
@@ -113,7 +113,7 @@
 /* ARTISANS */
 
 .artisan-section {
-  background: #fbf8f2;
+  background: var(--background);
   padding: 80px 0;
 }
 
@@ -131,7 +131,7 @@
 }
 
 .section-title h2 {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   color: var(--crimson);
   font-size: 36px;
 }
@@ -143,7 +143,7 @@
 }
 
 .artisan-card {
-  background: #f9f6f1;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 22px;
   padding: 24px;
@@ -162,7 +162,7 @@
 
 .artisan-card h3 {
   color: var(--crimson);
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 20px;
   margin-bottom: 6px;
 }
@@ -195,7 +195,7 @@
 }
 
 .cta-box h2 {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   font-size: 34px;
   margin-bottom: 14px;
 }

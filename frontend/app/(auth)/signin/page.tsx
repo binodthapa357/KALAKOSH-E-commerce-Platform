@@ -49,7 +49,14 @@ export default function SignInPage() {
             // Dispatch storage event to notify other layout parts
             window.dispatchEvent(new Event('storage'));
             
-            router.push("/");
+            const role = data.user?.role;
+            if (role === "vendor") {
+                router.push("/vendor/dashboard");
+            } else if (role === "admin") {
+                router.push("/admin");
+            } else {
+                router.push("/");
+            }
         } catch (err) {
             setError(
                 err instanceof Error

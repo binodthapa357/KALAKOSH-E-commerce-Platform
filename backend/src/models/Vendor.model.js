@@ -52,6 +52,10 @@ const vendorSchema = new mongoose.Schema(
         message: (props) => `${props.value} is not a valid 9-digit PAN number!`,
       },
     },
+    pan_photo: {
+      type: String,
+      required: [true, "PAN photo is required for verification"],
+    },
     bank_details: {
       type: bankDetailsSchema,
       required: [true, "Bank details are required for vendor payments"],

@@ -1,7 +1,7 @@
 /* HERO */
 
 .categories-hero {
-  background: #f5eee4;
+  background: var(--background);
   text-align: center;
   padding: 80px 20px;
 }
@@ -17,7 +17,7 @@
 .categories-hero h1 {
   font-size: 44px;
   color: var(--primary-500);
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   margin-bottom: 18px;
 }
 
@@ -32,14 +32,14 @@
 /* PAGE + CONTENT — same background as the hero above */
 
 .categories-page {
-  background: #f5eee4;
+  background: var(--background);
 }
 
 .categories-content {
   max-width: 1200px;
   margin: 0 auto;
   padding: 60px 24px 90px;
-  background: #f5eee4;
+  background: var(--background);
   color: var(--primary-500);
 }
 
@@ -118,7 +118,7 @@
   align-items: center;
   justify-content: center;
   font-size: 42px;
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
   color: var(--primary-500);
   background: var(--secondary-100);
 }

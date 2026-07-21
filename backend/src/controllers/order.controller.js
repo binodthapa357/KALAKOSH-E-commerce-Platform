@@ -168,7 +168,20 @@ export const createOrder = async (req, res, next) => {
 export const getMyOrders = async (req, res, next) => {
   try {
     const orders = await Order.find({ user_id: req.user._id }).sort({ createdAt: -1 });
-    res.status(200).json({ success: true, orders });
+    
+    const ordersWithItems = [];
+    for (const order of orders) {
+      const items = await OrderItem.find({ order_id: order._id }).populate({
+        path: "product_id",
+        populate: { path: "vendor_id", select: "shop_name" }
+      });
+      ordersWithItems.push({
+        ...order.toObject(),
+        items
+      });
+    }
+
+    res.status(200).json({ success: true, orders: ordersWithItems });
   } catch (error) {
     next(error);
   }

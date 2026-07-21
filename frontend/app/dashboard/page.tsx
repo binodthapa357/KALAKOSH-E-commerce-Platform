@@ -74,7 +74,11 @@ export default function DashboardPage() {
                 if (!meRes.ok) throw new Error("Could not load your account");
 
                 const me = await meRes.json();
-                setUser(me);
+                setUser(me.user ? {
+                    name: me.user.name,
+                    email: me.user.email,
+                    joinedAt: me.user.createdAt
+                } : null);
 
                 if (ordersRes.ok) {
                     const ordersData = await ordersRes.json();
@@ -83,17 +87,40 @@ export default function DashboardPage() {
                         : Array.isArray(ordersData?.orders)
                           ? ordersData.orders
                           : [];
-                    setOrders(list);
+                    
+                    const mappedOrders = list.map((order: any) => {
+                        const firstItem = order.items?.[0];
+                        const firstProduct = firstItem?.product_id;
+                        
+                        let orderStatus: "delivered" | "shipped" | "processing" | "cancelled" = "processing";
+                        if (order.order_status === "delivered") orderStatus = "delivered";
+                        else if (order.order_status === "shipped") orderStatus = "shipped";
+                        else if (order.order_status === "cancelled") orderStatus = "cancelled";
+
+                        return {
+                            id: order._id || order.order_number,
+                            productName: firstProduct?.name || `Order ${order.order_number}`,
+                            productImage: firstProduct?.images?.[0] || "",
+                            artisan: firstProduct?.vendor_id?.shop_name || "Kalakosh Artisan",
+                            date: order.createdAt || new Date().toISOString(),
+                            status: orderStatus,
+                            total: order.total_amount ?? 0,
+                        };
+                    });
+                    setOrders(mappedOrders);
                 }
 
                 if (wishlistRes.ok) {
                     const wishlistData = await wishlistRes.json();
-                    const list = Array.isArray(wishlistData)
-                        ? wishlistData
-                        : Array.isArray(wishlistData?.items)
-                          ? wishlistData.items
-                          : [];
-                    setWishlist(list);
+                    const productsList = wishlistData?.wishlist?.products || [];
+                    const mappedWishlist = productsList.map((prod: any) => ({
+                        id: prod._id,
+                        name: prod.name,
+                        image: prod.images?.[0] || "",
+                        artisan: prod.vendor_id?.shop_name || "Kalakosh Artisan",
+                        price: prod.price ?? 0,
+                    }));
+                    setWishlist(mappedWishlist);
                 }
             } catch (err) {
                 setError(err instanceof Error ? err.message : "Something went wrong");
@@ -136,66 +163,56 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-cream-50">
-            {/* Top bar */}
-            <header className="sticky top-0 z-10 border-b border-brown-100 bg-cream-50/90 backdrop-blur">
-                <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-                    <Link href="/" className="text-xl font-semibold text-primary-500">
-                        Kalakosh
-                    </Link>
-                    <nav className="hidden items-center gap-8 text-sm text-brown-400 md:flex">
-                        <Link href="/" className="hover:text-primary-500">
-                            Marketplace
-                        </Link>
-                        <Link href="/dashboard" className="font-medium text-primary-500">
-                            Dashboard
-                        </Link>
-                        <Link href="/dashboard/orders" className="hover:text-primary-500">
-                            Orders
-                        </Link>
-                        <Link href="/dashboard/wishlist" className="hover:text-primary-500">
-                            Wishlist
-                        </Link>
-                    </nav>
-                    <div className="flex items-center gap-4">
-                        <div className="hidden h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-600 sm:flex">
-                            {initials || "?"}
-                        </div>
-                        <button
-                            onClick={handleLogout}
-                            className="rounded-full border border-brown-100 px-4 py-2 text-sm text-brown-400 transition hover:border-primary-300 hover:text-primary-500"
-                        >
-                            Sign out
-                        </button>
-                    </div>
-                </div>
-            </header>
-
-            <main className="mx-auto max-w-6xl px-6 py-10">
+        <div className="min-h-screen bg-[#FBF8F3] py-10">
+            <main className="mx-auto max-w-6xl px-6">
                 {error && (
                     <p className="mb-6 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-destructive">
                         {error}
                     </p>
                 )}
 
-                {/* Welcome */}
-                <section className="flex flex-col justify-between gap-6 rounded-2xl border border-brown-100 bg-white px-8 py-8 sm:flex-row sm:items-center">
-                    <div>
-                        <p className="text-sm text-brown-300">Welcome back</p>
-                        <h1 className="mt-1 text-3xl font-semibold text-primary-500">
-                            {user?.name ?? "Friend of artisans"}
-                        </h1>
-                        <p className="mt-2 max-w-md text-sm text-brown-400">
-                            Every piece you&apos;ve collected here carries a story, and a
-                            livelihood, from a Nepali artisan family.
-                        </p>
+                {/* Welcome & Profile Details Card */}
+                <section className="flex flex-col justify-between gap-6 rounded-3xl border border-brown-100 bg-white p-6 sm:p-8 sm:flex-row sm:items-center shadow-xs">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+                        {/* User Initials Circle */}
+                        <div className="w-16 h-16 bg-[#5C1A1A] text-white rounded-full flex items-center justify-center font-serif font-bold text-2xl shadow-sm border border-brown-100/50 flex-shrink-0">
+                            {initials || "?"}
+                        </div>
+                        <div>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <span className="bg-primary-50 text-primary-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                    Customer Profile
+                                </span>
+                                {user?.joinedAt && (
+                                    <span className="text-[10px] text-muted-foreground font-medium">
+                                        Member since: {new Date(user.joinedAt).toLocaleDateString()}
+                                    </span>
+                                )}
+                            </div>
+                            <h1 className="mt-1.5 text-2xl font-serif font-bold text-primary-800">
+                                {user?.name ?? "Friend of artisans"}
+                            </h1>
+                            <p className="text-sm text-muted-foreground mt-0.5">{user?.email}</p>
+                            <p className="mt-2 text-xs text-brown-400 max-w-md leading-relaxed">
+                                Every piece you collect supports authentic local Nepalese craftsmanship and artisan livelihoods.
+                            </p>
+                        </div>
                     </div>
-                    <Link
-                        href="/"
-                        className="h-12 shrink-0 rounded-full bg-primary-500 px-6 text-sm font-medium text-white transition hover:bg-primary-600 flex items-center justify-center"
-                    >
-                        Explore the marketplace
-                    </Link>
+                    
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <Link
+                            href="/shop"
+                            className="h-11 shrink-0 rounded-full bg-primary-700 hover:bg-primary-800 px-6 text-xs font-semibold text-white transition-all flex items-center justify-center shadow-xs"
+                        >
+                            Explore Marketplace
+                        </Link>
+                        <button
+                            onClick={handleLogout}
+                            className="h-11 shrink-0 rounded-full border border-border hover:border-red-650 hover:bg-red-50/50 hover:text-red-750 px-6 text-xs font-semibold text-muted-foreground transition-all cursor-pointer bg-white"
+                        >
+                            Sign Out
+                        </button>
+                    </div>
                 </section>
 
                 {/* Stats */}

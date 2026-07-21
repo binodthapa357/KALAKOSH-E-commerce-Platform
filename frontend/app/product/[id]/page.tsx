@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AddToCartButton from "@/components/AddToCartButton";
+import ProductDetailWishlistButton from "@/components/ProductDetailWishlistButton";
 
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
@@ -235,9 +236,7 @@ export default async function ProductDetailPage({
                 vendorName={product.vendor_id?.shop_name || "Kalakosh Artisan"}
                 stock={product.stock}
               />
-              <button className="flex-1 border-2 border-primary-700 text-primary-700 hover:bg-primary-700 hover:text-white font-semibold py-3 px-6 rounded-full transition-colors cursor-pointer">
-                Add to Wishlist
-              </button>
+              <ProductDetailWishlistButton product={product} />
             </div>
           </div>
         </div>

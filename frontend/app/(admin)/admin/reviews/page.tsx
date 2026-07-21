@@ -179,7 +179,7 @@ export default function ReviewsPage() {
             className="w-full pl-11 pr-4 py-3 border border-border rounded-full bg-white focus-visible:ring-primary-400"
           />
         </div>
-        <Select value={sortBy} onValueChange={setSortBy}>
+        <Select value={sortBy} onValueChange={(val) => setSortBy(val || 'newest')}>
           <SelectTrigger className="w-[180px] border border-border rounded-full bg-white text-sm focus:ring-primary-400">
             <ChevronDown className="w-4 h-4 mr-2" />
             <SelectValue placeholder="Sort by" />
@@ -271,15 +271,17 @@ export default function ReviewsPage() {
                       <td className="py-4 pr-6 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 hover:bg-primary-100 hover:text-primary-700 transition-colors"
-                              >
-                                <MoreHorizontal className="w-4 h-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
+                            <DropdownMenuTrigger
+                              render={
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 hover:bg-primary-100 hover:text-primary-700 transition-colors"
+                                >
+                                  <MoreHorizontal className="w-4 h-4" />
+                                </Button>
+                              }
+                            />
                             <DropdownMenuContent align="end" className="w-48 bg-white border border-border rounded-xl shadow-lg">
                               <DropdownMenuLabel className="text-text-mid">Moderate Review</DropdownMenuLabel>
                               <DropdownMenuSeparator className="bg-border/60" />

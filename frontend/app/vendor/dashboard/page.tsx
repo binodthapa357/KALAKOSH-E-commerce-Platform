@@ -201,25 +201,10 @@ export default function VendorDashboardPage() {
 
     if (vendor && (vendor.status === "pending" || vendor.status === "rejected")) {
         return (
-            <div className="min-h-screen bg-[#FBF7F0] font-sans flex flex-col justify-between">
-                {/* Minimal Header */}
-                <header className="border-b border-[#EADCC9] bg-white">
-                    <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-                        <span className="text-xl font-serif font-bold text-[#8B3232]">
-                            Kalakosh <span className="text-xs font-sans font-medium text-gray-500 uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-stone-100 align-middle ml-2">Artisan Center</span>
-                        </span>
-                        <button
-                            onClick={handleLogout}
-                            className="rounded-full border border-stone-200 px-4 py-2 text-sm text-stone-600 transition hover:border-[#8B3232] hover:text-[#8B3232]"
-                        >
-                            Sign out
-                        </button>
-                    </div>
-                </header>
-
-                <main className="mx-auto max-w-3xl px-6 py-12 flex-1 w-full">
+            <div className="min-h-screen bg-[#FBF7F0] font-sans flex flex-col py-12">
+                <main className="mx-auto max-w-3xl px-6 flex-1 w-full">
                     {vendor.status === "pending" ? (
-                        <div className="bg-white border border-yellow-200 rounded-3xl p-8 shadow-sm text-center">
+                        <div className="bg-white border border-yellow-250 rounded-3xl p-8 shadow-sm text-center">
                             <div className="w-16 h-16 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-6 text-yellow-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -229,7 +214,13 @@ export default function VendorDashboardPage() {
                             <p className="mt-4 text-stone-600 leading-relaxed max-w-xl mx-auto">
                                 Thank you for registering with Kalakosh! Your artisan profile is currently pending administrator verification. We are reviewing your shop details and PAN documents to maintain platform safety.
                             </p>
-                            <p className="mt-2 text-stone-500 text-sm">This process typically takes 24 to 48 hours. We will notify you once approved.</p>
+                            <p className="mt-2 text-stone-500 text-sm mb-6">This process typically takes 24 to 48 hours. We will notify you once approved.</p>
+                            <button
+                                onClick={handleLogout}
+                                className="rounded-full border border-stone-300 hover:border-red-650 hover:bg-red-50 hover:text-red-750 px-6 py-2 text-xs font-semibold text-muted-foreground transition-all cursor-pointer bg-white"
+                            >
+                                Sign Out
+                            </button>
                         </div>
                     ) : (
                         <div className="bg-white border border-red-200 rounded-3xl p-8 shadow-sm text-center">
@@ -242,7 +233,13 @@ export default function VendorDashboardPage() {
                             <p className="mt-4 text-stone-600 leading-relaxed max-w-xl mx-auto">
                                 We regret to inform you that your artisan registration profile has been rejected by the Kalakosh administration. This could be due to incorrect PAN information, low-quality document uploads, or mismatched bank details.
                             </p>
-                            <p className="mt-4 text-sm font-semibold text-stone-700">Please review your submitted details below or contact support at <a href="mailto:support@kalakosh.com" className="text-[#8B3232] hover:underline">support@kalakosh.com</a> to re-apply.</p>
+                            <p className="mt-4 text-sm font-semibold text-stone-700 mb-6">Please review your submitted details below or contact support at <a href="mailto:support@kalakosh.com" className="text-[#8B3232] hover:underline">support@kalakosh.com</a> to re-apply.</p>
+                            <button
+                                onClick={handleLogout}
+                                className="rounded-full border border-stone-300 hover:border-red-650 hover:bg-red-50 hover:text-red-750 px-6 py-2 text-xs font-semibold text-muted-foreground transition-all cursor-pointer bg-white"
+                            >
+                                Sign Out
+                            </button>
                         </div>
                     )}
 
@@ -310,70 +307,59 @@ export default function VendorDashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-cream-50">
-            {/* Top bar */}
-            <header className="sticky top-0 z-10 border-b border-brown-100 bg-cream-50/90 backdrop-blur">
-                <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-                    <Link href="/" className="text-xl font-semibold text-primary-500">
-                        Kalakosh
-                        <span className="ml-2 rounded-full bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-600 align-middle">
-                            Artisan
-                        </span>
-                    </Link>
-                    <nav className="hidden items-center gap-8 text-sm text-brown-400 md:flex">
-                        <Link href="/vendor/dashboard" className="font-medium text-primary-500">
-                            Dashboard
-                        </Link>
-                        <Link href="/vendor/products" className="hover:text-primary-500">
-                            Products
-                        </Link>
-                        <Link href="/vendor/orders" className="hover:text-primary-500">
-                            Orders
-                        </Link>
-                        <Link href="/vendor/payouts" className="hover:text-primary-500">
-                            Payouts
-                        </Link>
-                    </nav>
-                    <div className="flex items-center gap-4">
-                        <div className="hidden h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-600 sm:flex">
-                            {initials || "?"}
-                        </div>
-                        <button
-                            onClick={handleLogout}
-                            className="rounded-full border border-brown-100 px-4 py-2 text-sm text-brown-400 transition hover:border-primary-300 hover:text-primary-500"
-                        >
-                            Sign out
-                        </button>
-                    </div>
-                </div>
-            </header>
-
-            <main className="mx-auto max-w-6xl px-6 py-10">
+        <div className="min-h-screen bg-[#FBF8F3] py-10">
+            <main className="mx-auto max-w-6xl px-6">
                 {error && (
                     <p className="mb-6 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-destructive">
                         {error}
                     </p>
                 )}
 
-                {/* Welcome */}
-                <section className="flex flex-col justify-between gap-6 rounded-2xl border border-brown-100 bg-white px-8 py-8 sm:flex-row sm:items-center">
-                    <div>
-                        <p className="text-sm text-brown-300">Your shop</p>
-                        <h1 className="mt-1 text-3xl font-semibold text-primary-500">
-                            {vendor?.shopName ?? "Your workshop"}
-                        </h1>
-                        <p className="mt-2 max-w-md text-sm text-brown-400">
-                            {pendingCount > 0
-                                ? `You have ${pendingCount} order${pendingCount === 1 ? "" : "s"} waiting to be fulfilled.`
-                                : "All caught up. No orders waiting on you right now."}
-                        </p>
+                {/* Welcome & Profile Details Card */}
+                <section className="flex flex-col justify-between gap-6 rounded-3xl border border-brown-100 bg-white p-6 sm:p-8 sm:flex-row sm:items-center shadow-xs">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+                        {/* Shop Initials Circle */}
+                        <div className="w-16 h-16 bg-[#5C1A1A] text-white rounded-full flex items-center justify-center font-serif font-bold text-2xl shadow-sm border border-brown-100/50 flex-shrink-0">
+                            {initials || "?"}
+                        </div>
+                        <div>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <span className="bg-[#41A124]/10 text-[#41A124] text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                    Approved Artisan
+                                </span>
+                                {vendor?.joinedAt && (
+                                    <span className="text-[10px] text-muted-foreground font-medium">
+                                        Selling since: {new Date(vendor.joinedAt).toLocaleDateString()}
+                                    </span>
+                                )}
+                            </div>
+                            <h1 className="mt-1.5 text-2xl font-serif font-bold text-primary-800">
+                                {vendor?.shopName ?? "Your Workshop"}
+                            </h1>
+                            <p className="text-sm text-muted-foreground mt-0.5">
+                                Owned by <strong>{vendor?.ownerName}</strong> &middot; {vendor?.email}
+                            </p>
+                            <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-brown-400 font-medium">
+                                <span>PAN: <code className="font-mono bg-stone-100 px-1.5 py-0.5 rounded text-gray-750">*******{vendor?.panNumber?.slice(-3) || "###"}</code></span>
+                                <span>Bank: <strong className="text-gray-750">{vendor?.bankDetails?.bank_name || "N/A"}</strong></span>
+                            </div>
+                        </div>
                     </div>
-                    <Link
-                        href="/vendor/products/new"
-                        className="h-12 shrink-0 rounded-full bg-primary-500 px-6 text-sm font-medium text-white transition hover:bg-primary-600 flex items-center justify-center"
-                    >
-                        List a new piece
-                    </Link>
+                    
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <Link
+                            href="/vendor/products"
+                            className="h-11 shrink-0 rounded-full bg-primary-700 hover:bg-primary-800 px-6 text-xs font-semibold text-white transition-all flex items-center justify-center shadow-xs"
+                        >
+                            List a New Piece
+                        </Link>
+                        <button
+                            onClick={handleLogout}
+                            className="h-11 shrink-0 rounded-full border border-border hover:border-red-650 hover:bg-red-50/50 hover:text-red-750 px-6 text-xs font-semibold text-muted-foreground transition-all cursor-pointer bg-white"
+                        >
+                            Sign Out
+                        </button>
+                    </div>
                 </section>
 
                 {/* Stats */}

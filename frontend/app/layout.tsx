@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { usePathname } from "next/navigation";
+import { AppProvider } from "@/context/AppContext";
 
 export default function RootLayout({
   children,
@@ -18,9 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {!isAdminRoute && <Navbar />}
-        <main>{children}</main>
-        {!isAdminRoute && <Footer />}
+        <AppProvider>
+          {!isAdminRoute && <Navbar />}
+          <main>{children}</main>
+          {!isAdminRoute && <Footer />}
+        </AppProvider>
       </body>
     </html>
   );

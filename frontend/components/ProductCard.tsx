@@ -38,7 +38,7 @@ export default function ProductCard({ product }: { product: Product }) {
                     sizes="(max-width: 460px) 100vw, (max-width: 700px) 50vw, (max-width: 992px) 33vw, 25vw"
                 />
                 {hasDiscount && <span className="discount-badge">Sale</span>}
-                <WishlistButton productId={product._id} />
+                <WishlistButton product={product} />
             </div>
 
             <div className="card-body">

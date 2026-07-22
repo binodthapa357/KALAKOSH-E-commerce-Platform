@@ -3,39 +3,49 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  getCart,
-  updateCartQuantity,
-  removeFromCart,
-  CART_UPDATED_EVENT,
-  type CartItem,
-} from "@/lib/cart";
+import { useApp } from "@/context/AppContext";
 
 export default function CartPage() {
   const router = useRouter();
-  const [items, setItems] = useState<CartItem[]>([]);
+  const { cart, updateCartQuantity, removeFromCart } = useApp();
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const sync = () => setItems(getCart());
-    sync();
     setLoaded(true);
-
-    window.addEventListener(CART_UPDATED_EVENT, sync);
-    window.addEventListener("storage", sync);
-    return () => {
-      window.removeEventListener(CART_UPDATED_EVENT, sync);
-      window.removeEventListener("storage", sync);
-    };
   }, []);
 
   const changeQuantity = (productId: string, quantity: number) => {
-    setItems(updateCartQuantity(productId, quantity));
+    updateCartQuantity(productId, quantity);
   };
 
   const remove = (productId: string) => {
-    setItems(removeFromCart(productId));
+    removeFromCart(productId);
   };
+
+  const items = cart
+    .filter((item) => item && item.product)
+    .map((item) => {
+      const p = item.product;
+      const hasDiscount =
+        p.discount_price !== undefined && p.discount_price < p.price;
+      const effectivePrice = p.discount_price ?? p.price;
+      const originalPrice = hasDiscount ? p.price : undefined;
+
+      return {
+        productId: p._id,
+        name: p.name,
+        description: p.description,
+        image: p.images?.[0] || "/placeholder.svg",
+        price: effectivePrice,
+        originalPrice: originalPrice,
+        vendorName:
+          typeof p.vendor_id === "object" && p.vendor_id
+            ? p.vendor_id.shop_name
+            : "Kalakosh Artisan",
+        stock: p.stock ?? Infinity,
+        quantity: item.quantity,
+      };
+    });
 
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);

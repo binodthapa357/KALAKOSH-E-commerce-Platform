@@ -23,8 +23,30 @@ function readCart(): CartItem[] {
     // Self-heal: repair any items already in storage from before validation
     // existed (e.g. NaN prices, missing images/names from an older bug).
     let repaired = false;
-    const clean = list.map((raw: Partial<CartItem>) => {
+    const clean = list.map((raw: any) => {
+      // If stored in AppContext format: { product: {...}, quantity: N }
+      if (raw && raw.product && typeof raw.product === "object") {
+        const p = raw.product;
+        const price = Number(p.discount_price ?? p.price);
+        const originalPrice = p.discount_price !== undefined ? Number(p.price) : undefined;
+        const stock = Number(p.stock);
+        const quantity = Number(raw.quantity);
+        return {
+          productId: p._id ?? "",
+          name: p.name || "Untitled product",
+          description: p.description || undefined,
+          image: p.images?.[0] || "/placeholder.svg",
+          price: Number.isFinite(price) ? price : 0,
+          originalPrice: originalPrice && Number.isFinite(originalPrice) ? originalPrice : undefined,
+          vendorName: (typeof p.vendor_id === "object" && p.vendor_id?.shop_name) || "Kalakosh Artisan",
+          stock: Number.isFinite(stock) && stock > 0 ? stock : Infinity,
+          quantity: Number.isFinite(quantity) && quantity >= 1 ? quantity : 1,
+        };
+      }
+
+      // Existing flat format
       const price = Number(raw.price);
+      const originalPrice = raw.originalPrice !== undefined ? Number(raw.originalPrice) : undefined;
       const stock = Number(raw.stock);
       const quantity = Number(raw.quantity);
       const needsFix =
@@ -44,8 +66,8 @@ function readCart(): CartItem[] {
         image: raw.image || "/placeholder.svg",
         price: Number.isFinite(price) ? price : 0,
         originalPrice:
-          raw.originalPrice !== undefined && Number.isFinite(Number(raw.originalPrice))
-            ? Number(raw.originalPrice)
+          originalPrice !== undefined && Number.isFinite(originalPrice)
+            ? originalPrice
             : undefined,
         vendorName: raw.vendorName || "Kalakosh Artisan",
         stock: Number.isFinite(stock) && stock > 0 ? stock : Infinity,

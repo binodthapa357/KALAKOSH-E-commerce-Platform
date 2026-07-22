@@ -125,14 +125,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const localWishlist = localStorage.getItem("kalakosh_wishlist");
     if (localCart) {
       try {
-        setCart(JSON.parse(localCart));
+        const parsed = JSON.parse(localCart);
+        setCart(Array.isArray(parsed) ? parsed.filter((item: any) => item && item.product) : []);
       } catch (e) {
         console.error(e);
       }
     }
     if (localWishlist) {
       try {
-        setWishlist(JSON.parse(localWishlist));
+        const parsed = JSON.parse(localWishlist);
+        setWishlist(Array.isArray(parsed) ? parsed.filter((p: any) => p) : []);
       } catch (e) {
         console.error(e);
       }
@@ -148,10 +150,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       });
       const data = await res.json();
       if (res.ok && data.success && data.cart) {
-        const items = data.cart.items.map((item: any) => ({
-          product: item.product_id,
-          quantity: item.quantity,
-        }));
+        const items = data.cart.items
+          .filter((item: any) => item.product_id)
+          .map((item: any) => ({
+            product: item.product_id,
+            quantity: item.quantity,
+          }));
         setCart(items);
       }
     } catch (error) {
@@ -166,7 +170,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       });
       const data = await res.json();
       if (res.ok && data.success && data.wishlist) {
-        setWishlist(data.wishlist.products || []);
+        setWishlist((data.wishlist.products || []).filter((p: any) => p !== null && p !== undefined));
       }
     } catch (error) {
       console.error("Error fetching wishlist from DB:", error);
@@ -176,6 +180,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const syncGuestCartToDB = async (authToken: string, guestCart: CartItem[]) => {
     try {
       for (const item of guestCart) {
+        if (!item.product) continue;
         await fetch(`${API_URL}/api/cart`, {
           method: "POST",
           headers: {
@@ -239,7 +244,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const addToCart = async (product: Product, quantity = 1) => {
     const updatedCart = [...cart];
-    const existingIndex = updatedCart.findIndex(item => item.product._id === product._id);
+    const existingIndex = updatedCart.findIndex(item => item.product && item.product._id === product._id);
 
     if (existingIndex > -1) {
       updatedCart[existingIndex].quantity += quantity;
@@ -272,7 +277,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const removeFromCart = async (productId: string) => {
-    const updatedCart = cart.filter(item => item.product._id !== productId);
+    const updatedCart = cart.filter(item => item.product && item.product._id !== productId);
     setCart(updatedCart);
     toast.info("Item removed from cart");
 
@@ -293,7 +298,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const updateCartQuantity = async (productId: string, quantity: number) => {
     if (quantity < 1) return;
     const updatedCart = cart.map(item =>
-      item.product._id === productId ? { ...item, quantity } : item
+      item.product && item.product._id === productId ? { ...item, quantity } : item
     );
     setCart(updatedCart);
 
@@ -337,14 +342,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // --- WISHLIST MANAGEMENT ---
 
   const toggleWishlist = async (product: Product) => {
-    const exists = wishlist.some(item => item._id === product._id);
+    const exists = wishlist.some(item => item && item._id === product._id);
     let updatedWishlist = [];
 
     if (exists) {
-      updatedWishlist = wishlist.filter(item => item._id !== product._id);
+      updatedWishlist = wishlist.filter(item => item && item._id !== product._id);
       toast.info("Removed from wishlist");
     } else {
-      updatedWishlist = [...wishlist, product];
+      updatedWishlist = [...wishlist.filter(Boolean), product];
       toast.success("Added to wishlist!");
     }
 
@@ -371,12 +376,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const isInWishlist = (productId: string) => {
-    return wishlist.some(item => item._id === productId);
+    return wishlist.some(item => item && item._id === productId);
   };
 
   // Calculations
-  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const cartCount = cart.reduce((total, item) => total + (item.product ? item.quantity : 0), 0);
   const cartSubtotal = cart.reduce((total, item) => {
+    if (!item.product) return total;
     const price = item.product.discount_price ?? item.product.price;
     return total + price * item.quantity;
   }, 0);

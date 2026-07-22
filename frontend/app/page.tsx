@@ -18,21 +18,96 @@ import {
 
 import { FaStar as FaStarSolid, FaStarHalfAlt } from "react-icons/fa";
 
+import { useState, useEffect } from "react";
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+const getCategoryFallbackImage = (slug: string) => {
+  const fallbacks: Record<string, string> = {
+    paintings: "/images/painting.jpg",
+    textiles: "/images/textile.jpg",
+    pottery: "/images/pottery.jpg",
+    jewelry: "/images/jewlery.jpg",
+    "wood-crafts": "/images/wood.jpg"
+  };
+  return fallbacks[slug] || "/images/hero-arrangement.jpg";
+};
+
+const heroImages = [
+  "/images/hero-arrangement.jpg",
+  "/images/painting.jpg",
+  "/images/wood.jpg",
+];
+
 export default function Home() {
   const router = useRouter();
-  const categories = [
-    { name: "Paintings", slug: "paintings", image: "/images/painting.jpg" },
-    { name: "Textiles", slug: "textiles", image: "/images/textile.jpg" },
-    { name: "Pottery", slug: "pottery", image: "/images/pottery.jpg" },
-    { name: "Jewelry", slug: "jewelry", image: "/images/jewlery.jpg" },
-    { name: "Wood Crafts", slug: "wood-crafts", image: "/images/wood.jpg" },
-  ];
+  const [categories, setCategories] = useState<{ name: string; slug: string; image: string }[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [currentHeroIdx, setCurrentHeroIdx] = useState(0);
+  const [loadingCats, setLoadingCats] = useState(true);
+  const [loadingProducts, setLoadingProducts] = useState(true);
 
-  const products = [
+  // Hero auto-scrolling
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentHeroIdx(prev => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Fetch Categories
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/api/categories`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.categories) {
+          const activeCats = data.categories
+            .filter((c: any) => c.status === "active")
+            .map((c: any) => ({
+              name: c.name,
+              slug: c.slug || c.name.toLowerCase().replace(/ /g, "-"),
+              image: c.image || getCategoryFallbackImage(c.slug || c.name.toLowerCase().replace(/ /g, "-"))
+            }));
+          setCategories(activeCats);
+        }
+      })
+      .catch(err => {
+        console.error("Error loading categories", err);
+        setCategories([
+          { name: "Paintings", slug: "paintings", image: "/images/painting.jpg" },
+          { name: "Textiles", slug: "textiles", image: "/images/textile.jpg" },
+          { name: "Pottery", slug: "pottery", image: "/images/pottery.jpg" },
+          { name: "Jewelry", slug: "jewelry", image: "/images/jewlery.jpg" },
+          { name: "Wood Crafts", slug: "wood-crafts", image: "/images/wood.jpg" },
+        ]);
+      })
+      .finally(() => {
+        setLoadingCats(false);
+      });
+  }, []);
+
+  // Fetch Featured Products
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/api/products/featured`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setProducts(data);
+        }
+      })
+      .catch(err => {
+        console.error("Error loading products", err);
+      })
+      .finally(() => {
+        setLoadingProducts(false);
+      });
+  }, []);
+
+  const defaultProducts = [
     {
       id: 1,
       name: "Sacred Tara Thangka",
-      price: "Rs.189",
+      price: "Rs. 18,900",
       rating: 4.9,
       reviews: 124,
       location: "Kathmandu · Cotton Canvas",
@@ -41,7 +116,7 @@ export default function Home() {
     {
       id: 2,
       name: "Tibetan Singing Bowl",
-      price: "Rs.799",
+      price: "Rs. 7,900",
       rating: 4.8,
       reviews: 312,
       location: "Patan · Brass Alloy",
@@ -50,7 +125,7 @@ export default function Home() {
     {
       id: 3,
       name: "Pashmina Shawl",
-      price: "Rs.124",
+      price: "Rs. 12,400",
       rating: 4.9,
       reviews: 87,
       location: "Kathmandu Valley · 100% Pashmina Wool",
@@ -59,7 +134,7 @@ export default function Home() {
     {
       id: 4,
       name: "Filigree Turquoise Necklace",
-      price: "Rs.156",
+      price: "Rs. 15,600",
       rating: 4.7,
       reviews: 56,
       location: "Patan · Sterling Silver",
@@ -108,19 +183,41 @@ export default function Home() {
     return stars;
   };
 
+  const normalizedProducts = (products.length > 0 ? products : defaultProducts).map((p: any) => {
+    const isDB = !!p._id;
+    return {
+      id: isDB ? p._id : p.id.toString(),
+      name: p.name,
+      price: isDB ? `Rs. ${p.price.toLocaleString("en-IN")}` : p.price,
+      rating: isDB ? (p.avg_rating ?? 5) : p.rating,
+      reviewsCount: isDB ? (p.reviews?.length ?? 0) : p.reviews,
+      location: isDB ? `${p.region || "Nepal"} · ${p.material || "Handmade"}` : p.location,
+      image: isDB ? (p.images?.[0] || "/placeholder.svg") : p.image,
+    };
+  });
+
   return (
     <main className="bg-[#f5efe7] font-sans text-[#2d1a16]">
       {/* HERO SECTION */}
       <section className="relative w-[calc(100%-70px)] h-[500px] mx-[35px] my-[55px] rounded-[28px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.08)] bg-[#f4ece1]">
-        {/* Background Image */}
-        <Image
-          src="/images/hero-arrangement.jpg"
-          alt="Authentic Nepali Handicrafts"
-          fill
-          priority
-          sizes="100vw"
-          className="absolute inset-0 object-cover object-center z-0"
-        />
+        {/* Background Image Carousel with Fading */}
+        {heroImages.map((img, idx) => (
+          <div
+            key={img}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out z-0 ${
+              idx === currentHeroIdx ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <Image
+              src={img}
+              alt="Authentic Nepali Handicrafts"
+              fill
+              priority={idx === 0}
+              sizes="100vw"
+              className="object-cover object-center"
+            />
+          </div>
+        ))}
         {/* Soft Golden/Cream Mask */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#f4ece1]/98 via-[#f4ece1]/80 to-transparent z-10" />
 
@@ -149,13 +246,13 @@ export default function Home() {
             <div className="flex gap-4">
               <Link
                 href="/shop"
-                className="bg-[#7d1d1d] hover:bg-[#651515] text-white px-8 py-3.5 rounded-[8px] text-[11px] font-bold tracking-wider uppercase transition-colors inline-block text-center"
+                className="bg-[#7d1d1d] hover:bg-[#651515] text-white px-8 py-3.5 rounded-[8px] text-[11px] font-bold tracking-wider uppercase transition-colors inline-block text-center shadow-md hover:shadow-lg"
               >
                 SHOP NOW
               </Link>
               <Link
                 href="/categories"
-                className="bg-transparent border border-[#7d1d1d] text-[#6b5544] hover:bg-[#7d1d1d]/5 px-8 py-[13px] rounded-[8px] text-[11px] font-bold tracking-wider transition-colors inline-block text-center"
+                className="bg-transparent border border-[#7d1d1d] text-[#6b5544] hover:bg-[#7d1d1d]/5 px-8 py-[13px] rounded-[8px] text-[11px] font-bold tracking-wider transition-colors inline-block text-center shadow-sm"
               >
                 Explore Categories
               </Link>
@@ -163,11 +260,20 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Custom Pagination Indicator from Screenshot */}
+        {/* Dynamic Pagination Indicators */}
         <div className="flex items-center gap-2 absolute left-1/2 bottom-5 -translate-x-1/2 z-20">
-          <div className="w-6 h-1.5 bg-[#7d1d1d] rounded-full" />
-          <div className="w-1.5 h-1.5 bg-[#7d1d1d]/30 rounded-full" />
-          <div className="w-1.5 h-1.5 bg-[#7d1d1d]/30 rounded-full" />
+          {heroImages.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentHeroIdx(idx)}
+              className={`transition-all duration-300 rounded-full ${
+                idx === currentHeroIdx
+                  ? "w-6 h-1.5 bg-[#7d1d1d]"
+                  : "w-1.5 h-1.5 bg-[#7d1d1d]/35 hover:bg-[#7d1d1d]/60"
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
         </div>
       </section>
 
@@ -186,23 +292,24 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Circular Categories List with New Font Style */}
         <div className="relative z-10 flex justify-center items-center flex-wrap gap-[42px]">
           {categories.map((category) => (
             <Link
               key={category.name}
               href={`/category/${category.slug}`}
-              className="text-center"
+              className="text-center group"
             >
-              <div className="relative w-[250px] h-[250px] rounded-full overflow-hidden bg-[#ead7bf] transition-transform duration-300 hover:translate-y-[-8px] hover:scale-105 cursor-pointer">
+              <div className="relative w-[250px] h-[250px] rounded-full overflow-hidden bg-[#ead7bf] border border-[#ead7bf]/10 shadow-md transition-transform duration-300 hover:translate-y-[-8px] hover:scale-105 hover:shadow-lg cursor-pointer">
                 <Image
                   src={category.image}
                   alt={category.name}
                   fill
                   sizes="250px"
-                  className="object-cover"
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               </div>
-              <p className="mt-[18px] text-lg text-[#2b1713]">
+              <p className="mt-[18px] font-serif text-lg font-bold text-[#2b1713] tracking-wide hover:text-[#7d1d1d] transition-colors">
                 • {category.name}
               </p>
             </Link>
@@ -233,50 +340,53 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="relative z-10 grid grid-cols-4 gap-7">
-          {products.map((product) => (
+        {/* Compact, Premium Featured Products Grid */}
+        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          {normalizedProducts.map((product) => (
             <div
               key={product.id}
               onClick={() => router.push(`/product/${product.id}`)}
-              className="bg-[#fdf9f4] rounded-[22px] overflow-hidden border border-[#e7ddd1] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_25px_rgba(0,0,0,0.08)] cursor-pointer"
+              className="bg-[#fdf9f4] rounded-[20px] overflow-hidden border border-[#e7ddd1] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_10px_20px_rgba(0,0,0,0.06)] cursor-pointer flex flex-col justify-between"
             >
               {/* IMAGE */}
-              <div className="relative h-[320px] bg-[#efe4d3]">
+              <div className="relative h-[250px] bg-[#efe4d3] overflow-hidden group">
                 <Image
                   src={product.image}
                   alt={product.name}
                   fill
                   sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 25vw"
-                  className="object-cover"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
 
                 <button
                   onClick={(e) => e.stopPropagation()}
-                  className="absolute top-3.5 right-3.5 w-[38px] h-[38px] rounded-full bg-white/90 flex justify-center items-center text-[#6e2b22] hover:bg-red-50 transition-colors"
+                  className="absolute top-3 right-3 w-[34px] h-[34px] rounded-full bg-white/95 flex justify-center items-center text-[#6e2b22] hover:bg-red-50 transition-colors shadow-sm"
                 >
-                  <FaRegHeart />
+                  <FaRegHeart className="w-4 h-4" />
                 </button>
               </div>
 
               {/* BODY */}
-              <div className="p-[18px_18px_20px]">
-                <div className="text-[13px] text-[#7a5b3d] mb-2.5 flex items-center gap-1">
-                  {renderStars(product.rating)}
-                  <span>
-                    {product.rating} ({product.reviews})
-                  </span>
+              <div className="p-4 flex-1 flex flex-col justify-between">
+                <div>
+                  <div className="text-[12px] text-[#7a5b3d] mb-1.5 flex items-center gap-1">
+                    <div className="flex gap-0.5">{renderStars(product.rating)}</div>
+                    <span className="font-medium ml-1">
+                      {product.rating} ({product.reviewsCount})
+                    </span>
+                  </div>
+
+                  <h3 className="font-serif text-lg font-bold text-[#2d1a16] line-clamp-1 mb-1">
+                    {product.name}
+                  </h3>
+
+                  <p className="text-[#7d6d66] text-xs mb-4 line-clamp-1">
+                    {product.location}
+                  </p>
                 </div>
 
-                <h3 className="font-serif text-[34px] leading-[1.05] text-[#2d1a16] mb-1.5">
-                  {product.name}
-                </h3>
-
-                <p className="text-[#7d6d66] text-sm mb-[18px]">
-                  {product.location}
-                </p>
-
-                <div className="flex justify-between items-center">
-                  <span className="text-[34px] font-serif font-bold text-primary-700">
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-xl font-bold text-primary-700">
                     {product.price}
                   </span>
 
@@ -285,9 +395,9 @@ export default function Home() {
                       e.stopPropagation();
                       router.push(`/product/${product.id}`);
                     }}
-                    className="bg-primary-700 hover:bg-primary-800 text-white rounded-full px-5 py-3 text-sm font-semibold flex items-center gap-2 transition"
+                    className="bg-primary-700 hover:bg-primary-800 text-white rounded-full px-4 py-2 text-xs font-bold flex items-center gap-1.5 transition shadow-sm"
                   >
-                    <FaBagShopping />
+                    <FaBagShopping className="w-3.5 h-3.5" />
                     Add
                   </button>
                 </div>

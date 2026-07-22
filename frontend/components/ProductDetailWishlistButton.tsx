@@ -1,6 +1,7 @@
 "use client";
 
 import { useApp } from "@/context/AppContext";
+import { Heart } from "lucide-react";
 
 interface ProductDetailWishlistButtonProps {
   product: any;
@@ -19,13 +20,14 @@ export default function ProductDetailWishlistButton({
   return (
     <button
       onClick={handleToggle}
-      className={`flex-1 border-2 font-semibold py-3 px-6 rounded-full transition-colors cursor-pointer ${
+      className={`p-3 rounded-full border transition-all duration-300 cursor-pointer flex items-center justify-center ${
         active
-          ? "border-red-600 bg-red-600 text-white hover:bg-red-700 hover:border-red-700"
-          : "border-primary-700 text-primary-700 hover:bg-primary-700 hover:text-white"
+          ? "border-red-200 bg-red-50 text-red-600 shadow-sm scale-105"
+          : "border-gray-200 bg-white text-gray-400 hover:text-red-500 hover:bg-red-50 hover:border-red-100 shadow-sm"
       }`}
+      aria-label={active ? "Remove from wishlist" : "Add to wishlist"}
     >
-      {active ? "♥ In Wishlist" : "♡ Add to Wishlist"}
+      <Heart className={`w-5 h-5 transition-transform ${active ? "fill-current text-red-600 scale-110" : ""}`} />
     </button>
   );
 }

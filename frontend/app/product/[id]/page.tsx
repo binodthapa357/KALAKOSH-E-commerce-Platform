@@ -1,6 +1,8 @@
 import Link from "next/link";
 import AddToCartButton from "@/components/AddToCartButton";
+import BuyNowButton from "@/components/BuyNowButton";
 import ProductDetailWishlistButton from "@/components/ProductDetailWishlistButton";
+import ProductImageGallery from "@/components/ProductImageGallery";
 
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
@@ -66,7 +68,6 @@ export default async function ProductDetailPage({
   }
 
   const mainImage = product.images?.[0] || "/placeholder.svg";
-  const galleryImages = product.images?.slice(1) || [];
   const discountPrice = product.discount_price;
   const hasDiscount =
     discountPrice !== undefined && discountPrice < product.price;
@@ -77,7 +78,7 @@ export default async function ProductDetailPage({
   const effectivePrice = hasDiscount ? discountPrice! : product.price;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#FBF7F0]">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="text-sm text-muted-foreground mb-6">
@@ -95,36 +96,19 @@ export default async function ProductDetailPage({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* ===== IMAGE GALLERY ===== */}
           <div>
-            <div className="relative w-full h-96 lg:h-[500px] rounded-xl overflow-hidden bg-muted mb-4">
-              <img
-                src={mainImage}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            {galleryImages.length > 0 && (
-              <div className="flex gap-3 overflow-x-auto">
-                {galleryImages.map((img, i) => (
-                  <div
-                    key={i}
-                    className="relative w-24 h-24 rounded-lg overflow-hidden bg-muted flex-shrink-0"
-                  >
-                    <img
-                      src={img}
-                      alt={`${product.name} ${i + 2}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+            <ProductImageGallery images={product.images || []} name={product.name} />
           </div>
 
           {/* ===== PRODUCT INFO ===== */}
           <div>
-            <h1 className="text-3xl font-serif font-bold text-primary-800 mb-2">
-              {product.name}
-            </h1>
+            <div className="flex justify-between items-start gap-4 mb-2">
+              <h1 className="text-3xl font-serif font-bold text-primary-800">
+                {product.name}
+              </h1>
+              <div className="flex-shrink-0">
+                <ProductDetailWishlistButton product={product} />
+              </div>
+            </div>
 
             {/* Rating + Stock */}
             <div className="flex items-center gap-3 mb-4">
@@ -225,7 +209,18 @@ export default async function ProductDetailPage({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 mt-8">
+              <BuyNowButton
+                productId={product._id}
+                name={product.name}
+                description={product.description}
+                image={mainImage}
+                price={effectivePrice}
+                originalPrice={hasDiscount ? product.price : undefined}
+                vendorName={product.vendor_id?.shop_name || "Kalakosh Artisan"}
+                stock={product.stock}
+                className="flex-1 bg-[#D87D4A] hover:bg-[#c9713e] text-white font-bold py-3.5 px-8 rounded-full transition-colors cursor-pointer text-center shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              />
               <AddToCartButton
                 productId={product._id}
                 name={product.name}
@@ -235,8 +230,8 @@ export default async function ProductDetailPage({
                 originalPrice={hasDiscount ? product.price : undefined}
                 vendorName={product.vendor_id?.shop_name || "Kalakosh Artisan"}
                 stock={product.stock}
+                className="flex-1 bg-[#8B3232] hover:bg-[#722828] text-white font-bold py-3.5 px-8 rounded-full transition-colors cursor-pointer text-center shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               />
-              <ProductDetailWishlistButton product={product} />
             </div>
           </div>
         </div>

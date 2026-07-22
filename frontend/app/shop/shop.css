@@ -325,6 +325,65 @@
   color: #a89078;
 }
 
+/* ---------- ACTIVE FILTERS ---------- */
+.active-filters {
+  background: #fdfaf6;
+  border: 1px solid #ead9c6;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 5px;
+}
+.active-filters-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.active-filters-title span {
+  font-size: 11px;
+  font-weight: bold;
+  color: #4a1e1a;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.clear-all-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #9a6b4d;
+  font-size: 11px;
+  text-decoration: underline;
+  padding: 0;
+}
+.active-filters-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid #ead9c6;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  color: #3d2817;
+  font-weight: 555;
+}
+.filter-pill button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #8B3232;
+  font-size: 9px;
+  padding: 0 0 0 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 1100px) {
   .product-grid { grid-template-columns: repeat(2, 1fr); }

@@ -264,19 +264,6 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-[#FBF8F3] py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Breadcrumb */}
-        <nav className="text-sm text-muted-foreground mb-8">
-          <Link href="/" className="hover:text-primary-700">
-            Home
-          </Link>
-          <span className="mx-2">/</span>
-          <Link href="/cart" className="hover:text-primary-700">
-            Cart
-          </Link>
-          <span className="mx-2">/</span>
-          <span className="text-foreground font-medium">Checkout</span>
-        </nav>
-
         <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary-800 tracking-wide mb-10">
           Checkout
         </h1>

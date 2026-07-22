@@ -96,6 +96,45 @@ export default function Shop() {
             </div>
             <hr />
 
+            {/* Active Filters Section */}
+            {(selectedCategory || selectedRegion || selectedMaterial || maxPrice < MAX_PRICE_LIMIT) && (
+              <>
+                <div className="active-filters">
+                  <div className="active-filters-title">
+                    <span>Active Filters</span>
+                    <button onClick={clearFilters} className="clear-all-btn">Clear All</button>
+                  </div>
+                  <div className="active-filters-list">
+                    {selectedCategory && (
+                      <span className="filter-pill">
+                        Category: {selectedCategory}
+                        <button onClick={() => setSelectedCategory("")}>✕</button>
+                      </span>
+                    )}
+                    {selectedRegion && (
+                      <span className="filter-pill">
+                        Region: {selectedRegion}
+                        <button onClick={() => setSelectedRegion("")}>✕</button>
+                      </span>
+                    )}
+                    {selectedMaterial && (
+                      <span className="filter-pill">
+                        Material: {selectedMaterial}
+                        <button onClick={() => setSelectedMaterial("")}>✕</button>
+                      </span>
+                    )}
+                    {maxPrice < MAX_PRICE_LIMIT && (
+                      <span className="filter-pill">
+                        Under Rs. {maxPrice}
+                        <button onClick={() => setMaxPrice(MAX_PRICE_LIMIT)}>✕</button>
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <hr />
+              </>
+            )}
+
             <div className="filter-group">
               <h4>CATEGORY</h4>
               {CATEGORIES.map((c) => (

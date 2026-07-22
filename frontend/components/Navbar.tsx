@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Heart, ShoppingBag, User } from "lucide-react";
 import Image from "next/image";
 import { isLoggedIn, getRole } from "@/lib/auth";
+import { useApp } from "@/context/AppContext";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -18,6 +19,7 @@ const navLinks = [
 const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const { cartCount } = useApp();
 
   const hideNavbar = pathname?.startsWith('/signin') || pathname?.startsWith('/signup') || pathname?.startsWith('/admin');
   
@@ -106,8 +108,13 @@ const Navbar = () => {
           >
             <Heart className="h-5 w-5 hover:text-[#8B3232]" />
           </Link>
-          <Link href="/cart" aria-label="Cart" onClick={handleCartClick}>
+          <Link href="/cart" aria-label="Cart" onClick={handleCartClick} className="relative">
             <ShoppingBag className="h-5 w-5 hover:text-[#8B3232]" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-[#8B3232] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold px-1 min-w-[18px]">
+                {cartCount}
+              </span>
+            )}
           </Link>
           <Link
             href="/signin"

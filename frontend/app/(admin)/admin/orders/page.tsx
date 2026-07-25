@@ -84,8 +84,8 @@ export default function OrdersPage() {
       {/* Page Title */}
       <div className="mb-8">
         <span className="text-text-light text-xs tracking-[0.2em]">SALES</span>
-        <div className="flex items-center justify-between">
-          <h1 className="font-serif text-primary-700 text-[70px] font-semibold leading-none mt-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h1 className="font-serif text-primary-700 text-3xl sm:text-5xl md:text-[60px] lg:text-[70px] font-semibold leading-none mt-2.5">
             Orders
           </h1>
           {!loading && (
@@ -164,7 +164,7 @@ export default function OrdersPage() {
                     })}
                   </td>
                   <td className="py-4 border-t border-black/5 text-text-dark text-sm font-medium">
-                    ${order.total_amount.toFixed(2)}
+                    Rs.{order.total_amount.toFixed(2)}
                   </td>
                   <td className="py-4 border-t border-black/5 text-sm">
                     <span className={`px-3 py-1.5 rounded-full text-xs font-medium capitalize ${getPaymentColor(order.payment_status)}`}>

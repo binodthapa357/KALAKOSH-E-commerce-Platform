@@ -1,16 +1,30 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Phone, Mail, MapPin } from 'lucide-react';
 import { FaFacebookF, FaInstagram, FaXTwitter, FaYoutube } from 'react-icons/fa6';
 import { usePathname } from 'next/navigation';
+import { isLoggedIn, getRole } from '@/lib/auth';
 
 const Footer = () => {
   const pathname = usePathname();
   const hideFooter = pathname?.startsWith('/signin') || pathname?.startsWith('/signup') || pathname?.startsWith('/admin');
-  
+
+  // Avoid hydration mismatch: localStorage-based auth state is unknown on
+  // the server, so we render the "logged out" version first, then swap to
+  // the real state right after mount.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   if (hideFooter) return null;
+
+  const accountHref = mounted && isLoggedIn()
+    ? (getRole() === 'vendor' ? '/vendor/dashboard' : '/dashboard')
+    : '/signin';
 
   return (
     <footer className="bg-[#5C1A1A] px-6 pt-12 pb-6 text-white sm:px-10">
@@ -62,8 +76,18 @@ const Footer = () => {
         <div>
           <h5 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#E8B84B]">Categories</h5>
           <ul className="flex flex-col gap-2.5 text-xs text-[#E3D4C4]">
-            {['Paintings', 'Textiles', 'Pottery', 'Jewelry', 'Wood Crafts'].map((c) => (
-              <li key={c} className="cursor-pointer hover:text-white">{c}</li>
+            {[
+              { name: 'Paintings', href: '/category/paintings' },
+              { name: 'Textiles', href: '/category/textiles' },
+              { name: 'Pottery', href: '/category/pottery' },
+              { name: 'Jewelry', href: '/category/jewelry' },
+              { name: 'Wood Crafts', href: '/category/wood-crafts' },
+            ].map((c) => (
+              <li key={c.name}>
+                <Link href={c.href} className="hover:text-white transition-all duration-200">
+                  {c.name}
+                </Link>
+              </li>
             ))}
           </ul>
         </div>
@@ -72,8 +96,19 @@ const Footer = () => {
         <div>
           <h5 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#E8B84B]">Customer Service</h5>
           <ul className="flex flex-col gap-2.5 text-xs text-[#E3D4C4]">
-            {['About Us', 'Contact Us', 'Track Order', 'Shipping & Delivery', 'Returns & Refunds', 'FAQ'].map((c) => (
-              <li key={c} className="cursor-pointer hover:text-white">{c}</li>
+            {[
+              { name: 'About Us', href: '/about' },
+              { name: 'Contact Us', href: '/contact' },
+              { name: 'Track Order', href: '/track-order' },
+              { name: 'Shipping & Delivery', href: '/help' },
+              { name: 'Returns & Refunds', href: '/help' },
+              { name: 'FAQ', href: '/help' },
+            ].map((c) => (
+              <li key={c.name}>
+                <Link href={c.href} className="hover:text-white transition-all duration-200">
+                  {c.name}
+                </Link>
+              </li>
             ))}
           </ul>
         </div>
@@ -82,8 +117,18 @@ const Footer = () => {
         <div>
           <h5 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#E8B84B]">Quick Links</h5>
           <ul className="flex flex-col gap-2.5 text-xs text-[#E3D4C4]">
-            {['My Account', 'Wishlist', 'Cart', 'Terms & Conditions', 'Privacy Policy'].map((c) => (
-              <li key={c} className="cursor-pointer hover:text-white">{c}</li>
+            {[
+              { name: 'My Account', href: accountHref },
+              { name: 'Wishlist', href: '/wishlist' },
+              { name: 'Cart', href: '/cart' },
+              { name: 'Terms & Conditions', href: '/help' },
+              { name: 'Privacy Policy', href: '/help' },
+            ].map((c) => (
+              <li key={c.name}>
+                <Link href={c.href} className="hover:text-white transition-all duration-200">
+                  {c.name}
+                </Link>
+              </li>
             ))}
           </ul>
         </div>
@@ -115,7 +160,7 @@ const Footer = () => {
       </div>
 
       <div className="mx-auto max-w-7xl pt-6 text-center text-[11px] text-[#C4A3A3]">
-        © 2026 KALAKOSH (हस्तकला कोष). All Rights Reserved. Crafted with love in the Himalayas.
+        © 2026 KALAKOSH (कला कोष). All Rights Reserved. Crafted with love in the Himalayas.
       </div>
     </footer>
   );

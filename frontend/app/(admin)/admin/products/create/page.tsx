@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Input } from '@/components/ui/input';
 import { FaArrowLeft, FaUpload } from 'react-icons/fa6';
 import { Button } from '@/components/ui/button';
 import { fetchApi } from '@/lib/api';
@@ -41,6 +40,7 @@ export default function CreateProductPage() {
         }
       } catch (err: any) {
         console.error('Failed to load categories', err);
+        toast.error('Could not load categories: ' + (err.message || 'unknown error'));
       } finally {
         setLoadingCats(false);
       }
@@ -54,6 +54,7 @@ export default function CreateProductPage() {
         }
       } catch (err: any) {
         console.error('Failed to load vendors', err);
+        toast.error('Could not load vendors: ' + (err.message || 'unknown error'));
       } finally {
         setLoadingVendors(false);
       }
@@ -72,7 +73,7 @@ export default function CreateProductPage() {
     if (files.length > 0) {
       const updatedFiles = [...imageFiles, ...files].slice(0, 6);
       setImageFiles(updatedFiles);
-      
+
       const newPreviews = files.map(file => {
         return new Promise<string>((resolve) => {
           const reader = new FileReader();
@@ -85,6 +86,7 @@ export default function CreateProductPage() {
         setImagePreviews(prev => [...prev, ...results].slice(0, 6));
       });
     }
+    e.target.value = '';
   };
 
   const removeImage = (index: number) => {
@@ -98,23 +100,50 @@ export default function CreateProductPage() {
       toast.error('Please upload at least one product image.');
       return;
     }
+    if (!formData.category) {
+      toast.error('Please select a category.');
+      return;
+    }
+    if (!formData.vendor_id) {
+      toast.error('Please select a vendor.');
+      return;
+    }
+
     setSubmitting(true);
     try {
       const imageUrls: string[] = [];
+
       for (const file of imageFiles) {
         const formDataUpload = new FormData();
         formDataUpload.append('image', file);
 
-        const uploadRes = await fetchApi('/admin/upload?folder=products', {
-          method: 'POST',
-          body: formDataUpload,
-        });
-
-        if (uploadRes && uploadRes.url) {
-          imageUrls.push(uploadRes.url);
+        let uploadRes;
+        try {
+          uploadRes = await fetchApi('/admin/upload?folder=products', {
+            method: 'POST',
+            body: formDataUpload,
+          });
+        } catch (uploadErr: any) {
+          console.error('Image upload failed for', file.name, uploadErr);
+          toast.error(`Failed to upload ${file.name}: ${uploadErr.message || 'unknown error'}`);
+          throw uploadErr;
         }
+
+        const url = uploadRes?.url || uploadRes?.data?.url || uploadRes?.imageUrl;
+        if (!url) {
+          console.error('Upload succeeded but response had no recognizable URL field:', uploadRes);
+          toast.error(`Upload for ${file.name} did not return a URL. Check backend response shape.`);
+          throw new Error('Missing image URL in upload response');
+        }
+        imageUrls.push(url);
       }
 
+      // NOTE: the backend's validation explicitly checks req.body.category
+      // (see the "Missing required fields (name, description, price, stock,
+      // category)" error) even though the Product document itself stores it
+      // as category_id internally. The route must map category -> category_id
+      // when saving. Sending category_id from here left `category` undefined
+      // and failed that check.
       const body = {
         name: formData.name,
         category: formData.category,
@@ -138,6 +167,7 @@ export default function CreateProductPage() {
       toast.success('Product created successfully');
       router.push('/admin/products');
     } catch (err: any) {
+      console.error('Create product failed:', err);
       toast.error(err.message || 'Failed to create product');
     } finally {
       setSubmitting(false);
@@ -157,7 +187,7 @@ export default function CreateProductPage() {
           </Link>
           <span className="text-text-light text-xs tracking-[0.2em]">INVENTORY</span>
         </div>
-        <h1 className="font-serif text-primary-700 text-[70px] font-semibold leading-none mt-2.5">
+        <h1 className="font-serif text-primary-700 text-3xl sm:text-5xl md:text-[60px] lg:text-[70px] font-semibold leading-none mt-2.5">
           Create Product
         </h1>
       </div>
@@ -361,11 +391,11 @@ export default function CreateProductPage() {
         <div className="lg:col-span-1">
           <div className="bg-card border border-border rounded-2xl p-7 sticky top-4 shadow-sm">
             <h3 className="font-serif text-primary-700 text-2xl mb-4">Product Images</h3>
-            
+
             {imagePreviews.length > 0 && (
               <div className="grid grid-cols-2 gap-3 mb-4">
                 {imagePreviews.map((src, idx) => (
-                  <div key={idx} className="relative aspect-square border border-border rounded-xl overflow-hidden group">
+                  <div key={src} className="relative aspect-square border border-border rounded-xl overflow-hidden group">
                     <img
                       src={src}
                       alt={`Preview ${idx + 1}`}
@@ -384,24 +414,26 @@ export default function CreateProductPage() {
               </div>
             )}
 
-            <div
-              className={`border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors relative hover:border-primary-400`}
+            <label
+              htmlFor="product-image-upload"
+              className="block border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors relative hover:border-primary-400 cursor-pointer"
             >
-              <div className="space-y-3">
+              <div className="space-y-3 pointer-events-none">
                 <div className="w-12 h-12 mx-auto rounded-full bg-primary-100 flex items-center justify-center">
                   <FaUpload className="text-primary-700 text-xl" />
                 </div>
                 <p className="text-text-mid font-medium text-sm">Upload images (up to 6)</p>
                 <p className="text-text-light text-xs">PNG, JPG up to 5MB</p>
               </div>
-              <Input
+              <input
+                id="product-image-upload"
                 type="file"
                 accept="image/*"
                 multiple
                 onChange={handleImageChange}
-                className="absolute inset-0 opacity-0 cursor-pointer"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
-            </div>
+            </label>
           </div>
         </div>
       </div>

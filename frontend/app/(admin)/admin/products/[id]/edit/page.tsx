@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft, FaUpload } from 'react-icons/fa6';
-import { Input } from '@/components/ui/input';
 import { fetchApi } from '@/lib/api';
 import { toast } from 'sonner';
 
@@ -64,7 +63,7 @@ export default function EditProductPage() {
         setLoading(false);
       }
     };
-    
+
     if (productId) {
       loadData();
     }
@@ -81,7 +80,7 @@ export default function EditProductPage() {
       const remainingSlots = 6 - (images.length + newImageFiles.length);
       const updatedFiles = [...newImageFiles, ...files].slice(0, remainingSlots);
       setNewImageFiles(updatedFiles);
-      
+
       const newPreviews = files.map(file => {
         return new Promise<string>((resolve) => {
           const reader = new FileReader();
@@ -94,6 +93,8 @@ export default function EditProductPage() {
         setNewImagePreviews(prev => [...prev, ...results].slice(0, remainingSlots));
       });
     }
+    // Reset the input so selecting the same file again still fires onChange
+    e.target.value = '';
   };
 
   const removeExistingImage = (idx: number) => {
@@ -111,6 +112,11 @@ export default function EditProductPage() {
       toast.error('Please keep/upload at least one product image.');
       return;
     }
+    if (!formData.category) {
+      toast.error('Please select a category.');
+      return;
+    }
+
     setSubmitting(true);
     try {
       const uploadedUrls: string[] = [];
@@ -118,18 +124,34 @@ export default function EditProductPage() {
         const formDataUpload = new FormData();
         formDataUpload.append('image', file);
 
-        const uploadRes = await fetchApi('/admin/upload?folder=products', {
-          method: 'POST',
-          body: formDataUpload,
-        });
-
-        if (uploadRes && uploadRes.url) {
-          uploadedUrls.push(uploadRes.url);
+        let uploadRes;
+        try {
+          uploadRes = await fetchApi('/admin/upload?folder=products', {
+            method: 'POST',
+            body: formDataUpload,
+          });
+        } catch (uploadErr: any) {
+          console.error('Image upload failed for', file.name, uploadErr);
+          toast.error(`Failed to upload ${file.name}: ${uploadErr.message || 'unknown error'}`);
+          throw uploadErr;
         }
+
+        // Match the same fallback shape used on the Create page, so this
+        // doesn't silently drop images if the backend response key differs.
+        const url = uploadRes?.url || uploadRes?.data?.url || uploadRes?.imageUrl;
+        if (!url) {
+          console.error('Upload succeeded but response had no recognizable URL field:', uploadRes);
+          toast.error(`Upload for ${file.name} did not return a URL. Check backend response shape.`);
+          throw new Error('Missing image URL in upload response');
+        }
+        uploadedUrls.push(url);
       }
 
       const finalImages = [...images, ...uploadedUrls];
 
+      // NOTE: the backend's required-field validation checks req.body.category,
+      // not category_id, even though the stored document field is category_id.
+      // Send `category` here to match what the route actually validates.
       const body = {
         name: formData.name,
         category: formData.category,
@@ -152,6 +174,7 @@ export default function EditProductPage() {
       toast.success('Product updated successfully');
       router.push('/admin/products');
     } catch (err: any) {
+      console.error('Update product failed:', err);
       toast.error(err.message || 'Failed to update product');
     } finally {
       setSubmitting(false);
@@ -182,7 +205,7 @@ export default function EditProductPage() {
           </Link>
           <span className="text-text-light text-xs tracking-[0.2em]">INVENTORY</span>
         </div>
-        <h1 className="font-serif text-primary-700 text-[70px] font-semibold leading-none mt-2.5">
+        <h1 className="font-serif text-primary-700 text-3xl sm:text-5xl md:text-[60px] lg:text-[70px] font-semibold leading-none mt-2.5">
           Edit Product
         </h1>
       </div>
@@ -368,7 +391,7 @@ export default function EditProductPage() {
           <div className="bg-card border border-border rounded-2xl p-7 sticky top-4 shadow-sm space-y-6">
             <div>
               <h3 className="font-serif text-primary-700 text-2xl mb-4">Product Images</h3>
-              
+
               {/* Existing Images */}
               {images.length > 0 && (
                 <div className="mb-4">
@@ -423,24 +446,26 @@ export default function EditProductPage() {
             </div>
 
             {images.length + newImageFiles.length < 6 ? (
-              <div
-                className={`border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors relative hover:border-primary-400`}
+              <label
+                htmlFor="edit-product-image-upload"
+                className="block border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors relative hover:border-primary-400 cursor-pointer"
               >
-                <div className="space-y-3">
+                <div className="space-y-3 pointer-events-none">
                   <div className="w-12 h-12 mx-auto rounded-full bg-primary-100 flex items-center justify-center">
                     <FaUpload className="text-primary-700 text-xl" />
                   </div>
                   <p className="text-text-mid font-medium text-sm">Upload more (max {6 - (images.length + newImageFiles.length)} more)</p>
                   <p className="text-text-light text-xs">PNG, JPG up to 5MB</p>
                 </div>
-                <Input
+                <input
+                  id="edit-product-image-upload"
                   type="file"
                   accept="image/*"
                   multiple
                   onChange={handleImageChange}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
-              </div>
+              </label>
             ) : (
               <p className="text-xs text-text-light text-center border border-border rounded-xl p-4 bg-muted">
                 Maximum limit of 6 product images reached.

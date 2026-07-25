@@ -5,39 +5,36 @@ dotenv.config();
 
 // Configure Cloudinary
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "mock_cloud",
-  api_key: process.env.CLOUDINARY_API_KEY || "mock_key",
-  api_secret: process.env.CLOUDINARY_API_SECRET || "mock_secret",
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 /**
- * Check if Cloudinary is fully configured.
- * @returns {boolean}
+ * Check if Cloudinary is fully configured. Throws on startup-relevant checks
+ * if credentials are missing, rather than silently falling back to mocks.
  */
 const isCloudinaryConfigured = () => {
-  const name = process.env.CLOUDINARY_CLOUD_NAME;
-  const key = process.env.CLOUDINARY_API_KEY;
-  const secret = process.env.CLOUDINARY_API_SECRET;
-  return !!(name && name !== "mock_cloud" && key && key !== "mock_key" && secret && secret !== "mock_secret");
+  const { CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
+  return !!(CLOUDINARY_CLOUD_NAME && CLOUDINARY_API_KEY && CLOUDINARY_API_SECRET);
 };
 
+if (!isCloudinaryConfigured()) {
+  console.error(
+    "❌ Cloudinary credentials are missing. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, " +
+    "and CLOUDINARY_API_SECRET in backend/.env — image uploads will fail until this is fixed."
+  );
+}
+
 /**
- * Uploads an image buffer to Cloudinary. Falls back to mock URLs if Cloudinary is not configured.
+ * Uploads an image buffer to Cloudinary.
  * @param {Buffer} fileBuffer - The binary image buffer.
  * @param {string} folder - Target folder in Cloudinary.
  * @returns {Promise<{ secure_url: string, public_id: string }>}
  */
 export const uploadImageToCloudinary = async (fileBuffer, folder = "products") => {
   if (!isCloudinaryConfigured()) {
-    console.warn("Cloudinary is not configured or uses mock credentials. Falling back to dynamic mock image.");
-    // Generate a random high-quality mock URL from Lorem Picsum and a mock public ID
-    const randomId = Math.random().toString(36).substring(7);
-    const mockUrl = `https://picsum.photos/seed/${randomId}/600/400`;
-    const mockPublicId = `mock_public_id_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-    return {
-      secure_url: mockUrl,
-      public_id: mockPublicId,
-    };
+    throw new Error("Cloudinary is not configured. Check CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in your .env file.");
   }
 
   return new Promise((resolve, reject) => {
@@ -64,8 +61,12 @@ export const uploadImageToCloudinary = async (fileBuffer, folder = "products") =
  * @returns {Promise<{ result: string }>}
  */
 export const deleteImageFromCloudinary = async (publicId) => {
-  if (!isCloudinaryConfigured() || !publicId || publicId.startsWith("mock_")) {
-    console.warn(`Cloudinary not configured or mock public ID (${publicId}). Skipping actual Cloudinary deletion.`);
+  if (!isCloudinaryConfigured()) {
+    console.warn("Cloudinary not configured. Skipping deletion for:", publicId);
+    return { result: "ok" };
+  }
+
+  if (!publicId) {
     return { result: "ok" };
   }
 

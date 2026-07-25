@@ -74,8 +74,8 @@ export default function ProductsPage() {
       {/* Page Title */}
       <div className="mb-8">
         <span className="text-text-light text-xs tracking-[0.2em]">INVENTORY</span>
-        <div className="flex items-center justify-between">
-          <h1 className="font-serif text-primary-700 text-[70px] font-semibold leading-none mt-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h1 className="font-serif text-primary-700 text-3xl sm:text-5xl md:text-[60px] lg:text-[70px] font-semibold leading-none mt-2.5">
             Products
           </h1>
           <Link
@@ -169,11 +169,11 @@ export default function ProductsPage() {
                     <td className="py-4 border-t border-black/5 text-text-dark text-sm">
                       {product.discount_price ? (
                         <span>
-                          <span className="line-through text-text-light mr-1">${product.price}</span>
-                          <span className="text-primary-700 font-medium">${product.discount_price}</span>
+                          <span className="line-through text-text-light mr-1">Rs.{product.price}</span>
+                          <span className="text-primary-700 font-medium">Rs.{product.discount_price}</span>
                         </span>
                       ) : (
-                        `$${product.price}`
+                        `Rs.${product.price}`
                       )}
                     </td>
                     <td className="py-4 border-t border-black/5 text-text-dark text-sm">
@@ -189,7 +189,8 @@ export default function ProductsPage() {
                     <td className="py-4 border-t border-black/5 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <Link
-                          href={`/admin/products/${product._id}`}
+                          href={`/product/${product._id}`}
+                          target="_blank"
                           className="p-2 rounded-lg hover:bg-primary-100 text-text-light hover:text-primary-700 transition-colors"
                         >
                           <FaEye />

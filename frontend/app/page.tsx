@@ -144,22 +144,22 @@ export default function Home() {
 
   const features = [
     {
-      icon: <FaRegCircleQuestion className="text-xl" />,
+      icon: <FaRegCircleQuestion className="text-lg sm:text-xl" />,
       title: "Authentic Products",
       description: "100% authentic handmade Nepali products",
     },
     {
-      icon: <FaUsers className="text-xl" />,
+      icon: <FaUsers className="text-lg sm:text-xl" />,
       title: "Direct from Artisans",
       description: "Supporting local artisans and communities",
     },
     {
-      icon: <FaShieldHeart className="text-xl" />,
+      icon: <FaShieldHeart className="text-lg sm:text-xl" />,
       title: "Secure Payments",
       description: "Safe & secure payments via eSewa, Khalti & more",
     },
     {
-      icon: <FaTruck className="text-xl" />,
+      icon: <FaTruck className="text-lg sm:text-xl" />,
       title: "Fast Delivery",
       description: "Quick delivery across Nepal",
     },
@@ -197,9 +197,9 @@ export default function Home() {
   });
 
   return (
-    <main className="bg-[#f5efe7] font-sans text-[#2d1a16]">
+    <main className="bg-[#f5efe7] font-sans text-[#2d1a16] overflow-x-hidden">
       {/* HERO SECTION */}
-      <section className="relative w-[calc(100%-70px)] h-[500px] mx-[35px] my-[55px] rounded-[28px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.08)] bg-[#f4ece1]">
+      <section className="relative w-[calc(100%-24px)] sm:w-[calc(100%-40px)] lg:w-[calc(100%-70px)] h-[420px] sm:h-[460px] lg:h-[500px] mx-3 sm:mx-5 lg:mx-[35px] my-6 sm:my-10 lg:my-[55px] rounded-2xl lg:rounded-[28px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.08)] bg-[#f4ece1]">
         {/* Background Image Carousel with Fading */}
         {heroImages.map((img, idx) => (
           <div
@@ -219,11 +219,11 @@ export default function Home() {
           </div>
         ))}
         {/* Soft Golden/Cream Mask */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#f4ece1]/98 via-[#f4ece1]/80 to-transparent z-10" />
+        <div className="absolute inset-0 bg-gradient-to-b sm:bg-gradient-to-r from-[#f4ece1]/98 via-[#f4ece1]/85 sm:via-[#f4ece1]/80 to-[#f4ece1]/40 sm:to-transparent z-10" />
 
-        <div className="relative z-20 h-full flex items-center pl-[50px]">
-          <div className="max-w-[480px]">
-            <h1 className="font-serif text-[56px] md:text-[62px] leading-[1.0] font-medium text-[#3d271f]">
+        <div className="relative z-20 h-full flex items-center px-6 sm:pl-[50px]">
+          <div className="max-w-full sm:max-w-[420px] lg:max-w-[480px]">
+            <h1 className="font-serif text-[34px] sm:text-[46px] md:text-[56px] lg:text-[62px] leading-[1.05] lg:leading-[1.0] font-medium text-[#3d271f]">
               Discover <br />
               Authentic <br />
               <span className="text-[#7d1d1d]">
@@ -233,26 +233,26 @@ export default function Home() {
             </h1>
 
             {/* Custom Divider from Screenshot */}
-            <div className="flex items-center gap-2.5 my-6">
-              <div className="w-[45px] h-[1.5px] bg-[#c9974a]" />
+            <div className="flex items-center gap-2.5 my-4 sm:my-6">
+              <div className="w-[35px] sm:w-[45px] h-[1.5px] bg-[#c9974a]" />
               <div className="w-1 h-3 bg-[#c9974a]" />
-              <div className="w-[45px] h-[1.5px] bg-[#c9974a]" />
+              <div className="w-[35px] sm:w-[45px] h-[1.5px] bg-[#c9974a]" />
             </div>
 
-            <p className="text-[#6b5544] leading-relaxed text-sm md:text-base mb-8 max-w-[380px]">
+            <p className="text-[#6b5544] leading-relaxed text-sm mb-6 sm:mb-8 max-w-[340px] sm:max-w-[380px]">
               Connecting local artisans with the world — every piece tells a story of Himalayan heritage.
             </p>
 
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-3 sm:gap-4">
               <Link
                 href="/shop"
-                className="bg-[#7d1d1d] hover:bg-[#651515] text-white px-8 py-3.5 rounded-[8px] text-[11px] font-bold tracking-wider uppercase transition-colors inline-block text-center shadow-md hover:shadow-lg"
+                className="bg-[#7d1d1d] hover:bg-[#651515] text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg text-[10px] sm:text-[11px] font-bold tracking-wider uppercase transition-colors inline-block text-center shadow-md hover:shadow-lg"
               >
                 SHOP NOW
               </Link>
               <Link
                 href="/categories"
-                className="bg-transparent border border-[#7d1d1d] text-[#6b5544] hover:bg-[#7d1d1d]/5 px-8 py-[13px] rounded-[8px] text-[11px] font-bold tracking-wider transition-colors inline-block text-center shadow-sm"
+                className="bg-transparent border border-[#7d1d1d] text-[#6b5544] hover:bg-[#7d1d1d]/5 px-6 sm:px-8 py-[11px] sm:py-[13px] rounded-lg text-[10px] sm:text-[11px] font-bold tracking-wider transition-colors inline-block text-center shadow-sm"
               >
                 Explore Categories
               </Link>
@@ -261,7 +261,7 @@ export default function Home() {
         </div>
 
         {/* Dynamic Pagination Indicators */}
-        <div className="flex items-center gap-2 absolute left-1/2 bottom-5 -translate-x-1/2 z-20">
+        <div className="flex items-center gap-2 absolute left-1/2 bottom-4 sm:bottom-5 -translate-x-1/2 z-20">
           {heroImages.map((_, idx) => (
             <button
               key={idx}
@@ -278,38 +278,38 @@ export default function Home() {
       </section>
 
       {/* CATEGORIES SECTION */}
-      <section className="py-20 px-[60px] bg-[#f7f2ea] relative">
+      <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-[60px] bg-[#f7f2ea] relative">
         <div className="absolute inset-0 bg-[radial-gradient(#d9c8b3_0.7px,transparent_0.7px)] bg-[length:22px_22px] opacity-35 pointer-events-none" />
 
-        <div className="relative z-10 text-center mb-[60px]">
-          <h2 className="font-serif text-[62px] font-medium text-primary-700">
+        <div className="relative z-10 text-center mb-10 sm:mb-14 lg:mb-[60px]">
+          <h2 className="font-serif text-[34px] sm:text-[46px] lg:text-[62px] font-medium text-primary-700">
             Shop by Categories
           </h2>
           <div className="flex justify-center items-center gap-2.5 mt-2.5">
-            <div className="w-[45px] h-[2px] bg-secondary-500" />
+            <div className="w-[35px] sm:w-[45px] h-[2px] bg-secondary-500" />
             <span className="text-secondary-500">✦</span>
-            <div className="w-[45px] h-[2px] bg-secondary-500" />
+            <div className="w-[35px] sm:w-[45px] h-[2px] bg-secondary-500" />
           </div>
         </div>
 
         {/* Circular Categories List with New Font Style */}
-        <div className="relative z-10 flex justify-center items-center flex-wrap gap-[42px]">
+        <div className="relative z-10 flex justify-center items-center flex-wrap gap-6 sm:gap-8 lg:gap-[42px]">
           {categories.map((category) => (
             <Link
               key={category.name}
               href={`/category/${category.slug}`}
               className="text-center group"
             >
-              <div className="relative w-[250px] h-[250px] rounded-full overflow-hidden bg-[#ead7bf] border border-[#ead7bf]/10 shadow-md transition-transform duration-300 hover:translate-y-[-8px] hover:scale-105 hover:shadow-lg cursor-pointer">
+              <div className="relative w-[140px] h-[140px] sm:w-[190px] sm:h-[190px] lg:w-[250px] lg:h-[250px] rounded-full overflow-hidden bg-[#ead7bf] border border-[#ead7bf]/10 shadow-md transition-transform duration-300 hover:translate-y-[-8px] hover:scale-105 hover:shadow-lg cursor-pointer">
                 <Image
                   src={category.image}
                   alt={category.name}
                   fill
-                  sizes="250px"
+                  sizes="(max-width: 640px) 140px, (max-width: 1024px) 190px, 250px"
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               </div>
-              <p className="mt-[18px] font-serif text-lg font-bold text-[#2b1713] tracking-wide hover:text-[#7d1d1d] transition-colors">
+              <p className="mt-3 sm:mt-[18px] font-serif text-sm sm:text-base lg:text-lg font-bold text-[#2b1713] tracking-wide hover:text-[#7d1d1d] transition-colors">
                 • {category.name}
               </p>
             </Link>
@@ -318,75 +318,75 @@ export default function Home() {
       </section>
 
       {/* FEATURED PRODUCTS */}
-      <section className="py-[90px] px-[60px] bg-[#f8f3eb] relative">
+      <section className="py-14 sm:py-16 lg:py-[90px] px-4 sm:px-8 lg:px-[60px] bg-[#f8f3eb] relative">
         <div className="absolute inset-0 bg-[radial-gradient(#d9c8b3_0.7px,transparent_0.7px)] bg-[length:22px_22px] opacity-35 pointer-events-none" />
 
-        <div className="relative z-10 flex justify-between items-center mb-[55px]">
-          <div className="text-center flex-1">
-            <h2 className="font-serif text-[60px] font-medium text-primary-700">
+        <div className="relative z-10 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0 mb-10 sm:mb-14 lg:mb-[55px]">
+          <div className="text-center flex-1 order-2 sm:order-1">
+            <h2 className="font-serif text-[32px] sm:text-[44px] lg:text-[60px] font-medium text-primary-700">
               Featured Handicrafts
             </h2>
             <div className="flex justify-center items-center gap-2.5 mt-2.5">
-              <div className="w-[45px] h-[2px] bg-secondary-500" />
+              <div className="w-[35px] sm:w-[45px] h-[2px] bg-secondary-500" />
               <span className="text-secondary-500">✦</span>
-              <div className="w-[45px] h-[2px] bg-secondary-500" />
+              <div className="w-[35px] sm:w-[45px] h-[2px] bg-secondary-500" />
             </div>
           </div>
           <Link
             href="/shop"
-            className="text-primary-700 text-sm hover:underline"
+            className="order-1 sm:order-2 text-primary-700 text-sm hover:underline sm:absolute sm:right-[60px]"
           >
             View All Products →
           </Link>
         </div>
 
         {/* Compact, Premium Featured Products Grid */}
-        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        <div className="relative z-10 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-7xl mx-auto">
           {normalizedProducts.map((product) => (
             <div
               key={product.id}
               onClick={() => router.push(`/product/${product.id}`)}
-              className="bg-[#fdf9f4] rounded-[20px] overflow-hidden border border-[#e7ddd1] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_10px_20px_rgba(0,0,0,0.06)] cursor-pointer flex flex-col justify-between"
+              className="bg-[#fdf9f4] rounded-2xl lg:rounded-[20px] overflow-hidden border border-[#e7ddd1] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_10px_20px_rgba(0,0,0,0.06)] cursor-pointer flex flex-col justify-between"
             >
               {/* IMAGE */}
-              <div className="relative h-[250px] bg-[#efe4d3] overflow-hidden group">
+              <div className="relative h-[160px] sm:h-[200px] lg:h-[250px] bg-[#efe4d3] overflow-hidden group">
                 <Image
                   src={product.image}
                   alt={product.name}
                   fill
-                  sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 25vw"
+                  sizes="(max-width:768px) 50vw, (max-width:1200px) 50vw, 25vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
 
                 <button
                   onClick={(e) => e.stopPropagation()}
-                  className="absolute top-3 right-3 w-[34px] h-[34px] rounded-full bg-white/95 flex justify-center items-center text-[#6e2b22] hover:bg-red-50 transition-colors shadow-sm"
+                  className="absolute top-2 right-2 sm:top-3 sm:right-3 w-[28px] h-[28px] sm:w-[34px] sm:h-[34px] rounded-full bg-white/95 flex justify-center items-center text-[#6e2b22] hover:bg-red-50 transition-colors shadow-sm"
                 >
-                  <FaRegHeart className="w-4 h-4" />
+                  <FaRegHeart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
               </div>
 
               {/* BODY */}
-              <div className="p-4 flex-1 flex flex-col justify-between">
+              <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between">
                 <div>
-                  <div className="text-[12px] text-[#7a5b3d] mb-1.5 flex items-center gap-1">
+                  <div className="text-[10px] sm:text-[12px] text-[#7a5b3d] mb-1.5 flex items-center gap-1 flex-wrap">
                     <div className="flex gap-0.5">{renderStars(product.rating)}</div>
                     <span className="font-medium ml-1">
                       {product.rating} ({product.reviewsCount})
                     </span>
                   </div>
 
-                  <h3 className="font-serif text-lg font-bold text-[#2d1a16] line-clamp-1 mb-1">
+                  <h3 className="font-serif text-sm sm:text-base lg:text-lg font-bold text-[#2d1a16] line-clamp-1 mb-1">
                     {product.name}
                   </h3>
 
-                  <p className="text-[#7d6d66] text-xs mb-4 line-clamp-1">
+                  <p className="text-[#7d6d66] text-[11px] sm:text-xs mb-3 sm:mb-4 line-clamp-1">
                     {product.location}
                   </p>
                 </div>
 
-                <div className="flex justify-between items-center mt-2">
-                  <span className="text-xl font-bold text-primary-700">
+                <div className="flex justify-between items-center mt-2 gap-2">
+                  <span className="text-base sm:text-lg lg:text-xl font-bold text-primary-700">
                     {product.price}
                   </span>
 
@@ -395,9 +395,9 @@ export default function Home() {
                       e.stopPropagation();
                       router.push(`/product/${product.id}`);
                     }}
-                    className="bg-primary-700 hover:bg-primary-800 text-white rounded-full px-4 py-2 text-xs font-bold flex items-center gap-1.5 transition shadow-sm"
+                    className="bg-primary-700 hover:bg-primary-800 text-white rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition shadow-sm whitespace-nowrap"
                   >
-                    <FaBagShopping className="w-3.5 h-3.5" />
+                    <FaBagShopping className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     Add
                   </button>
                 </div>
@@ -408,45 +408,45 @@ export default function Home() {
       </section>
 
       {/* SUPPORT ARTISANS */}
-      <section className="py-5 px-[42px] pb-[90px] bg-[#f8f3eb] relative">
+      <section className="py-4 sm:py-5 px-4 sm:px-6 lg:px-[42px] pb-14 sm:pb-16 lg:pb-[90px] bg-[#f8f3eb] relative">
         <div className="absolute inset-0 bg-[radial-gradient(#d9c8b3_0.7px,transparent_0.7px)] bg-[length:22px_22px] opacity-35 pointer-events-none" />
 
         {/* Banner */}
-        <div className="relative h-[325px] rounded-[28px] overflow-hidden border border-[#d8cdbf] flex items-center pl-[65px]">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#f7f0e6]/92 via-[#f7f0e6]/78 to-transparent z-10" />
+        <div className="relative h-[380px] sm:h-[340px] lg:h-[325px] rounded-2xl lg:rounded-[28px] overflow-hidden border border-[#d8cdbf] flex items-center px-6 sm:pl-[65px]">
+          <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-[#f7f0e6]/95 via-[#f7f0e6]/85 sm:via-[#f7f0e6]/78 to-[#f7f0e6]/30 sm:to-transparent z-10" />
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: "url('/images/artisan.jpg')" }}
           />
-          <div className="relative z-20 max-w-[420px]">
-            <h2 className="font-serif text-[58px] leading-[1] text-primary-700 mb-[18px]">
+          <div className="relative z-20 max-w-full sm:max-w-[380px] lg:max-w-[420px]">
+            <h2 className="font-serif text-[32px] sm:text-[44px] lg:text-[58px] leading-[1.05] lg:leading-[1] text-primary-700 mb-3 sm:mb-[18px]">
               Support Local Artisans
             </h2>
-            <p className="text-[17px] leading-relaxed text-[#5f4f47] mb-7">
+            <p className="text-sm sm:text-base lg:text-[17px] leading-relaxed text-[#5f4f47] mb-5 sm:mb-7">
               Every purchase helps preserve our rich cultural heritage and
               empowers Nepali craftspeople.
             </p>
-            <button className="bg-primary-700 text-white border-none px-6 py-3.5 rounded-xl text-sm font-semibold tracking-[0.5px] cursor-pointer hover:bg-primary-800 transition-colors">
+            <button className="bg-primary-700 text-white border-none px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl text-xs sm:text-sm font-semibold tracking-[0.5px] cursor-pointer hover:bg-primary-800 transition-colors">
               EXPLORE NOW
             </button>
           </div>
         </div>
 
         {/* Features */}
-        <div className="relative z-10 mt-[42px] grid grid-cols-4 gap-[18px]">
+        <div className="relative z-10 mt-8 sm:mt-10 lg:mt-[42px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-[18px]">
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="bg-[#fcf8f3] border-2 border-[#ddd2c5] rounded-[20px] p-6 flex items-start gap-[18px] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(0,0,0,0.05)]"
+              className="bg-[#fcf8f3] border-2 border-[#ddd2c5] rounded-2xl lg:rounded-[20px] p-5 sm:p-6 flex items-start gap-4 sm:gap-[18px] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(0,0,0,0.05)]"
             >
-              <div className="min-w-[48px] h-[48px] rounded-full border-2 border-[#e2c79d] flex justify-center items-center text-primary-700 text-lg">
+              <div className="min-w-[40px] h-[40px] sm:min-w-[48px] sm:h-[48px] rounded-full border-2 border-[#e2c79d] flex justify-center items-center text-primary-700 text-base sm:text-lg shrink-0">
                 {feature.icon}
               </div>
               <div>
-                <h4 className="font-serif text-[28px] text-[#2d1a16] mb-1.5">
+                <h4 className="font-serif text-xl sm:text-2xl lg:text-[28px] text-[#2d1a16] mb-1.5">
                   {feature.title}
                 </h4>
-                <p className="text-sm leading-relaxed text-[#6d5c55]">
+                <p className="text-xs sm:text-sm leading-relaxed text-[#6d5c55]">
                   {feature.description}
                 </p>
               </div>
@@ -456,61 +456,61 @@ export default function Home() {
       </section>
 
       {/* ARTISAN + NEWSLETTER */}
-      <section className="w-[calc(100%-80px)] mx-auto my-[70px] bg-[#f8f3eb] border-2 border-[#d8cdbf] rounded-[28px] overflow-hidden grid grid-cols-[1.15fr_1fr_1fr] relative">
+      <section className="w-[calc(100%-24px)] sm:w-[calc(100%-48px)] lg:w-[calc(100%-80px)] mx-auto my-8 sm:my-12 lg:my-[70px] bg-[#f8f3eb] border-2 border-[#d8cdbf] rounded-2xl lg:rounded-[28px] overflow-hidden grid grid-cols-1 lg:grid-cols-[1.15fr_1fr_1fr] relative">
         <div className="absolute inset-0 bg-[radial-gradient(#d9c8b3_0.7px,transparent_0.7px)] bg-[length:22px_22px] opacity-25 pointer-events-none" />
 
         {/* Image */}
-        <div className="relative h-full min-h-[500px]">
+        <div className="relative h-[240px] sm:h-[320px] lg:h-full lg:min-h-[500px]">
           <Image
             src="/images/artist.jpg"
             alt="Artisan"
             fill
-            sizes="33vw"
+            sizes="(max-width: 1024px) 100vw, 33vw"
             className="object-cover"
           />
         </div>
 
         {/* Content */}
-        <div className="relative z-10 p-[46px_42px] border-r-2 border-[#ddd2c5]">
-          <h2 className="font-serif text-[54px] font-medium text-primary-700 mb-3">
+        <div className="relative z-10 p-8 sm:p-10 lg:p-[46px_42px] border-b-2 lg:border-b-0 lg:border-r-2 border-[#ddd2c5]">
+          <h2 className="font-serif text-[34px] sm:text-[42px] lg:text-[54px] font-medium text-primary-700 mb-3">
             Meet Our Artisans
           </h2>
-          <div className="flex items-center gap-2.5 mb-[26px]">
-            <div className="w-[42px] h-[2px] bg-secondary-500" />
+          <div className="flex items-center gap-2.5 mb-5 sm:mb-[26px]">
+            <div className="w-[35px] sm:w-[42px] h-[2px] bg-secondary-500" />
             <span className="text-secondary-500">✦</span>
-            <div className="w-[42px] h-[2px] bg-secondary-500" />
+            <div className="w-[35px] sm:w-[42px] h-[2px] bg-secondary-500" />
           </div>
-          <p className="text-base leading-relaxed text-[#5f4f47] max-w-[430px] mb-[34px]">
+          <p className="text-sm sm:text-base leading-relaxed text-[#5f4f47] max-w-[430px] mb-6 sm:mb-[34px]">
             Our artisans pour their heart and soul into every piece they create.
             By buying from us, you are supporting their dreams and preserving
             centuries-old traditions.
           </p>
-          <button className="bg-primary-700 text-white border-none px-6 py-3.5 rounded-xl text-sm font-semibold tracking-[0.5px] cursor-pointer hover:bg-primary-800 transition-colors">
+          <button className="bg-primary-700 text-white border-none px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl text-xs sm:text-sm font-semibold tracking-[0.5px] cursor-pointer hover:bg-primary-800 transition-colors">
             VIEW THEIR STORIES
           </button>
         </div>
 
         {/* Newsletter */}
-        <div className="relative z-10 p-[46px_42px]">
-          <h2 className="font-serif text-[54px] font-medium text-primary-700 mb-3">
+        <div className="relative z-10 p-8 sm:p-10 lg:p-[46px_42px]">
+          <h2 className="font-serif text-[34px] sm:text-[42px] lg:text-[54px] font-medium text-primary-700 mb-3">
             Stay Updated
           </h2>
-          <div className="flex items-center gap-2.5 mb-[26px]">
-            <div className="w-[42px] h-[2px] bg-secondary-500" />
+          <div className="flex items-center gap-2.5 mb-5 sm:mb-[26px]">
+            <div className="w-[35px] sm:w-[42px] h-[2px] bg-secondary-500" />
             <span className="text-secondary-500">✦</span>
-            <div className="w-[42px] h-[2px] bg-secondary-500" />
+            <div className="w-[35px] sm:w-[42px] h-[2px] bg-secondary-500" />
           </div>
-          <p className="text-base leading-relaxed text-[#5f4f47] max-w-[430px] mb-[34px]">
+          <p className="text-sm sm:text-base leading-relaxed text-[#5f4f47] max-w-[430px] mb-6 sm:mb-[34px]">
             Subscribe to our newsletter for updates on new arrivals, offers and
             more.
           </p>
-          <div className="flex items-center gap-3.5">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-3.5">
             <input
               type="email"
               placeholder="Enter your email address"
-              className="flex-1 h-14 border-2 border-[#ddd2c5] bg-[#fffaf5] rounded-[14px] px-[18px] text-base outline-none focus:border-primary-400 transition-colors"
+              className="flex-1 h-12 sm:h-14 border-2 border-[#ddd2c5] bg-[#fffaf5] rounded-xl sm:rounded-[14px] px-4 sm:px-[18px] text-sm sm:text-base outline-none focus:border-primary-400 transition-colors min-w-0"
             />
-            <button className="h-14 px-[26px] border-none rounded-[14px] bg-primary-700 text-white text-sm font-semibold cursor-pointer hover:bg-primary-800 transition-colors whitespace-nowrap">
+            <button className="h-12 sm:h-14 px-6 sm:px-[26px] border-none rounded-xl sm:rounded-[14px] bg-primary-700 text-white text-sm font-semibold cursor-pointer hover:bg-primary-800 transition-colors whitespace-nowrap">
               SUBSCRIBE
             </button>
           </div>

@@ -72,8 +72,8 @@ export default function UsersPage() {
       {/* Page Title */}
       <div className="mb-8">
         <span className="text-text-light text-xs tracking-[0.2em]">ACCESS</span>
-        <div className="flex items-center justify-between">
-          <h1 className="font-serif text-primary-700 text-[70px] font-semibold leading-none mt-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h1 className="font-serif text-primary-700 text-3xl sm:text-5xl md:text-[60px] lg:text-[70px] font-semibold leading-none mt-2.5">
             Users
           </h1>
           <div className="flex items-center gap-3 text-sm text-text-mid">

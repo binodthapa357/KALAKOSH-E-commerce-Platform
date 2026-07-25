@@ -57,8 +57,8 @@ export default function AdminDashboard() {
   }, []);
 
   const formatCurrency = (amount: number) => {
-    if (amount >= 1000) return `$${(amount / 1000).toFixed(1)}k`;
-    return `$${amount.toFixed(0)}`;
+    if (amount >= 1000) return `Rs.${(amount / 1000).toFixed(1)}k`;
+    return `Rs.${amount.toFixed(0)}`;
   };
 
   return (
@@ -66,7 +66,7 @@ export default function AdminDashboard() {
       {/* Page Title */}
       <div className="mb-8">
         <span className="text-text-light text-xs tracking-[0.2em]">OVERVIEW</span>
-        <h1 className="font-serif text-primary-700 text-[70px] font-semibold leading-none mt-2.5">
+        <h1 className="font-serif text-primary-700 text-3xl sm:text-5xl md:text-[60px] lg:text-[70px] font-semibold leading-none mt-2.5">
           Platform Health
         </h1>
       </div>
@@ -141,7 +141,7 @@ export default function AdminDashboard() {
                         {order.user_id?.name ?? 'Unknown'}
                       </td>
                       <td className="py-4 border-t border-black/5 text-text-dark text-sm font-medium">
-                        ${order.total_amount.toFixed(2)}
+                        Rs.{order.total_amount.toFixed(2)}
                       </td>
                       <td className="py-4 border-t border-black/5 text-text-dark text-sm">
                         <span className={`px-3.5 py-2 rounded-full text-xs font-medium capitalize ${getStatusColor(order.order_status)}`}>

@@ -88,16 +88,23 @@ const Navbar = () => {
         </Link>
 
         <ul className="hidden gap-10 text-sm text-[#5C2E2E] md:flex">
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <Link
-                href={link.href}
-                className="transition hover:text-[#8B3232]"
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href || (link.href !== "/" && pathname?.startsWith(link.href));
+            return (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className={`transition pb-1 font-medium ${
+                    isActive
+                      ? "text-[#8B3232] border-b-2 border-[#8B3232] font-semibold"
+                      : "hover:text-[#8B3232]"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
 
         <div className="flex items-center gap-5 text-[#5C2E2E]">

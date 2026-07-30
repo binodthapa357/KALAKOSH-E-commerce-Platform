@@ -72,23 +72,28 @@
   padding: 70px 20px 50px;
 }
 .hero-subtitle {
-  color: #9a6b4d;
-  letter-spacing: 4px;
+  color: #c9974a;
+  letter-spacing: 6px;
   font-size: 13px;
   margin: 0 0 15px;
+  text-transform: uppercase;
 }
 .shop-hero h1 {
+  font-family: var(--font-serif);
   font-size: 52px;
   margin: 10px 0 20px;
-  color: #2a1a10;
+  color: #7d1d1d;
   font-weight: 500;
+  letter-spacing: 1px;
 }
 .hero-text {
+  font-family: var(--font-serif);
   color: #6b5544;
-  font-size: 17px;
+  font-size: 19px;
   max-width: 600px;
   margin: 0 auto;
   font-style: italic;
+  line-height: 1.6;
 }
 
 /* ---------- CONTENT ---------- */
@@ -382,6 +387,47 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+/* ---------- PAGINATION ---------- */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 50px 0 20px;
+}
+
+.pagination-btn {
+  background: #fff;
+  border: 1px solid #ead9c6;
+  color: #4a1e1a;
+  padding: 8px 16px;
+  border-radius: 99px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #fdfaf6;
+  border-color: #c9974a;
+  color: #c9974a;
+  transform: translateY(-1px);
+}
+
+.pagination-btn.active {
+  background: #4a1e1a;
+  border-color: #4a1e1a;
+  color: #f5e6d3;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ---------- RESPONSIVE ---------- */

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
+import { ShoppingBag } from "lucide-react";
 
 export default function CartPage() {
   const router = useRouter();
@@ -61,19 +62,12 @@ export default function CartPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Breadcrumb */}
-        <nav className="text-sm text-muted-foreground mb-6">
-          <Link href="/" className="hover:text-primary-700">
-            Home
-          </Link>
-          <span className="mx-2">/</span>
-          <span className="text-foreground">Cart</span>
-        </nav>
 
-        <h1 className="text-3xl font-serif font-bold text-primary-800 mb-2">
+
+        <h1 className="text-3xl font-serif font-medium text-primary-700 mb-2">
           Your Cart
         </h1>
-        <p className="text-muted-foreground mb-8">
+        <p className="font-serif italic text-muted-foreground mb-8">
           {itemCount === 0
             ? "Your cart is empty."
             : `${itemCount} item${itemCount === 1 ? "" : "s"} in your cart.`}
@@ -81,7 +75,7 @@ export default function CartPage() {
 
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-4 py-20 border border-dashed border-border rounded-xl">
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground font-serif italic mb-2">
               Looks like you haven&apos;t added anything yet.
             </p>
             <Link

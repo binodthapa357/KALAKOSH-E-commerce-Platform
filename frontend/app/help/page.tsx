@@ -97,27 +97,20 @@ export default function HelpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FBF8F3] py-12">
+    <div className="min-h-screen bg-[#FBF8F3] py-12 font-sans">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         
-        {/* Breadcrumbs */}
-        <nav className="text-sm text-muted-foreground mb-8">
-          <Link href="/" className="hover:text-primary-700">
-            Home
-          </Link>
-          <span className="mx-2">/</span>
-          <span className="text-foreground font-medium">Help & Support</span>
-        </nav>
+
 
         {/* Hero Header */}
         <div className="text-center max-w-xl mx-auto mb-16">
-          <div className="w-14 h-14 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4 text-[#5C2E2E]">
-            <HelpCircle className="w-8 h-8 text-primary-700" />
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary-800 tracking-wide">
+          <p className="text-secondary-600 uppercase tracking-[0.25em] text-xs sm:text-sm font-semibold mb-3">
+            — ARTISAN CUSTOMER SERVICE —
+          </p>
+          <h1 className="text-3xl sm:text-4xl lg:text-[48px] font-serif font-medium text-primary-700 tracking-wide leading-tight mb-4">
             Help & Support Center
           </h1>
-          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
+          <p className="font-serif italic text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed">
             Have questions about ordering, payments, or artisan heritage crafts? We&apos;re here to help.
           </p>
         </div>

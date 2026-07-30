@@ -14,27 +14,21 @@ export default function WishlistPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background py-10">
+    <div className="min-h-screen bg-background py-12 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Breadcrumb */}
-        <nav className="text-sm text-muted-foreground mb-6">
-          <Link href="/" className="hover:text-primary-700">
-            Home
-          </Link>
-          <span className="mx-2">/</span>
-          <span className="text-foreground font-medium">Wishlist</span>
-        </nav>
 
-        <div className="flex flex-col md:flex-row md:items-baseline md:justify-between border-b border-border pb-6 mb-8">
-          <div>
-            <h1 className="text-4xl font-serif font-bold text-primary-800 tracking-wide">
-              My Wishlist
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              Save your favorite Nepalese handicrafts and track them here.
-            </p>
-          </div>
-          <span className="text-sm font-semibold text-primary-700 mt-2 md:mt-0">
+        {/* Wishlist Header */}
+        <div className="text-center max-w-xl mx-auto mb-12">
+          <p className="text-secondary-600 uppercase tracking-[0.25em] text-xs sm:text-sm font-semibold mb-3">
+            — MY COLLECTION —
+          </p>
+          <h1 className="text-3xl sm:text-4xl lg:text-[48px] font-serif font-medium text-primary-700 tracking-wide leading-tight mb-4">
+            My Wishlist
+          </h1>
+          <p className="font-serif italic text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed mb-5">
+            Save your favorite Nepalese handicrafts and track them here.
+          </p>
+          <span className="inline-block text-xs uppercase tracking-wider font-semibold bg-primary-50 text-primary-700 px-4.5 py-2 rounded-full border border-primary-100 shadow-2xs">
             {wishlist.length} {wishlist.length === 1 ? "Item" : "Items"}
           </span>
         </div>

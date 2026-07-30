@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { FaPlus, FaSearch, FaEdit, FaTrash, FaEye } from 'react-icons/fa';
-import { getProducts, type AdminProduct } from '@/services/admin/product';
+import { FaPlus, FaSearch, FaEdit, FaTrash, FaEye, FaStar, FaRegStar } from 'react-icons/fa';
+import { getProducts, toggleProductFeatured, type AdminProduct } from '@/services/admin/product';
 import { fetchApi } from '@/lib/api';
 import { toast } from 'sonner';
 
@@ -32,6 +32,7 @@ export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [togglingFeaturedId, setTogglingFeaturedId] = useState<string | null>(null);
 
   const fetchProducts = async () => {
     try {
@@ -66,6 +67,21 @@ export default function ProductsPage() {
       toast.error(err instanceof Error ? err.message : 'Failed to delete product');
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleToggleFeatured = async (product: AdminProduct) => {
+    setTogglingFeaturedId(product._id);
+    try {
+      await toggleProductFeatured(product._id);
+      setProducts((prev) =>
+        prev.map((p) => (p._id === product._id ? { ...p, isFeatured: !p.isFeatured } : p))
+      );
+      toast.success(`Product ${product.isFeatured ? 'unfeatured' : 'featured'} successfully`);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to update featured status');
+    } finally {
+      setTogglingFeaturedId(null);
     }
   };
 
@@ -148,6 +164,7 @@ export default function ProductsPage() {
                 <th className="text-left text-text-mid text-xs pb-4">VENDOR</th>
                 <th className="text-left text-text-mid text-xs pb-4">PRICE</th>
                 <th className="text-left text-text-mid text-xs pb-4">STOCK</th>
+                <th className="text-left text-text-mid text-xs pb-4">FEATURED</th>
                 <th className="text-left text-text-mid text-xs pb-4">STATUS</th>
                 <th className="text-right text-text-mid text-xs pb-4">ACTIONS</th>
               </tr>
@@ -180,6 +197,20 @@ export default function ProductsPage() {
                       <span className={`px-3 py-1.5 rounded-full text-xs font-medium ${stockStatus.cls}`}>
                         {product.stock} · {stockStatus.label}
                       </span>
+                    </td>
+                    <td className="py-4 border-t border-black/5">
+                      <button
+                        onClick={() => handleToggleFeatured(product)}
+                        disabled={togglingFeaturedId === product._id}
+                        className="p-1.5 rounded hover:bg-yellow-50 text-yellow-500 transition-colors disabled:opacity-50 inline-flex items-center justify-center"
+                        title={product.isFeatured ? "Remove from Featured" : "Mark as Featured"}
+                      >
+                        {product.isFeatured ? (
+                          <FaStar className="w-5 h-5 fill-current text-yellow-500" />
+                        ) : (
+                          <FaRegStar className="w-5 h-5 text-gray-400 hover:text-yellow-500" />
+                        )}
+                      </button>
                     </td>
                     <td className="py-4 border-t border-black/5">
                       <span className={`px-3 py-1.5 rounded-full text-xs font-medium capitalize ${getStatusBadge(product.status)}`}>

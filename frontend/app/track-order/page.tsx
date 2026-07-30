@@ -131,24 +131,20 @@ function TrackOrderContent() {
   const isCancelled = orderData?.order.order_status === "cancelled";
 
   return (
-    <div className="min-h-screen bg-[#FBF8F3] py-12">
+    <div className="min-h-screen bg-[#FBF8F3] py-12 font-sans">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         
-        {/* Breadcrumb */}
-        <nav className="text-sm text-muted-foreground mb-6">
-          <Link href="/" className="hover:text-primary-700">
-            Home
-          </Link>
-          <span className="mx-2">/</span>
-          <span className="text-foreground font-medium">Track Order</span>
-        </nav>
 
-        <div className="text-center max-w-xl mx-auto mb-10">
-          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary-800 tracking-wide">
+
+        <div className="text-center max-w-xl mx-auto mb-12">
+          <p className="text-secondary-600 uppercase tracking-[0.25em] text-xs sm:text-sm font-semibold mb-3">
+            — SHIPMENT STATUS —
+          </p>
+          <h1 className="text-3xl sm:text-4xl lg:text-[48px] font-serif font-medium text-primary-700 tracking-wide leading-tight mb-4">
             Track Your Order
           </h1>
-          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
-            Check the real-time status of your artisan craftworks from creation to delivery.
+          <p className="font-serif italic text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed">
+            Enter your Order Number and registered Email Address to view the live shipping status timeline.
           </p>
         </div>
 

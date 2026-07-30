@@ -8,6 +8,7 @@ export interface AdminProduct {
   discount_price?: number;
   stock: number;
   status: 'active' | 'pending' | 'inactive';
+  isFeatured?: boolean;
   avg_rating: number;
   images: string[];
   region: string;
@@ -24,4 +25,9 @@ export const getProducts = async (filters?: { status?: string }): Promise<AdminP
   const query = params.toString() ? `?${params.toString()}` : '';
   const data = await fetchApi(`/admin/products${query}`);
   return data.products;
+};
+
+export const toggleProductFeatured = async (id: string): Promise<AdminProduct> => {
+  const data = await fetchApi(`/admin/products/${id}/toggle-featured`, { method: 'PATCH' });
+  return data.product;
 };

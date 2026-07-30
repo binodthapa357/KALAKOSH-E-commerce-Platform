@@ -120,6 +120,13 @@ const searchProducts = async (keyword, filters = {}, pagination = { page: 1, lim
 };
 
 const getFeaturedProducts = async () => {
+  const featured = await Product.find({ status: "active", isFeatured: true })
+    .populate("category_id", "name slug")
+    .populate("vendor_id", "shop_name status")
+    .limit(8);
+
+  if (featured.length > 0) return featured;
+
   return await Product.find({ status: "active" })
     .populate("category_id", "name slug")
     .populate("vendor_id", "shop_name status")

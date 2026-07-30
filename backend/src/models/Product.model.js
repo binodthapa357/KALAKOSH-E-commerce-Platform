@@ -78,6 +78,10 @@ const productSchema = new mongoose.Schema(
       },
       default: "pending",
     },
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

@@ -4,6 +4,7 @@ import {
   getUsersList,
   toggleUserStatus,
   getProductsList,
+  toggleProductFeatured,
   getVendorsList,
   updateVendorStatus,
   getOrdersList,
@@ -26,6 +27,7 @@ router.get("/users", getUsersList);
 router.patch("/users/:id/toggle-status", toggleUserStatus);
 
 router.get("/products", getProductsList);
+router.patch("/products/:id/toggle-featured", toggleProductFeatured);
 
 router.get("/vendors", getVendorsList);
 router.patch("/vendors/:id/status", updateVendorStatus);

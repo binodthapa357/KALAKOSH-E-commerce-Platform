@@ -26,6 +26,9 @@ export default function Shop() {
   const [maxPrice, setMaxPrice] = useState(MAX_PRICE_LIMIT);
   const [sort, setSort] = useState("");
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   const buildQuery = useCallback(() => {
     const params = new URLSearchParams();
     if (selectedCategory) params.set("category", selectedCategory);
@@ -33,8 +36,9 @@ export default function Shop() {
     if (selectedMaterial) params.set("material", selectedMaterial);
     if (maxPrice < MAX_PRICE_LIMIT) params.set("maxPrice", String(maxPrice));
     if (sort) params.set("sort", sort);
+    if (currentPage > 1) params.set("page", String(currentPage));
     return params.toString();
-  }, [selectedCategory, selectedRegion, selectedMaterial, maxPrice, sort]);
+  }, [selectedCategory, selectedRegion, selectedMaterial, maxPrice, sort, currentPage]);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -51,6 +55,7 @@ export default function Shop() {
           ? data.products
           : [];
       setProducts(list);
+      setTotalPages(data?.totalPages || 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -68,10 +73,12 @@ export default function Shop() {
     setSelectedMaterial("");
     setMaxPrice(MAX_PRICE_LIMIT);
     setSort("");
+    setCurrentPage(1);
   };
 
   const toggleFilter = (value, current, setter) => {
     setter(value === current ? "" : value);
+    setCurrentPage(1);
   };
 
   return (
@@ -157,7 +164,10 @@ export default function Shop() {
                 max={MAX_PRICE_LIMIT}
                 step="50"
                 value={maxPrice}
-                onChange={(e) => setMaxPrice(Number(e.target.value))}
+                onChange={(e) => {
+                  setMaxPrice(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
               />
               <div className="price"><span>Rs. 0</span><span>Rs. {maxPrice}</span></div>
             </div>
@@ -197,10 +207,16 @@ export default function Shop() {
               <div>
                 <h2>Products</h2>
                 <p className="results">
-                  {loading ? "Loading..." : `Showing ${products.length} treasures`}
+                  {loading ? "Loading..." : `Showing available treasures`}
                 </p>
               </div>
-              <select value={sort} onChange={(e) => setSort(e.target.value)}>
+              <select
+                value={sort}
+                onChange={(e) => {
+                  setSort(e.target.value);
+                  setCurrentPage(1);
+                }}
+              >
                 {SORT_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
@@ -214,11 +230,45 @@ export default function Shop() {
             )}
 
             {!loading && !error && products.length > 0 && (
-              <div className="product-grid">
-                {products.map((item) => (
-                  <ProductCard key={item._id} product={item} />
-                ))}
-              </div>
+              <>
+                <div className="product-grid">
+                  {products.map((item) => (
+                    <ProductCard key={item._id} product={item} />
+                  ))}
+                </div>
+
+                {/* PAGINATION */}
+                {totalPages > 1 && (
+                  <div className="pagination">
+                    <button
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                      className="pagination-btn"
+                    >
+                      Previous
+                    </button>
+                    {Array.from({ length: totalPages }).map((_, index) => {
+                      const pNum = index + 1;
+                      return (
+                        <button
+                          key={pNum}
+                          onClick={() => setCurrentPage(pNum)}
+                          className={`pagination-btn ${currentPage === pNum ? "active" : ""}`}
+                        >
+                          {pNum}
+                        </button>
+                      );
+                    })}
+                    <button
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                      className="pagination-btn"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </main>
         </section>

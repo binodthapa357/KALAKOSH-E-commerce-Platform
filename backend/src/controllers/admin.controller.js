@@ -342,6 +342,31 @@ export const uploadImageAdmin = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Toggle product featured status
+ * @route   PATCH /api/admin/products/:id/toggle-featured
+ * @access  Private (Admin Only)
+ */
+export const toggleProductFeatured = async (req, res, next) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    product.isFeatured = !product.isFeatured;
+    await product.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Product ${product.isFeatured ? "featured" : "unfeatured"} successfully`,
+      product,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getDashboardStats,
   getUsersList,
@@ -353,4 +378,5 @@ export default {
   getReviewsList,
   deleteReviewAdmin,
   uploadImageAdmin,
+  toggleProductFeatured,
 };

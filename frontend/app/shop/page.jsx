@@ -195,7 +195,7 @@ export default function Shop() {
           <main className="products">
             <div className="products-header">
               <div>
-                <h2>Featured Products</h2>
+                <h2>Products</h2>
                 <p className="results">
                   {loading ? "Loading..." : `Showing ${products.length} treasures`}
                 </p>

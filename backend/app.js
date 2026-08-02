@@ -21,7 +21,13 @@ const app = express();
    Middlewares
 ======================== */
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: [
+    "https://kalakosh-e-commerce-platform.vercel.app",
+    "http://localhost:3000"
+  ],
+  credentials: true
+}));
 
 /* ========================
    Routes

@@ -1,14 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import AuthLayout from '@/components/AuthLayout';
 import Link from 'next/link';
 import { User, Mail, Lock, Eye, EyeOff, AlertCircle, ArrowRight, Store, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApp } from '@/context/AppContext';
 
-export default function SignUpPage() {
+function SignUpContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { login } = useApp();
   const [role, setRole] = useState<'user' | 'vendor'>('user');
   const [form, setForm] = useState({
     name: '',
@@ -117,17 +120,15 @@ export default function SignUpPage() {
         throw new Error(data.message || 'Registration failed');
       }
 
-      localStorage.setItem('token', data.token);
-      
-      // Dispatch storage event to notify other layout parts
-      window.dispatchEvent(new Event('storage'));
+      login(data.token, data.user);
       
       toast.success(role === 'vendor' ? 'Artisan profile registered successfully!' : 'Account registered successfully!');
       
       if (role === 'vendor') {
         router.push('/vendor/dashboard');
       } else {
-        router.push('/');
+        const redirect = searchParams.get("redirect") || "/";
+        router.push(redirect);
       }
     } catch (err: any) {
       setError(err.message || 'Something went wrong');
@@ -446,11 +447,23 @@ export default function SignUpPage() {
 
         <p className="mt-6 text-center text-sm text-stone-500">
           Already have an account?{' '}
-          <Link href="/signin" className="font-semibold text-[#8B3232] hover:underline">
+          <Link href={`/signin?redirect=${searchParams.get("redirect") || "/"}`} className="font-semibold text-[#8B3232] hover:underline">
             Sign In
           </Link>
         </p>
       </div>
     </AuthLayout>
+  );
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    }>
+      <SignUpContent />
+    </Suspense>
   );
 }

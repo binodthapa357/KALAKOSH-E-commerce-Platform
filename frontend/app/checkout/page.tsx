@@ -1,32 +1,16 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useApp } from "@/context/AppContext";
-import { clearCart as clearLocalCart, getCart } from "@/lib/cart";
 import { CreditCard, Truck, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-interface CartItem {
-  product: {
-    _id: string;
-    name: string;
-    price: number;
-    discount_price?: number;
-    images?: string[];
-  };
-  quantity: number;
-}
-
 export default function CheckoutPage() {
   const router = useRouter();
-  const { token, user } = useApp();
-  const syncRef = useRef(false);
+  const { token, user, cart, cartSubtotal, loadingAuth, clearCart } = useApp();
   
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [subtotal, setSubtotal] = useState(0);
   const [shippingCost, setShippingCost] = useState(150);
   const [placingOrder, setPlacingOrder] = useState(false);
 
@@ -41,96 +25,27 @@ export default function CheckoutPage() {
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-  const syncLocalCartToBackend = async (authToken: string, localItems: any[]) => {
-    try {
-      // 1. Clear backend cart first
-      await fetch(`${API_URL}/api/cart`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-
-      // 2. Add each local item to backend cart
-      for (const item of localItems) {
-        await fetch(`${API_URL}/api/cart`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`,
-          },
-          body: JSON.stringify({
-            product_id: item.productId,
-            quantity: item.quantity,
-          }),
-        });
-      }
-    } catch (error) {
-      console.error("Error syncing cart to backend:", error);
-    }
-  };
-
   // Redirect if not logged in
   useEffect(() => {
-    const storedToken = localStorage.getItem("token") || token;
-    if (!storedToken) {
-      toast.error("Please sign in to access checkout");
-      router.push("/signin?redirect=/checkout");
-      return;
-    }
-
-    if (user) {
-      setName(user.name || "");
-    }
-
-    const runSyncAndFetch = async () => {
-      if (!syncRef.current) {
-        syncRef.current = true;
-        const localCart = getCart();
-        if (localCart.length > 0) {
-          await syncLocalCartToBackend(storedToken, localCart);
-        }
+    if (!loadingAuth) {
+      const storedToken = localStorage.getItem("token") || token;
+      if (!storedToken) {
+        toast.error("Please sign in to access checkout");
+        router.push("/signin?redirect=/checkout");
+        return;
       }
-      await fetchCart(storedToken);
-    };
 
-    runSyncAndFetch();
-  }, [token, user]);
-
-  const fetchCart = async (authToken: string) => {
-    try {
-      const res = await fetch(`${API_URL}/api/cart`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-      const data = await res.json();
-      if (res.ok && data.success && data.cart) {
-        const items = data.cart.items.map((item: any) => ({
-          product: item.product_id,
-          quantity: item.quantity,
-        })).filter((item: any) => item.product !== null); // Filter out any deleted products
-        
-        setCartItems(items);
-        
-        // Calculate subtotal
-        const sub = items.reduce((sum: number, item: CartItem) => {
-          const price = item.product.discount_price ?? item.product.price;
-          return sum + price * item.quantity;
-        }, 0);
-        setSubtotal(sub);
-      } else {
-        toast.error("Failed to load your cart");
+      if (user) {
+        setName(user.name || "");
       }
-    } catch (error) {
-      console.error("Error fetching cart:", error);
-      toast.error("Error connecting to server");
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [loadingAuth, token, user]);
 
   // Recalculate shipping cost client-side dynamically as user inputs city/state
   useEffect(() => {
-    if (subtotal === 0) return;
+    if (cartSubtotal === 0) return;
     
-    if (subtotal >= 5000) {
+    if (cartSubtotal >= 5000) {
       setShippingCost(0);
       return;
     }
@@ -168,7 +83,7 @@ export default function CheckoutPage() {
     } else {
       setShippingCost(200);
     }
-  }, [city, state, subtotal]);
+  }, [city, state, cartSubtotal]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -180,7 +95,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (cartItems.length === 0) {
+    if (cart.length === 0) {
       toast.error("Your cart is empty");
       return;
     }
@@ -222,11 +137,8 @@ export default function CheckoutPage() {
       }
 
       // Order created successfully!
-      // Clear local storage cart state
-      clearLocalCart();
-      
-      // Also update the global context cart count
-      window.dispatchEvent(new Event("kalakosh-cart-updated"));
+      // Clear global cart
+      await clearCart();
 
       const order = data.order;
 
@@ -248,9 +160,9 @@ export default function CheckoutPage() {
     }
   };
 
-  const totalAmount = subtotal + shippingCost;
+  const totalAmount = cartSubtotal + shippingCost;
 
-  if (loading) {
+  if (loadingAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
@@ -268,7 +180,7 @@ export default function CheckoutPage() {
           Checkout
         </h1>
 
-        {cartItems.length === 0 ? (
+        {cart.length === 0 ? (
           <div className="bg-white border border-border p-12 rounded-3xl text-center shadow-sm max-w-xl mx-auto">
             <AlertCircle className="w-12 h-12 text-primary-500 mx-auto mb-4" />
             <h2 className="text-xl font-bold text-foreground mb-2">No items to checkout</h2>
@@ -479,7 +391,7 @@ export default function CheckoutPage() {
 
                 {/* Items List */}
                 <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1">
-                  {cartItems.map((item) => {
+                  {cart.map((item) => {
                     const price = item.product.discount_price ?? item.product.price;
                     const imgUrl = item.product.images?.[0] || "/placeholder.svg";
                     return (
@@ -514,7 +426,7 @@ export default function CheckoutPage() {
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span className="font-semibold text-foreground">
-                      Rs. {subtotal.toLocaleString("en-IN")}
+                      Rs. {cartSubtotal.toLocaleString("en-IN")}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -539,11 +451,11 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Info Note */}
-                {shippingCost > 0 && subtotal < 5000 && (
+                {shippingCost > 0 && cartSubtotal < 5000 && (
                   <div className="mt-6 p-4 bg-primary-50/30 border border-primary-100 rounded-2xl flex items-start gap-2.5">
                     <AlertCircle className="w-5 h-5 text-primary-700 flex-shrink-0 mt-0.5" />
                     <p className="text-xs text-primary-900 leading-relaxed">
-                      Add products worth Rs. <strong>{(5000 - subtotal).toLocaleString("en-IN")}</strong> more to qualify for <strong>FREE Shipping</strong>!
+                      Add products worth Rs. <strong>{(5000 - cartSubtotal).toLocaleString("en-IN")}</strong> more to qualify for <strong>FREE Shipping</strong>!
                     </p>
                   </div>
                 )}

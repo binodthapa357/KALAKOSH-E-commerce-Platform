@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Vendor from "../models/Vendor.model.js";
 import Product from "../models/Product.model.js";
 import OrderItem from "../models/OrderItem.model.js";
+import Order from "../models/Order.model.js";
 import Category from "../models/Category.model.js";
 import { uploadImageToCloudinary } from "../config/cloudinary.config.js";
 
@@ -177,29 +178,68 @@ export const getVendorOrders = async (req, res, next) => {
  * @access  Private (Vendor only)
  */
 export const updateVendorOrderItem = async (req, res, next) => {
+  const session = await mongoose.startSession();
   try {
-    const item = await OrderItem.findById(req.params.id);
+    session.startTransaction();
+
+    const item = await OrderItem.findById(req.params.id).session(session);
     if (!item) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(404).json({ message: "Order item not found" });
     }
 
     // Verify vendor ownership
-    const vendor = await Vendor.findOne({ user_id: req.user._id });
+    const vendor = await Vendor.findOne({ user_id: req.user._id }).session(session);
     if (!vendor || item.vendor_id.toString() !== vendor._id.toString()) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(403).json({ message: "Not authorized to modify this order item" });
     }
 
     const { status } = req.body;
     const allowed = ["pending", "processing", "shipped", "delivered", "cancelled"];
     if (!allowed.includes(status)) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(400).json({ message: "Invalid status value" });
     }
 
+    const oldItemStatus = item.item_status;
     item.item_status = status;
-    await item.save();
+    await item.save({ session });
+
+    // If item cancelled, refund stock
+    if (status === "cancelled" && oldItemStatus !== "cancelled") {
+      await Product.findByIdAndUpdate(item.product_id, { $inc: { stock: item.quantity } }).session(session);
+    }
+
+    // Auto-update overall order status based on sibling item statuses
+    const siblingItems = await OrderItem.find({ order_id: item.order_id }).session(session);
+    const allStatuses = siblingItems.map((sibling) => (sibling._id.toString() === item._id.toString() ? status : sibling.item_status));
+
+    let newParentStatus = null;
+    if (allStatuses.every((s) => s === "delivered")) {
+      newParentStatus = "delivered";
+    } else if (allStatuses.every((s) => s === "shipped" || s === "delivered")) {
+      newParentStatus = "shipped";
+    } else if (allStatuses.some((s) => s === "processing" || s === "shipped")) {
+      newParentStatus = "processing";
+    } else if (allStatuses.every((s) => s === "cancelled")) {
+      newParentStatus = "cancelled";
+    }
+
+    if (newParentStatus) {
+      await Order.findByIdAndUpdate(item.order_id, { order_status: newParentStatus }).session(session);
+    }
+
+    await session.commitTransaction();
+    session.endSession();
 
     res.status(200).json({ success: true, item });
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     next(error);
   }
 };

@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import AuthLayout from "@/components/AuthLayout";
 import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff, AlertCircle, ArrowRight } from "lucide-react";
+import { useApp } from "@/context/AppContext";
 
-export default function SignInPage() {
+function SignInContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const { login } = useApp();
     const [form, setForm] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -44,10 +47,7 @@ export default function SignInPage() {
                 throw new Error(data.message || "Invalid email or password");
             }
 
-            localStorage.setItem("token", data.token);
-            
-            // Dispatch storage event to notify other layout parts
-            window.dispatchEvent(new Event('storage'));
+            login(data.token, data.user);
             
             const role = data.user?.role;
             if (role === "vendor") {
@@ -55,7 +55,8 @@ export default function SignInPage() {
             } else if (role === "admin") {
                 router.push("/admin");
             } else {
-                router.push("/");
+                const redirect = searchParams.get("redirect") || "/";
+                router.push(redirect);
             }
         } catch (err) {
             setError(
@@ -164,11 +165,23 @@ export default function SignInPage() {
 
                 <p className="mt-8 text-center text-sm text-stone-500">
                     New to Kalakosh?{" "}
-                    <Link href="/signup" className="font-semibold text-[#8B3232] hover:text-[#5C1A1A] hover:underline">
+                    <Link href={`/signup?redirect=${searchParams.get("redirect") || "/"}`} className="font-semibold text-[#8B3232] hover:text-[#5C1A1A] hover:underline">
                         Create an account
                     </Link>
                 </p>
             </div>
         </AuthLayout>
+    );
+}
+
+export default function SignInPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <p className="text-muted-foreground">Loading...</p>
+            </div>
+        }>
+            <SignInContent />
+        </Suspense>
     );
 }

@@ -14,6 +14,8 @@ import vendorRoutes from "./src/routes/vendor.route.js";
 import vendorDashboardRoutes from "./src/routes/vendorDashboard.route.js";
 
 import errorMiddleware from "./src/middleware/error.middleware.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./swagger.js";
 
 const app = express();
 
@@ -28,6 +30,11 @@ app.use(cors({
   ],
   credentials: true
 }));
+
+/* ========================
+   Swagger Documentation
+======================= */
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 /* ========================
    Routes

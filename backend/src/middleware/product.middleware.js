@@ -73,12 +73,18 @@ const validateCategoryName = async (req, res, next) => {
       });
     }
 
+    const trimmedName = categoryName.trim();
+
+    // Match by slug (exact) OR by display name (case-insensitive)
     const category = await Category.findOne({
-      name: { $regex: new RegExp(`^${categoryName.trim()}$`, "i") },
+      $or: [
+        { slug: trimmedName },
+        { name: { $regex: new RegExp(`^${trimmedName}$`, "i") } },
+      ],
     });
 
     if (!category) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         message: `Category '${categoryName}' not found`,
       });

@@ -17,21 +17,65 @@ export const createCategory = async (req, res) => {
 };
 
 export const getAllCategories = async (req, res) => {
-    const categories = await Category.find();
+    try {
+        const categories = await Category.find();
 
-    res.json({
-        success: true,
-        categories,
-    });
+        res.json({
+            success: true,
+            categories,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
 };
 
 export const getCategoryById = async (req, res) => {
-    const category = await Category.findById(req.params.id);
+    try {
+        const category = await Category.findById(req.params.id);
 
-    res.json({
-        success: true,
-        category,
-    });
+        if (!category) {
+            return res.status(404).json({
+                success: false,
+                message: "Category not found",
+            });
+        }
+
+        res.json({
+            success: true,
+            category,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const getCategoryBySlug = async (req, res) => {
+    try {
+        const category = await Category.findOne({ slug: req.params.slug });
+
+        if (!category) {
+            return res.status(404).json({
+                success: false,
+                message: "Category not found",
+            });
+        }
+
+        res.json({
+            success: true,
+            category,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
 };
 
 export const updateCategory = async (req, res) => {
@@ -84,6 +128,7 @@ export default {
     createCategory,
     getAllCategories,
     getCategoryById,
+    getCategoryBySlug,
     updateCategory,
     deleteCategory,
 };

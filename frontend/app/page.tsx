@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { 
-  FaTruck, 
-  FaRegCircleQuestion, 
-  FaUsers, 
+import {
+  FaTruck,
+  FaRegCircleQuestion,
+  FaUsers,
   FaShieldHeart,
 } from 'react-icons/fa6';
 import { toast } from 'sonner';
@@ -30,19 +30,19 @@ export default function Home() {
 
   const features = [
     {
-      icon: <FaRegCircleQuestion className="text-xl" />,
-      title: 'Authentic Products',
-      description: '100% authentic handmade Nepali products',
+      icon: <FaRegCircleQuestion className="text-lg sm:text-xl" />,
+      title: "Authentic Products",
+      description: "100% authentic handmade Nepali products",
     },
     {
-      icon: <FaUsers className="text-xl" />,
-      title: 'Direct from Artisans',
-      description: 'Supporting local artisans and communities',
+      icon: <FaUsers className="text-lg sm:text-xl" />,
+      title: "Direct from Artisans",
+      description: "Supporting local artisans and communities",
     },
     {
-      icon: <FaShieldHeart className="text-xl" />,
-      title: 'Secure Payments',
-      description: 'Safe & secure payments via eSewa, Khalti & more',
+      icon: <FaShieldHeart className="text-lg sm:text-xl" />,
+      title: "Secure Payments",
+      description: "Safe & secure payments via eSewa, Khalti & more",
     },
     {
       icon: <FaTruck className="text-xl" />,
@@ -93,7 +93,7 @@ export default function Home() {
     <main className="bg-[#f5efe7] font-sans text-[#2d1a16] min-h-screen">
       {/* HERO SECTION */}
       <section className="relative w-[calc(100%-70px)] min-h-[520px] mx-[35px] my-[45px] rounded-[28px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.08)] bg-cover bg-center" style={{ backgroundImage: "url('/images/heritage.png')" }}>
-        <div 
+        <div
           className="absolute inset-0 bg-gradient-to-r from-[#f5efe7]/98 via-[#f5efe7]/85 to-transparent z-10"
         />
         <div className="relative z-10 h-full min-h-[520px] flex items-center pl-[50px] py-12">
@@ -104,7 +104,10 @@ export default function Home() {
             <h1 className="font-serif text-[64px] md:text-[72px] leading-[0.95] font-medium text-[#2c1612]">
               Discover <br />
               Authentic <br />
-              <span className="text-[#7d1d1d] italic">Nepali <br />Handicrafts</span>
+              <span className="text-[#7d1d1d]">
+                Nepali <br />
+                Handicrafts
+              </span>
             </h1>
 
             <div className="flex items-center gap-2.5 my-[22px]">
@@ -118,14 +121,14 @@ export default function Home() {
             </p>
 
             <div className="flex flex-wrap gap-3.5">
-              <Link 
-                href="/shop" 
+              <Link
+                href="/shop"
                 className="bg-[#7d1d1d] text-white border-none px-8 py-4 rounded-[12px] text-sm font-semibold cursor-pointer hover:bg-[#5c1515] transition-all shadow-md hover:shadow-lg inline-flex items-center gap-2"
               >
                 SHOP NOW →
               </Link>
-              <Link 
-                href="/categories" 
+              <Link
+                href="/categories"
                 className="bg-transparent border-2 border-[#7d1d1d] text-[#7d1d1d] px-7 py-[14px] rounded-[12px] text-sm font-semibold tracking-[0.5px] cursor-pointer hover:bg-[#7d1d1d]/10 transition-colors inline-flex items-center"
               >
                 EXPLORE CATEGORIES
@@ -146,9 +149,9 @@ export default function Home() {
             Shop by Categories
           </h2>
           <div className="flex justify-center items-center gap-2.5 mt-2.5">
-            <div className="w-[45px] h-[2px] bg-secondary-500" />
+            <div className="w-[35px] sm:w-[45px] h-[2px] bg-secondary-500" />
             <span className="text-secondary-500">✦</span>
-            <div className="w-[45px] h-[2px] bg-secondary-500" />
+            <div className="w-[35px] sm:w-[45px] h-[2px] bg-secondary-500" />
           </div>
         </div>
 
@@ -191,8 +194,8 @@ export default function Home() {
               Curated masterworks of living Nepali heritage
             </p>
           </div>
-          <Link 
-            href="/shop" 
+          <Link
+            href="/shop"
             className="text-[#7d1d1d] text-sm font-semibold bg-white px-5 py-2.5 rounded-full border border-[#ead9c6] shadow-sm transition-all hover:bg-[#7d1d1d] hover:text-white hover:border-[#7d1d1d] flex-shrink-0"
           >
             View All Products →
@@ -225,10 +228,10 @@ export default function Home() {
 
         {/* Banner */}
         <div className="relative min-h-[340px] rounded-[28px] overflow-hidden border border-[#d8cdbf] flex items-center pl-8 md:pl-[65px] py-8">
-          <div 
+          <div
             className="absolute inset-0 bg-gradient-to-r from-[#f7f0e6]/96 via-[#f7f0e6]/80 to-transparent z-10"
           />
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: "url('/images/artisan.jpg')" }}
           />
@@ -242,8 +245,8 @@ export default function Home() {
             <p className="text-[16px] leading-relaxed text-[#5f4f47] mb-6">
               Every purchase directly sustains local artisan families, protects endangered traditional crafts, and brings living history to your home.
             </p>
-            <Link 
-              href="/shop" 
+            <Link
+              href="/shop"
               className="bg-[#7d1d1d] text-white border-none px-7 py-3.5 rounded-xl text-sm font-semibold tracking-[0.5px] cursor-pointer hover:bg-[#5c1515] transition-colors inline-block shadow-md"
             >
               EXPLORE COLLECTION
@@ -256,16 +259,16 @@ export default function Home() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="bg-[#fcf8f3] border-2 border-[#ddd2c5] rounded-[20px] p-6 flex items-start gap-[18px] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(0,0,0,0.05)]"
+              className="bg-[#fcf8f3] border-2 border-[#ddd2c5] rounded-2xl lg:rounded-[20px] p-5 sm:p-6 flex items-start gap-4 sm:gap-[18px] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(0,0,0,0.05)]"
             >
-              <div className="min-w-[48px] h-[48px] rounded-full border-2 border-[#e2c79d] flex justify-center items-center text-primary-700 text-lg">
+              <div className="min-w-[40px] h-[40px] sm:min-w-[48px] sm:h-[48px] rounded-full border-2 border-[#e2c79d] flex justify-center items-center text-primary-700 text-base sm:text-lg shrink-0">
                 {feature.icon}
               </div>
               <div>
                 <h4 className="font-serif text-[22px] text-[#2d1a16] mb-1 font-medium">
                   {feature.title}
                 </h4>
-                <p className="text-sm leading-relaxed text-[#6d5c55]">
+                <p className="text-xs sm:text-sm leading-relaxed text-[#6d5c55]">
                   {feature.description}
                 </p>
               </div>
@@ -303,8 +306,8 @@ export default function Home() {
               Our master craftspeople pour their heart and soul into every piece they create. Discover the generations of heritage and sacred technique behind each craft.
             </p>
           </div>
-          <Link 
-            href="/about" 
+          <Link
+            href="/about"
             className="bg-[#7d1d1d] text-white border-none px-6 py-3.5 rounded-xl text-sm font-semibold tracking-[0.5px] cursor-pointer hover:bg-[#5c1515] transition-colors inline-block text-center w-fit shadow-sm"
           >
             VIEW THEIR STORIES
@@ -335,8 +338,8 @@ export default function Home() {
               required
               className="flex-1 h-12 border-2 border-[#ddd2c5] bg-[#fffaf5] rounded-[12px] px-4 text-sm outline-none focus:border-[#7d1d1d] transition-colors"
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isSubscribing}
               className="h-12 px-6 border-none rounded-[12px] bg-[#7d1d1d] text-white text-sm font-semibold cursor-pointer hover:bg-[#5c1515] transition-colors whitespace-nowrap disabled:opacity-60 shadow-sm"
             >

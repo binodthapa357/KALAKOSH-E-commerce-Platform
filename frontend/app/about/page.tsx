@@ -33,7 +33,7 @@ export default function AboutPage() {
     <div className="about-page">
       {/* HERO */}
       <section className="about-hero">
-        <div className="container">
+        <div className="about-container">
           <p className="subtitle">कलाकोष · LIVING HERITAGE</p>
           <h1>About KALAKOSH</h1>
           <p className="hero-text">
@@ -45,7 +45,7 @@ export default function AboutPage() {
 
       {/* STORY */}
       <section className="story-section">
-        <div className="container">
+        <div className="about-container">
           <div className="story-grid">
             <div className="story-left">
               <h3>OUR STORY</h3>
@@ -65,10 +65,10 @@ export default function AboutPage() {
             </div>
 
             <div className="story-image">
-              <Image 
-                src="/images/artisan.jpg" 
-                alt="Nepalese artisan crafting" 
-                fill 
+              <Image
+                src="/images/artisan.jpg"
+                alt="Nepalese artisan crafting"
+                fill
                 className="object-cover"
               />
             </div>
@@ -101,7 +101,7 @@ export default function AboutPage() {
 
       {/* ARTISANS */}
       <section className="artisan-section">
-        <div className="container">
+        <div className="about-container">
           <div className="section-title">
             <p>MEET THE ARTISANS</p>
             <h2>The Hands Behind the Craft</h2>
@@ -111,8 +111,8 @@ export default function AboutPage() {
             {artisans.map((artisan) => (
               <div className="artisan-card" key={artisan.name}>
                 <div className="relative w-[130px] h-[130px] mx-auto mb-4 rounded-full overflow-hidden border-4 border-[#f7efe7] shadow-sm">
-                  <Image 
-                    src={artisan.img} 
+                  <Image
+                    src={artisan.img}
                     alt={artisan.name}
                     fill
                     className="object-cover"
@@ -129,7 +129,7 @@ export default function AboutPage() {
 
       {/* CTA */}
       <section className="cta-section">
-        <div className="container">
+        <div className="about-container">
           <div className="cta-box">
             <h2>Bring a Piece of Nepal Home</h2>
             <p>Every purchase directly empowers a local artisan family and preserves centuries-old heritage.</p>

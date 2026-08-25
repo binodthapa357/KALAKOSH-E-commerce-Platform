@@ -30,7 +30,7 @@ const FaRotateRight = () => (
 
 function ShopContent() {
   const searchParams = useSearchParams();
-  const initialCategory = searchParams.get("category");
+  const initialCategory = searchParams?.get("category");
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -117,7 +117,7 @@ function ShopContent() {
       materials: Object.keys(materialCounts).sort(),
       materialCounts,
     };
-  }, [products]);
+  }, [products, categories]);
 
   // Handle Checkbox Changes
   const toggleCategory = (cat) => {
@@ -416,7 +416,7 @@ function ShopContent() {
             <div className="active-tags-bar flex flex-wrap gap-2 mb-6">
               {searchTerm && (
                 <span className="filter-chip">
-                  Keyword: "{searchTerm}"
+                  Keyword: &ldquo;{searchTerm}&rdquo;
                   <button onClick={() => setSearchTerm("")}>✕</button>
                 </span>
               )}
@@ -468,7 +468,7 @@ function ShopContent() {
                 No treasures found
               </h3>
               <p className="text-sm text-[#7d6d66] max-w-md mx-auto mb-6">
-                We couldn't find any products matching your active filters. Try adjusting
+                We couldn&apos;t find any products matching your active filters. Try adjusting
                 the price slider or unchecking some filters.
               </p>
               <button

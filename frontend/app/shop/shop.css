@@ -24,6 +24,7 @@
   line-height: 1.1;
 }
 .hero-text {
+  font-family: var(--font-serif);
   color: #6b5544;
   font-size: 16px;
   max-width: 620px;

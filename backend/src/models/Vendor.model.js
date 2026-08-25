@@ -52,6 +52,10 @@ const vendorSchema = new mongoose.Schema(
         message: (props) => `${props.value} is not a valid 9-digit PAN number!`,
       },
     },
+    pan_photo: {
+      type: String,
+      required: [true, "PAN photo is required for verification"],
+    },
     bank_details: {
       type: bankDetailsSchema,
       required: [true, "Bank details are required for vendor payments"],
@@ -69,6 +73,18 @@ const vendorSchema = new mongoose.Schema(
         message: "Status must be pending, active, suspended, or rejected",
       },
       default: "pending",
+    },
+    bio: {
+      type: String,
+      trim: true,
+    },
+    story: {
+      type: String,
+      trim: true,
+    },
+    profile_image: {
+      type: String,
+      trim: true,
     },
   },
   {

@@ -1,0 +1,137 @@
+.product-page {
+  background: #f5eee4;
+  min-height: 60vh;
+  padding: 60px 24px 90px;
+}
+
+.product-not-found {
+  text-align: center;
+  padding: 100px 20px;
+  color: var(--brown-600);
+  font-size: 16px;
+}
+
+.product-detail {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width: 800px) {
+  .product-detail {
+    grid-template-columns: 1fr;
+    padding: 24px;
+    gap: 28px;
+  }
+}
+
+/* IMAGE */
+
+.product-detail-image-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--secondary-50);
+}
+
+.product-detail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.product-detail-image-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  font-family: Georgia, serif;
+  color: var(--primary-500);
+  background: var(--secondary-100);
+}
+
+/* INFO */
+
+.product-detail-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-detail-category {
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-size: 12px;
+  color: var(--secondary-600);
+  margin-bottom: 10px;
+}
+
+.product-detail-name {
+  font-family: Georgia, serif;
+  font-size: 32px;
+  color: var(--primary-500);
+  margin-bottom: 16px;
+}
+
+.product-detail-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.product-detail-price {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary-500);
+}
+
+.product-detail-compare-price {
+  font-size: 16px;
+  color: var(--brown-600);
+  text-decoration: line-through;
+}
+
+.product-detail-description {
+  color: var(--brown-700);
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.product-detail-stock {
+  font-size: 14px;
+  color: var(--brown-600);
+  margin-bottom: 24px;
+}
+
+.product-detail-cta {
+  align-self: flex-start;
+  background: var(--primary-500);
+  color: #fff;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.product-detail-cta:hover {
+  background: var(--brown-800);
+}
+
+.product-detail-cta:disabled {
+  background: var(--brown-600);
+  cursor: not-allowed;
+}

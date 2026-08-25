@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { FaPlus, FaSearch, FaEdit, FaTrash, FaEye } from 'react-icons/fa';
-import { getProducts, type AdminProduct } from '@/services/admin/product';
+import { FaPlus, FaSearch, FaEdit, FaTrash, FaEye, FaStar, FaRegStar } from 'react-icons/fa';
+import { getProducts, toggleProductFeatured, type AdminProduct } from '@/services/admin/product';
 import { fetchApi } from '@/lib/api';
 import { toast } from 'sonner';
 
@@ -32,6 +32,7 @@ export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [togglingFeaturedId, setTogglingFeaturedId] = useState<string | null>(null);
 
   const fetchProducts = async () => {
     try {
@@ -69,13 +70,28 @@ export default function ProductsPage() {
     }
   };
 
+  const handleToggleFeatured = async (product: AdminProduct) => {
+    setTogglingFeaturedId(product._id);
+    try {
+      await toggleProductFeatured(product._id);
+      setProducts((prev) =>
+        prev.map((p) => (p._id === product._id ? { ...p, isFeatured: !p.isFeatured } : p))
+      );
+      toast.success(`Product ${product.isFeatured ? 'unfeatured' : 'featured'} successfully`);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to update featured status');
+    } finally {
+      setTogglingFeaturedId(null);
+    }
+  };
+
   return (
     <div>
       {/* Page Title */}
       <div className="mb-8">
         <span className="text-text-light text-xs tracking-[0.2em]">INVENTORY</span>
-        <div className="flex items-center justify-between">
-          <h1 className="font-serif text-primary-700 text-[70px] font-semibold leading-none mt-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h1 className="font-serif text-primary-700 text-3xl sm:text-5xl md:text-[60px] lg:text-[70px] font-semibold leading-none mt-2.5">
             Products
           </h1>
           <Link
@@ -91,7 +107,7 @@ export default function ProductsPage() {
       {!loading && (
         <div className="flex flex-wrap gap-3 mb-6">
           {[
-            { label: 'Total', value: products.length, cls: 'bg-[#F7F2EA] border-border text-text-dark' },
+            { label: 'Total', value: products.length, cls: 'bg-card border-border text-text-dark' },
             { label: 'Active', value: products.filter((p) => p.status === 'active').length, cls: 'bg-green-50 border-green-200 text-green-700' },
             { label: 'Pending', value: products.filter((p) => p.status === 'pending').length, cls: 'bg-yellow-50 border-yellow-200 text-yellow-700' },
             { label: 'Inactive', value: products.filter((p) => p.status === 'inactive').length, cls: 'bg-gray-50 border-gray-200 text-gray-700' },
@@ -134,7 +150,7 @@ export default function ProductsPage() {
       </div>
 
       {/* Products Table */}
-      <div className="bg-[#F7F2EA] border border-border rounded-2xl p-7 overflow-x-auto">
+      <div className="bg-card border border-border rounded-2xl p-7 overflow-x-auto shadow-sm">
         {loading ? (
           <div className="space-y-3">
             {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-14" />)}
@@ -148,6 +164,7 @@ export default function ProductsPage() {
                 <th className="text-left text-text-mid text-xs pb-4">VENDOR</th>
                 <th className="text-left text-text-mid text-xs pb-4">PRICE</th>
                 <th className="text-left text-text-mid text-xs pb-4">STOCK</th>
+                <th className="text-left text-text-mid text-xs pb-4">FEATURED</th>
                 <th className="text-left text-text-mid text-xs pb-4">STATUS</th>
                 <th className="text-right text-text-mid text-xs pb-4">ACTIONS</th>
               </tr>
@@ -169,17 +186,31 @@ export default function ProductsPage() {
                     <td className="py-4 border-t border-black/5 text-text-dark text-sm">
                       {product.discount_price ? (
                         <span>
-                          <span className="line-through text-text-light mr-1">${product.price}</span>
-                          <span className="text-primary-700 font-medium">${product.discount_price}</span>
+                          <span className="line-through text-text-light mr-1">Rs.{product.price}</span>
+                          <span className="text-primary-700 font-medium">Rs.{product.discount_price}</span>
                         </span>
                       ) : (
-                        `$${product.price}`
+                        `Rs.${product.price}`
                       )}
                     </td>
                     <td className="py-4 border-t border-black/5 text-text-dark text-sm">
                       <span className={`px-3 py-1.5 rounded-full text-xs font-medium ${stockStatus.cls}`}>
                         {product.stock} · {stockStatus.label}
                       </span>
+                    </td>
+                    <td className="py-4 border-t border-black/5">
+                      <button
+                        onClick={() => handleToggleFeatured(product)}
+                        disabled={togglingFeaturedId === product._id}
+                        className="p-1.5 rounded hover:bg-yellow-50 text-yellow-500 transition-colors disabled:opacity-50 inline-flex items-center justify-center"
+                        title={product.isFeatured ? "Remove from Featured" : "Mark as Featured"}
+                      >
+                        {product.isFeatured ? (
+                          <FaStar className="w-5 h-5 fill-current text-yellow-500" />
+                        ) : (
+                          <FaRegStar className="w-5 h-5 text-gray-400 hover:text-yellow-500" />
+                        )}
+                      </button>
                     </td>
                     <td className="py-4 border-t border-black/5">
                       <span className={`px-3 py-1.5 rounded-full text-xs font-medium capitalize ${getStatusBadge(product.status)}`}>
@@ -189,7 +220,8 @@ export default function ProductsPage() {
                     <td className="py-4 border-t border-black/5 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <Link
-                          href={`/admin/products/${product._id}`}
+                          href={`/product/${product._id}`}
+                          target="_blank"
                           className="p-2 rounded-lg hover:bg-primary-100 text-text-light hover:text-primary-700 transition-colors"
                         >
                           <FaEye />

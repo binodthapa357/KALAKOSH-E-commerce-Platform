@@ -10,8 +10,12 @@ import orderRoutes from "./src/routes/order.route.js";
 import shippingRoutes from "./src/routes/shipping.route.js";
 import paymentRoutes from "./src/routes/payment.route.js";
 import adminRoutes from "./src/routes/admin.route.js";
+import vendorRoutes from "./src/routes/vendor.route.js";
+import vendorDashboardRoutes from "./src/routes/vendorDashboard.route.js";
 
 import errorMiddleware from "./src/middleware/error.middleware.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./swagger.js";
 
 const app = express();
 
@@ -19,7 +23,18 @@ const app = express();
    Middlewares
 ======================== */
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: [
+    "https://kalakosh-e-commerce-platform.vercel.app",
+    "http://localhost:3000"
+  ],
+  credentials: true
+}));
+
+/* ========================
+   Swagger Documentation
+======================= */
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 /* ========================
    Routes
@@ -33,6 +48,8 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/shipping", shippingRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/vendors", vendorRoutes);
+app.use("/api/vendor", vendorDashboardRoutes);
 
 /* ========================
    Health Check

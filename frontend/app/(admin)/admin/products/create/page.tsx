@@ -3,9 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Input } from '@/components/ui/input';
-import { FaArrowLeft, FaUpload } from 'react-icons/fa6';
 import Image from 'next/image';
+import { FaArrowLeft, FaUpload, FaTrash } from 'react-icons/fa6';
 import { Button } from '@/components/ui/button';
 import { fetchApi } from '@/lib/api';
 import { toast } from 'sonner';
@@ -15,6 +14,7 @@ export default function CreateProductPage() {
   const [formData, setFormData] = useState({
     name: '',
     category: '',
+    vendor_id: '',
     price: '',
     discount_price: '',
     stock: '',
@@ -25,7 +25,8 @@ export default function CreateProductPage() {
     status: 'active',
   });
   const [categories, setCategories] = useState<{ _id: string; name: string }[]>([]);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -50,15 +51,30 @@ export default function CreateProductPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      const updatedFiles = [...imageFiles, ...files].slice(0, 6);
+      setImageFiles(updatedFiles);
+
+      const newPreviews = files.map(file => {
+        return new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(file);
+        });
+      });
+
+      Promise.all(newPreviews).then(results => {
+        setImagePreviews(prev => [...prev, ...results].slice(0, 6));
+      });
     }
+    e.target.value = '';
+  };
+
+  const removeImage = (index: number) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -82,12 +98,16 @@ export default function CreateProductPage() {
         status: formData.status,
       };
 
+      if (formData.vendor_id) {
+        payload.vendor_id = formData.vendor_id;
+      }
+
       if (formData.discount_price && Number(formData.discount_price) < Number(formData.price)) {
         payload.discount_price = Number(formData.discount_price);
       }
 
-      if (imagePreview) {
-        payload.images = [imagePreview];
+      if (imagePreviews.length > 0) {
+        payload.images = imagePreviews;
       }
 
       await fetchApi('/products', {
@@ -117,7 +137,7 @@ export default function CreateProductPage() {
           </Link>
           <span className="text-text-light text-xs tracking-[0.2em]">INVENTORY</span>
         </div>
-        <h1 className="font-serif text-primary-700 text-[70px] font-semibold leading-none mt-2.5">
+        <h1 className="font-serif text-primary-700 text-3xl sm:text-5xl md:text-[60px] lg:text-[70px] font-semibold leading-none mt-2.5">
           Create Product
         </h1>
       </div>
@@ -125,7 +145,7 @@ export default function CreateProductPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Form */}
         <div className="lg:col-span-2">
-          <form onSubmit={handleSubmit} className="bg-[#F7F2EA] border border-border rounded-2xl p-7">
+          <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-7 shadow-sm">
             <div className="space-y-6">
               <div>
                 <label className="block text-text-dark text-sm font-medium mb-2">Product Name *</label>
@@ -140,7 +160,7 @@ export default function CreateProductPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-text-dark text-sm font-medium mb-2">Category *</label>
                   {categories.length > 0 ? (
@@ -181,6 +201,19 @@ export default function CreateProductPage() {
                     min="0"
                     className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
                     placeholder="299"
+                  />
+                </div>
+                <div>
+                  <label className="block text-text-dark text-sm font-medium mb-2">Discount Price ($)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="discount_price"
+                    value={formData.discount_price}
+                    onChange={handleChange}
+                    min="0"
+                    className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
+                    placeholder="e.g. 249"
                   />
                 </div>
               </div>
@@ -266,7 +299,7 @@ export default function CreateProductPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors shadow-lg hover:shadow-xl font-semibold disabled:opacity-60"
+                  className="flex-1 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors shadow-lg hover:shadow-xl font-semibold disabled:opacity-60 cursor-pointer"
                 >
                   {submitting ? 'Creating...' : 'Create Product'}
                 </button>
@@ -283,47 +316,52 @@ export default function CreateProductPage() {
 
         {/* Image Upload Sidebar */}
         <div className="lg:col-span-1">
-          <div className="bg-[#F7F2EA] border border-border rounded-2xl p-7 sticky top-4">
-            <h3 className="font-serif text-primary-700 text-2xl mb-4">Product Image</h3>
-            <div
-              className={`border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors relative ${imagePreview ? 'border-primary-400' : 'hover:border-primary-400'
-                }`}
-            >
-              {imagePreview ? (
-                <div className="space-y-4">
-                  <div className="relative w-full h-48">
+          <div className="bg-card border border-border rounded-2xl p-7 sticky top-4 shadow-sm">
+            <h3 className="font-serif text-primary-700 text-2xl mb-4">Product Images</h3>
+
+            {imagePreviews.length > 0 && (
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                {imagePreviews.map((preview, index) => (
+                  <div key={index} className="relative h-28 rounded-xl overflow-hidden border border-border group bg-[#f5efe7]">
                     <Image
-                      src={imagePreview}
-                      alt="Preview"
+                      src={preview}
+                      alt={`Product preview ${index + 1}`}
                       fill
-                      className="object-contain rounded-lg"
+                      className="object-cover"
                     />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute top-1.5 right-1.5 bg-red-600/90 text-white p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700 cursor-pointer"
+                      title="Remove image"
+                    >
+                      <FaTrash className="text-xs" />
+                    </button>
                   </div>
-                  <Button
-                    type="button"
-                    onClick={() => setImagePreview(null)}
-                    className="text-red-600 hover:text-red-700 text-sm relative z-10"
-                    variant="ghost"
-                  >
-                    Remove Image
-                  </Button>
+                ))}
+              </div>
+            )}
+
+            <label
+              htmlFor="product-image-upload"
+              className="block border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors relative hover:border-primary-400 cursor-pointer bg-white"
+            >
+              <div className="space-y-3 pointer-events-none">
+                <div className="w-12 h-12 mx-auto rounded-full bg-primary-100 flex items-center justify-center">
+                  <FaUpload className="text-primary-700 text-xl" />
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-primary-100 flex items-center justify-center">
-                    <FaUpload className="text-primary-700 text-2xl" />
-                  </div>
-                  <p className="text-text-mid">Click to upload</p>
-                  <p className="text-text-light text-sm">PNG, JPG up to 5MB</p>
-                </div>
-              )}
-              <Input
+                <p className="text-text-mid font-medium text-sm">Upload images (up to 6)</p>
+                <p className="text-text-light text-xs">PNG, JPG up to 5MB</p>
+              </div>
+              <input
+                id="product-image-upload"
                 type="file"
                 accept="image/*"
-                onChange={handleImageUpload}
-                className="absolute inset-0 opacity-0 cursor-pointer"
+                multiple
+                onChange={handleImageChange}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
-            </div>
+            </label>
           </div>
         </div>
       </div>

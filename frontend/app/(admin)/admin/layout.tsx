@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
 import Link from 'next/link';
 // import Image from 'next/image';
 // import { Button } from '@/components/ui/button';
@@ -8,7 +9,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   FaBorderAll,
   FaRegUser,
-    FaStore,
+  FaStore,
   FaCube,
   FaTags,
   FaRegClipboard,
@@ -22,6 +23,8 @@ import {
   //   FaRegCircleQuestion,
   FaImage,        // ✅ For Banners
   FaUsers,        // ✅ For Customers
+  FaBars,         // ✅ For Mobile Responsive Menu
+  FaXmark,        // ✅ For Mobile Responsive Menu Close
 } from 'react-icons/fa6';
 // import { IoShieldCheckmarkSharp } from "react-icons/io5";
 
@@ -29,7 +32,7 @@ const menuItems = [
   { href: '/admin', label: 'Dashboard', icon: FaBorderAll },
   { href: '/admin/users', label: 'Users', icon: FaRegUser },
   { href: '/admin/customers', label: 'Customers', icon: FaUsers },   // ✅ NEW
-    { href: '/admin/vendors', label: 'Vendors', icon: FaStore },
+  { href: '/admin/vendors', label: 'Vendors', icon: FaStore },
   { href: '/admin/products', label: 'Products', icon: FaCube },
   { href: '/admin/categories', label: 'Categories', icon: FaTags },
   { href: '/admin/orders', label: 'Orders', icon: FaRegClipboard },
@@ -48,6 +51,7 @@ export default function AdminLayout({
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (pathname === '/admin/login') {
@@ -56,7 +60,23 @@ export default function AdminLayout({
     }
 
     const token = localStorage.getItem('adminToken');
-    if (!token) {
+    let isAdmin = false;
+    try {
+      const userStr = localStorage.getItem('adminUser');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        if (user && user.role === 'admin') {
+          isAdmin = true;
+        }
+      }
+    } catch {
+      isAdmin = false;
+    }
+
+    if (!token || !isAdmin) {
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminUser');
+      document.cookie = 'adminAuth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       router.replace('/admin/login');
     } else {
       setIsAuthenticated(true);
@@ -159,11 +179,94 @@ export default function AdminLayout({
         </div>
       </header> */}
 
+      {/* Mobile Top Bar */}
+      <div className="md:hidden flex items-center justify-between bg-card border border-border p-4 px-6 rounded-2xl shadow-sm mb-4">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="p-2 -ml-2 text-text-dark hover:text-primary-700 rounded-lg hover:bg-primary-50 transition-colors cursor-pointer"
+            aria-label="Open navigation menu"
+          >
+            <FaBars className="text-xl" />
+          </button>
+          <span className="font-serif text-primary-700 text-lg font-bold tracking-wider">KALAKOSH ADMIN</span>
+        </div>
+        <div className="text-xs text-[#E8B84B] font-semibold bg-[#5C1A1A] px-3 py-1.5 rounded-full">
+          Control Panel
+        </div>
+      </div>
+
+      {/* Mobile Drawer (visible on mobile, hidden on desktop) */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          {/* Backdrop overlay */}
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+
+          {/* Slide-in menu content */}
+          <aside className="fixed inset-y-0 left-0 w-[280px] bg-card border-r border-border p-6 shadow-2xl flex flex-col justify-between overflow-y-auto z-50">
+            <div>
+              <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
+                <div>
+                  <span className="text-text-light text-[10px] tracking-[0.2em]">CONTROL CENTER</span>
+                  <h2 className="font-serif text-primary-700 text-3xl font-semibold mt-0.5">Admin</h2>
+                </div>
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 text-text-dark hover:text-primary-700 rounded-lg hover:bg-primary-50 transition-colors cursor-pointer"
+                >
+                  <FaXmark className="text-xl" />
+                </button>
+              </div>
+
+              <ul className="list-none">
+                {menuItems.map((item) => {
+                  const isActive = pathname === item.href ||
+                    (item.href !== '/admin' && pathname?.startsWith(item.href));
+                  const Icon = item.icon;
+                  return (
+                    <li
+                      key={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`rounded-2xl cursor-pointer mb-2 transition-colors ${isActive ? 'bg-primary-700' : 'hover:bg-primary-700/10'}`}
+                    >
+                      <Link
+                        href={item.href}
+                        className={`h-12 flex items-center gap-3.5 px-4 rounded-2xl no-underline w-full transition-colors ${isActive ? 'text-white' : 'text-text-dark hover:text-primary-700'}`}
+                      >
+                        <Icon className={isActive ? 'text-white' : ''} />
+                        {item.label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            <div className="mt-8 border-t border-border pt-4">
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                disabled={isLoggingOut}
+                className="h-12 flex items-center gap-3.5 px-4 rounded-2xl no-underline w-full text-red-600 hover:text-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                <FaArrowRightFromBracket />
+                {isLoggingOut ? 'Logging out...' : 'Logout'}
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
+
       {/* Dashboard Layout */}
       <div className="grid grid-cols-1 md:grid-cols-[290px_1fr] gap-8 p-4 md:p-8 pb-20 min-h-screen bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIiIGhlaWdodD0iMjIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSIyMiIgaGVpZ2h0PSIyMiIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMSAxIEwgMTEgMjEgTSAxIDExIEwgMjEgMTEiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgwLDAsMCwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')]">
 
         {/* Sidebar */}
-        <aside className="bg-[#F7F2EA] border border-border rounded-2xl p-6 h-fit sticky top-4">
+        <aside className="hidden md:block bg-card border border-border rounded-2xl p-6 h-fit sticky top-4 shadow-sm">
           <div>
             <span className="text-text-light text-xs tracking-[0.2em]">CONTROL CENTER</span>
             <h2 className="font-serif text-primary-700 text-[44px] mt-1.5 font-semibold">Admin</h2>
@@ -198,7 +301,7 @@ export default function AdminLayout({
               <button
                 onClick={handleLogout}
                 disabled={isLoggingOut}
-                className="h-13 flex items-center gap-3.5 px-4 rounded-2xl no-underline w-full text-red-600 hover:text-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-13 flex items-center gap-3.5 px-4 rounded-2xl no-underline w-full text-red-600 hover:text-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <FaArrowRightFromBracket />
                 {isLoggingOut ? 'Logging out...' : 'Logout'}

@@ -1,6 +1,5 @@
 "use client";
 
-import "./ProductCard.css";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -77,21 +76,34 @@ export default function ProductCard({ product }: { product: Product }) {
   const displayPrice = product.discount_price ?? product.price;
 
   return (
-    <Link href={`/product/${product._id}`} className="product-card group">
+    <Link
+      href={`/product/${product._id}`}
+      className="group relative flex flex-col rounded-2xl overflow-hidden bg-white border border-[#ead9c6] shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+    >
       {/* Image Section */}
-      <div className="image-box">
+      <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#f7f2ea]">
         <Image
           src={product.images?.[0] || "/images/painting.jpg"}
           alt={product.name}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          className="product-image"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
+
+        {/* Sale badge */}
         {hasDiscount && (
-          <span className="sale-badge">SALE</span>
+          <span className="absolute top-3 left-3 bg-[#7d1d1d] text-white text-[10px] font-bold tracking-widest px-2.5 py-1 rounded-full uppercase z-10">
+            SALE
+          </span>
         )}
+
+        {/* Wishlist button */}
         <button
-          className={`wish-btn${isWishlisted ? " wishlisted" : ""}`}
+          className={`absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full shadow-md transition-all duration-200
+            ${isWishlisted
+              ? "bg-red-50 text-red-500 scale-110"
+              : "bg-white/90 text-[#5f4f47] hover:bg-red-50 hover:text-red-500 hover:scale-110"
+            }`}
           aria-label="Wishlist"
           onClick={toggleWishlist}
         >
@@ -100,36 +112,50 @@ export default function ProductCard({ product }: { product: Product }) {
       </div>
 
       {/* Info Section */}
-      <div className="card-body">
+      <div className="flex flex-col flex-1 p-4 gap-2">
         {/* Rating + Region row */}
-        <div className="card-meta-row">
-          <div className="rating-pill">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1 bg-amber-50 border border-amber-100 rounded-full px-2 py-0.5">
             <StarIcon />
-            <span>{product.avg_rating ? product.avg_rating.toFixed(1) : "5.0"}</span>
+            <span className="text-[11px] font-semibold text-amber-700">
+              {product.avg_rating ? product.avg_rating.toFixed(1) : "5.0"}
+            </span>
           </div>
           {product.region && (
-            <span className="region-label">{product.region.toUpperCase()}</span>
+            <span className="text-[10px] font-semibold tracking-widest text-[#a07c5b] uppercase">
+              {product.region.toUpperCase()}
+            </span>
           )}
         </div>
 
         {/* Name */}
-        <h3 className="card-title">{product.name}</h3>
+        <h3 className="text-[15px] font-semibold text-[#2c1612] leading-snug line-clamp-2 group-hover:text-[#7d1d1d] transition-colors">
+          {product.name}
+        </h3>
 
         {/* Material */}
-        <p className="card-material">
+        <p className="text-[12px] text-[#a07c5b] truncate">
           {product.material || "Handmade Authentic Craft"}
         </p>
 
         {/* Price + Add footer */}
-        <div className="card-footer">
-          <div className="price-block">
-            <span className="price-main">Rs. {displayPrice}</span>
+        <div className="flex items-center justify-between mt-auto pt-3 border-t border-[#f0e6d8]">
+          <div className="flex flex-col">
+            <span className="text-[15px] font-bold text-[#7d1d1d]">
+              Rs. {displayPrice}
+            </span>
             {hasDiscount && (
-              <span className="price-orig">Rs. {product.price}</span>
+              <span className="text-[11px] text-[#a07c5b] line-through">
+                Rs. {product.price}
+              </span>
             )}
           </div>
           <button
-            className="add-btn"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all duration-200 cursor-pointer
+              ${isAdding
+                ? "bg-[#f0e6d8] text-[#a07c5b]"
+                : "bg-[#7d1d1d] text-white hover:bg-[#5c1515] hover:shadow-md active:scale-95"
+              }`}
             onClick={handleAddToCart}
             disabled={isAdding}
           >

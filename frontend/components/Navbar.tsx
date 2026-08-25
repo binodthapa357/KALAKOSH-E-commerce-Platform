@@ -1,74 +1,133 @@
-import React from 'react';
-import Link from 'next/link';
-import {Button} from '@/components/ui/button';
-import {Heart, ShoppingBag, User} from 'lucide-react';
-import Image from 'next/image';
+"use client";
+
+import React from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { Heart, ShoppingBag, User } from "lucide-react";
+import Image from "next/image";
+import { isLoggedIn, getRole } from "@/lib/auth";
+import { useApp } from "@/context/AppContext";
 
 const navLinks = [
-  {
-    href: "/",
-    label: "Home",
-  },
-  {
-    href: "/shop",
-    label: "Shop",
-  },
-  {
-    href: "/categories",
-    label: "Categories",
-  },
-  {
-    href: "/about",
-    label: "About",
-  },
-  {
-    href: "/contact",
-    label: "Contact",
-  },
-  
+  { href: "/", label: "Home" },
+  { href: "/shop", label: "Shop" },
+  { href: "/categories", label: "Categories" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
 ];
 
 const Navbar = () => {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { cartCount } = useApp();
+
+  const hideNavbar = pathname?.startsWith('/signin') || pathname?.startsWith('/signup') || pathname?.startsWith('/admin');
+  
+  if (hideNavbar) return null;
+
+  const handleAccountClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    if (!isLoggedIn()) {
+      router.push("/signin");
+      return;
+    }
+
+    const role = getRole();
+    router.push(role === "vendor" ? "/vendor/dashboard" : "/dashboard");
+  };
+
+  const handleWishlistClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!isLoggedIn()) {
+      router.push("/signin?redirect=/wishlist");
+      return;
+    }
+    router.push("/wishlist");
+  };
+
+  const handleCartClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!isLoggedIn()) {
+      router.push("/signin?redirect=/cart");
+      return;
+    }
+    router.push("/cart");
+  };
+
   return (
     <header className="w-full bg-white shadow-sm">
       {/* Top Banner */}
       <div className="w-full bg-[#5C1A1A] text-white text-[11px] py-2 px-4 sm:px-8 flex justify-between items-center tracking-wide">
         <div>FREE SHIPPING on orders above Rs. 5000 within Nepal.</div>
         <div className="flex gap-6 items-center">
-          <button className="hover:underline transition-all">📋 Track Order</button>
-          <button className="hover:underline transition-all">❓ Help & Support</button>
+          <Link href="/track-order" className="hover:underline transition-all">
+            📋 Track Order
+          </Link>
+          <Link href="/help" className="hover:underline transition-all">
+            ❓ Help & Support
+          </Link>
         </div>
       </div>
 
       {/* Main nav */}
       <div className="flex items-center justify-between bg-[#FBF3E7] px-6 py-4 sm:px-10">
         <Link href="/" className="flex items-center gap-3">
-          <div className="relative h-9 w-9 overflow-hidden rounded-full">
-            <Image src="/images/logo.png" alt="Kalakosh logo" fill className="object-cover" />
+          <div className="relative h-11 w-11 overflow-hidden rounded-full">
+            <Image
+              src="/images/logo.png"
+              alt="Logo"
+              fill
+              sizes="(max-width:768px) 100px, 120px"
+              className="object-contain"
+            />
           </div>
-          <span className="text-lg font-serif uppercase tracking-[0.15em] text-[#5C2E2E]">
+          <span className="text-xl font-serif uppercase tracking-[0.15em] text-[#5C2E2E]">
             Kalakosh
           </span>
         </Link>
 
         <ul className="hidden gap-10 text-sm text-[#5C2E2E] md:flex">
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <Link href={link.href} className="transition hover:text-[#8B3232]">
-                {link.label}
-              </Link>
-            </li>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href || (link.href !== "/" && pathname?.startsWith(link.href));
+            return (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className={`transition pb-1 font-medium ${
+                    isActive
+                      ? "text-[#8B3232] border-b-2 border-[#8B3232] font-semibold"
+                      : "hover:text-[#8B3232]"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
 
         <div className="flex items-center gap-5 text-[#5C2E2E]">
-          <Link href="/wishlist" aria-label="Wishlist">
+          <Link
+            href="/wishlist"
+            aria-label="Wishlist"
+            onClick={handleWishlistClick}
+          >
             <Heart className="h-5 w-5 hover:text-[#8B3232]" />
           </Link>
-          <Link href="/cart" aria-label="Cart">
+          <Link href="/cart" aria-label="Cart" onClick={handleCartClick} className="relative">
             <ShoppingBag className="h-5 w-5 hover:text-[#8B3232]" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-[#8B3232] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold px-1 min-w-[18px]">
+                {cartCount}
+              </span>
+            )}
           </Link>
-          <Link href="/user-profile" aria-label="Account">
+          <Link
+            href="/signin"
+            aria-label="Account"
+            onClick={handleAccountClick}
+          >
             <User className="h-5 w-5 hover:text-[#8B3232]" />
           </Link>
         </div>

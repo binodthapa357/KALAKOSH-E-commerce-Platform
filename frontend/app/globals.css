@@ -282,8 +282,15 @@
   }
   body {
     @apply bg-background text-foreground;
+    margin: 0;
+    padding: 0;
   }
   html {
     @apply font-sans;
+  }
+  main {
+    display: block;
+    margin: 0;
+    padding: 0;
   }
 }

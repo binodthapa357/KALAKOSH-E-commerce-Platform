@@ -23,5 +23,6 @@ export const getProducts = async (filters?: { status?: string }): Promise<AdminP
   if (filters?.status) params.set('status', filters.status);
   const query = params.toString() ? `?${params.toString()}` : '';
   const data = await fetchApi(`/admin/products${query}`);
-  return data.products;
+  return data?.products || [];
 };
+

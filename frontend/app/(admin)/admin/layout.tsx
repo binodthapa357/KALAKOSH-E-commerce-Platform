@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 // import Image from 'next/image';
 // import { Button } from '@/components/ui/button';
@@ -46,6 +46,23 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    if (pathname === '/admin/login') {
+      setCheckingAuth(false);
+      return;
+    }
+
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+      router.replace('/admin/login');
+    } else {
+      setIsAuthenticated(true);
+      setCheckingAuth(false);
+    }
+  }, [pathname, router]);
 
   const handleLogout = async () => {
     if (!confirm('Are you sure you want to logout?')) return;
@@ -57,14 +74,32 @@ export default function AdminLayout({
       // ignore logout API errors
     }
 
-    // Clear all stored auth data
+    // Clear all stored auth data and cookies
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminUser');
+    document.cookie = 'adminAuth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     sessionStorage.clear();
-    document.cookie = 'adminAuth=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-
     router.push('/admin/login');
   };
+
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-[#f5efe7] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-[#7d1d1d] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-sm text-[#5f4f47]">Verifying administrator session...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <>
@@ -137,8 +172,9 @@ export default function AdminLayout({
           <ul className="list-none mt-7">
             {/* Menu Items */}
             {menuItems.map((item) => {
-              const isActive = pathname === item.href ||
-                (item.href !== '/admin' && pathname.startsWith(item.href));
+              const currentPath = pathname || '';
+              const isActive = currentPath === item.href ||
+                (item.href !== '/admin' && currentPath.startsWith(item.href));
               const Icon = item.icon;
               return (
                 <li key={item.href} className={`rounded-2xl cursor-pointer mb-2 transition-colors ${isActive ? 'bg-primary-700' : 'hover:bg-primary-700/10'}`}>

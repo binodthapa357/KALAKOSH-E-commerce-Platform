@@ -1,26 +1,22 @@
-"use client";
-
+import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { usePathname } from "next/navigation";
+import { ClientShell } from "./ClientShell";
+
+export const metadata: Metadata = {
+  title: "Kalakosh — Authentic Nepali Handicrafts",
+  description:
+    "Discover and shop authentic handmade Nepali handicrafts. Connecting artisans with the world.",
+};
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-  
-  // Check if the current path is an admin route
-  const isAdminRoute = pathname?.startsWith('/admin');
-
   return (
     <html lang="en">
       <body>
-        {!isAdminRoute && <Navbar />}
-        <main>{children}</main>
-        {!isAdminRoute && <Footer />}
+        <ClientShell>{children}</ClientShell>
       </body>
     </html>
   );

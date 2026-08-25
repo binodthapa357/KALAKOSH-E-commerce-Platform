@@ -16,7 +16,7 @@ const getAllProducts = async (
   const query = {};
 
   if (!includeInactive) {
-    query.status = "active";
+    query.status = { $ne: "inactive" };
   } else if (filters.status) {
     query.status = filters.status;
   }
@@ -85,7 +85,7 @@ const getAllProducts = async (
  * Search products
  */
 const searchProducts = async (keyword, filters = {}, pagination = { page: 1, limit: 12 }) => {
-  const query = { status: "active" };
+  const query = { status: { $ne: "inactive" } };
 
   if (keyword) {
     query.$text = { $search: keyword };
@@ -120,10 +120,10 @@ const searchProducts = async (keyword, filters = {}, pagination = { page: 1, lim
 };
 
 const getFeaturedProducts = async () => {
-  return await Product.find({ status: "active" })
+  return await Product.find({ status: { $ne: "inactive" } })
     .populate("category_id", "name slug")
     .populate("vendor_id", "shop_name status")
-    .sort({ avg_rating: -1, createdAt: -1 })
+    .sort({ createdAt: -1, avg_rating: -1 })
     .limit(8);
 };
 
@@ -144,14 +144,14 @@ const getProductByID = async (id) => {
 const getProductsByCategory = async (categoryId) => {
   return await Product.find({
     category_id: categoryId,
-    status: "active",
+    status: { $ne: "inactive" },
   }).populate("category_id vendor_id");
 };
 
 const getProductsByArtisan = async (vendorId) => {
   return await Product.find({
     vendor_id: vendorId,
-    status: "active",
+    status: { $ne: "inactive" },
   }).populate("category_id vendor_id");
 };
 

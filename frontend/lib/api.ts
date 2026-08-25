@@ -1,7 +1,13 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const getBaseUrl = () => {
+  const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  return raw.endsWith('/api') ? raw : `${raw}/api`;
+};
 
 export const fetchApi = async (endpoint: string, options: RequestInit = {}) => {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : null;
+  const token =
+    typeof window !== 'undefined'
+      ? localStorage.getItem('adminToken') || localStorage.getItem('token')
+      : null;
   
   const headers = new Headers(options.headers);
   if (token) {
@@ -11,7 +17,8 @@ export const fetchApi = async (endpoint: string, options: RequestInit = {}) => {
     headers.set('Content-Type', 'application/json');
   }
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const response = await fetch(`${getBaseUrl()}${cleanEndpoint}`, {
     ...options,
     headers,
   });

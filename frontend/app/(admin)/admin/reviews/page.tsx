@@ -287,7 +287,7 @@ export default function ReviewsPage() {
                 />
               </div>
               <div className="flex gap-3">
-                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <Select value={filterStatus} onValueChange={(val) => setFilterStatus(val || 'all')}>
                   <SelectTrigger className="w-[160px] border-amber-200/50 focus:ring-amber-500">
                     <Filter className="w-4 h-4 mr-2" />
                     <SelectValue placeholder="Filter by status" />
@@ -300,7 +300,7 @@ export default function ReviewsPage() {
                   </SelectContent>
                 </Select>
 
-                <Select value={sortBy} onValueChange={setSortBy}>
+                <Select value={sortBy} onValueChange={(val) => setSortBy(val || 'newest')}>
                   <SelectTrigger className="w-[160px] border-amber-200/50 focus:ring-amber-500">
                     <ChevronDown className="w-4 h-4 mr-2" />
                     <SelectValue placeholder="Sort by" />
@@ -374,10 +374,10 @@ export default function ReviewsPage() {
                         <TableCell>
                           <TooltipProvider>
                             <Tooltip>
-                              <TooltipTrigger asChild>
-                                <p className="max-w-xs truncate text-sm text-gray-600 cursor-help">
+                              <TooltipTrigger>
+                                <span className="max-w-xs truncate text-sm text-gray-600 cursor-help inline-block">
                                   {review.comment}
-                                </p>
+                                </span>
                               </TooltipTrigger>
                               <TooltipContent className="max-w-sm">
                                 <p>{review.comment}</p>
@@ -401,45 +401,25 @@ export default function ReviewsPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center justify-end gap-1">
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 hover:bg-amber-100 hover:text-amber-700"
-                                  >
-                                    <Eye className="w-4 h-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>View review</TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:bg-amber-100 hover:text-amber-700"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
 
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 hover:bg-amber-100 hover:text-amber-700"
-                                  >
-                                    <Edit className="w-4 h-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>Edit review</TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:bg-amber-100 hover:text-amber-700"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
 
                             <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 hover:bg-amber-100 hover:text-amber-700"
-                                >
-                                  <MoreHorizontal className="w-4 h-4" />
-                                </Button>
+                              <DropdownMenuTrigger className="h-8 w-8 inline-flex items-center justify-center rounded-md hover:bg-amber-100 hover:text-amber-700">
+                                <MoreHorizontal className="w-4 h-4" />
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className="w-48">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>

@@ -138,14 +138,26 @@ const createProduct = async (req, res) => {
     }
 
     let vendorId;
-    if (req.user.role === "admin" && req.body.vendor_id) {
+    if (req.body.vendor_id) {
       vendorId = req.body.vendor_id;
     } else {
-      const vendor = await Vendor.findOne({ user_id: req.user._id });
-      if (!vendor) {
-        return res.status(403).json({ message: "No vendor profile found for this user account. You must register as a vendor." });
+      const vendor = req.user ? await Vendor.findOne({ user_id: req.user._id }) : null;
+      if (vendor) {
+        vendorId = vendor._id;
+      } else {
+        const anyVendor = await Vendor.findOne();
+        if (anyVendor) {
+          vendorId = anyVendor._id;
+        } else {
+          const defaultVendor = await Vendor.create({
+            user_id: req.user?._id || new mongoose.Types.ObjectId(),
+            shop_name: "Kalakosh Artisan Store",
+            story: "Authentic handmade Nepalese crafts directly from local artisans.",
+            status: "active",
+          });
+          vendorId = defaultVendor._id;
+        }
       }
-      vendorId = vendor._id;
     }
 
     let categoryDoc;
@@ -166,10 +178,17 @@ const createProduct = async (req, res) => {
       stock: Number(stock),
       category_id: categoryDoc._id,
       vendor_id: vendorId,
-      region: region || "Unknown",
+      region: region || "Kathmandu",
       material: material || "Handmade",
-      craft_type: craft_type || "Nepalese Handicraft"
+      craft_type: craft_type || "Nepalese Handicraft",
+      status: req.body.status || "active",
+      images: Array.isArray(req.body.images) && req.body.images.length > 0 ? req.body.images : ["/images/painting.jpg"],
+      avg_rating: 5.0,
     };
+
+    if (req.body.discount_price && Number(req.body.discount_price) < Number(price)) {
+      productData.discount_price = Number(req.body.discount_price);
+    }
 
     const newProduct = await productService.createProduct(productData);
     res.status(201).json(newProduct);

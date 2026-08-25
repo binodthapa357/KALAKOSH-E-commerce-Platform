@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { FaArrowLeft, FaUpload } from 'react-icons/fa6';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { fetchApi } from '@/lib/api';
+import { toast } from 'sonner';
 
 export default function CreateProductPage() {
   const router = useRouter();
@@ -14,11 +16,34 @@ export default function CreateProductPage() {
     name: '',
     category: '',
     price: '',
+    discount_price: '',
     stock: '',
     description: '',
-    status: 'In Stock',
+    region: 'Kathmandu',
+    material: 'Handmade',
+    craft_type: 'Nepalese Handicraft',
+    status: 'active',
   });
+  const [categories, setCategories] = useState<{ _id: string; name: string }[]>([]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const catData = await fetchApi('/categories');
+        if (catData?.categories) {
+          setCategories(catData.categories);
+          if (catData.categories.length > 0) {
+            setFormData(prev => ({ ...prev, category: catData.categories[0]._id }));
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load categories', err);
+      }
+    };
+    loadCategories();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -36,10 +61,47 @@ export default function CreateProductPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Creating product:', formData);
-    router.push('/admin/products');
+    if (!formData.name || !formData.price || !formData.stock) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const payload: any = {
+        name: formData.name,
+        category: formData.category || (categories[0]?._id ?? 'General'),
+        price: Number(formData.price),
+        stock: Number(formData.stock),
+        description: formData.description || formData.name,
+        region: formData.region,
+        material: formData.material,
+        craft_type: formData.craft_type,
+        status: formData.status,
+      };
+
+      if (formData.discount_price && Number(formData.discount_price) < Number(formData.price)) {
+        payload.discount_price = Number(formData.discount_price);
+      }
+
+      if (imagePreview) {
+        payload.images = [imagePreview];
+      }
+
+      await fetchApi('/products', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+
+      toast.success('Product created successfully');
+      router.push('/admin/products');
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to create product');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -81,26 +143,44 @@ export default function CreateProductPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-text-dark text-sm font-medium mb-2">Category *</label>
-                  <input
-                    type="text"
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
-                    placeholder="e.g., Paintings"
-                  />
+                  {categories.length > 0 ? (
+                    <select
+                      name="category"
+                      value={formData.category}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
+                    >
+                      {categories.map((cat) => (
+                        <option key={cat._id} value={cat._id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      name="category"
+                      value={formData.category}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
+                      placeholder="e.g. Handicraft"
+                    />
+                  )}
                 </div>
                 <div>
-                  <label className="block text-text-dark text-sm font-medium mb-2">Price *</label>
+                  <label className="block text-text-dark text-sm font-medium mb-2">Price ($) *</label>
                   <input
-                    type="text"
+                    type="number"
+                    step="0.01"
                     name="price"
                     value={formData.price}
                     onChange={handleChange}
                     required
+                    min="0"
                     className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
-                    placeholder="$299"
+                    placeholder="299"
                   />
                 </div>
               </div>
@@ -116,7 +196,7 @@ export default function CreateProductPage() {
                     required
                     min="0"
                     className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
-                    placeholder="0"
+                    placeholder="10"
                   />
                 </div>
                 <div>
@@ -127,10 +207,46 @@ export default function CreateProductPage() {
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
                   >
-                    <option value="In Stock">In Stock</option>
-                    <option value="Low Stock">Low Stock</option>
-                    <option value="Out of Stock">Out of Stock</option>
+                    <option value="active">Active</option>
+                    <option value="pending">Pending</option>
+                    <option value="inactive">Inactive</option>
                   </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-text-dark text-sm font-medium mb-2">Region</label>
+                  <input
+                    type="text"
+                    name="region"
+                    value={formData.region}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
+                    placeholder="Kathmandu"
+                  />
+                </div>
+                <div>
+                  <label className="block text-text-dark text-sm font-medium mb-2">Material</label>
+                  <input
+                    type="text"
+                    name="material"
+                    value={formData.material}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
+                    placeholder="Brass / Wood / Wool"
+                  />
+                </div>
+                <div>
+                  <label className="block text-text-dark text-sm font-medium mb-2">Craft Type</label>
+                  <input
+                    type="text"
+                    name="craft_type"
+                    value={formData.craft_type}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
+                    placeholder="Nepalese Handicraft"
+                  />
                 </div>
               </div>
 
@@ -140,7 +256,7 @@ export default function CreateProductPage() {
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  rows={5}
+                  rows={4}
                   className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none"
                   placeholder="Describe the product..."
                 />
@@ -149,9 +265,10 @@ export default function CreateProductPage() {
               <div className="flex gap-4 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors shadow-lg hover:shadow-xl font-semibold"
+                  disabled={submitting}
+                  className="flex-1 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors shadow-lg hover:shadow-xl font-semibold disabled:opacity-60"
                 >
-                  Create Product
+                  {submitting ? 'Creating...' : 'Create Product'}
                 </button>
                 <Link
                   href="/admin/products"
@@ -169,20 +286,24 @@ export default function CreateProductPage() {
           <div className="bg-[#F7F2EA] border border-border rounded-2xl p-7 sticky top-4">
             <h3 className="font-serif text-primary-700 text-2xl mb-4">Product Image</h3>
             <div
-              className={`border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors ${imagePreview ? 'border-primary-400' : 'hover:border-primary-400'
+              className={`border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors relative ${imagePreview ? 'border-primary-400' : 'hover:border-primary-400'
                 }`}
             >
               {imagePreview ? (
                 <div className="space-y-4">
-                  <Image
-                    src={imagePreview}
-                    alt="Preview"
-                    className="w-full max-h-50 object-contain rounded-lg"
-                  />
+                  <div className="relative w-full h-48">
+                    <Image
+                      src={imagePreview}
+                      alt="Preview"
+                      fill
+                      className="object-contain rounded-lg"
+                    />
+                  </div>
                   <Button
                     type="button"
                     onClick={() => setImagePreview(null)}
-                    className="text-red-600 hover:text-red-700 text-sm"
+                    className="text-red-600 hover:text-red-700 text-sm relative z-10"
+                    variant="ghost"
                   >
                     Remove Image
                   </Button>

@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 export default function EditProductPage() {
   const router = useRouter();
   const params = useParams();
-  const productId = params.id;
+  const productId = params?.id as string | undefined;
 
   const [formData, setFormData] = useState({
     name: '',

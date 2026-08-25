@@ -1,70 +1,31 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
   FaTruck, 
-  // FaLink, 
   FaRegCircleQuestion, 
-  // FaStore, 
-  // FaShield,
-  FaRegHeart,
-  FaBagShopping,
-  FaUsers,
+  FaUsers, 
   FaShieldHeart,
- 
-  
-  FaRegStar
 } from 'react-icons/fa6';
-
-import { FaStar as FaStarSolid ,FaStarHalfAlt} from 'react-icons/fa';
+import { toast } from 'sonner';
+import { fetchApi } from '@/lib/api';
+import ProductCard from '@/components/ProductCard';
 
 export default function Home() {
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const categories = [
     { name: 'Paintings', image: '/images/painting.jpg' },
     { name: 'Textiles', image: '/images/textile.jpg' },
     { name: 'Pottery', image: '/images/pottery.jpg' },
     { name: 'Jewelry', image: '/images/jewlery.jpg' },
     { name: 'Wood Crafts', image: '/images/wood.jpg' },
-  ];
-
-  const products = [
-    {
-      id: 1,
-      name: 'Sacred Tara Thangka',
-      price: '$189',
-      rating: 4.9,
-      reviews: 124,
-      location: 'Kathmandu · Cotton Canvas',
-      image: '/images/sacredthanka.jpg',
-    },
-    {
-      id: 2,
-      name: 'Tibetan Singing Bowl',
-      price: '$79',
-      rating: 4.8,
-      reviews: 312,
-      location: 'Patan · Brass Alloy',
-      image: '/images/bowl.jpg',
-    },
-    {
-      id: 3,
-      name: 'Pashmina Shawl',
-      price: '$124',
-      rating: 4.9,
-      reviews: 87,
-      location: 'Kathmandu Valley · 100% Pashmina Wool',
-      image: '/images/pashmina.jpg',
-    },
-    {
-      id: 4,
-      name: 'Filigree Turquoise Necklace',
-      price: '$156',
-      rating: 4.7,
-      reviews: 56,
-      location: 'Patan · Sterling Silver',
-      image: '/images/necklace.jpg',
-    },
+    { name: 'Handicraft', image: '/images/heritage.png' },
   ];
 
   const features = [
@@ -86,74 +47,102 @@ export default function Home() {
     {
       icon: <FaTruck className="text-xl" />,
       title: 'Fast Delivery',
-      description: 'Quick delivery across Nepal',
+      description: 'Quick delivery across Nepal & Worldwide',
     },
   ];
 
-  const renderStars = (rating: number) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
+  useEffect(() => {
+    const loadFeatured = async () => {
+      try {
+        const data = await fetchApi('/products/featured').catch(() => null);
+        if (data && Array.isArray(data) && data.length > 0) {
+          setFeaturedProducts(data.slice(0, 4));
+        } else {
+          // Fallback to top products from /products
+          const allData = await fetchApi('/products').catch(() => null);
+          const list = allData?.products || (Array.isArray(allData) ? allData : []);
+          setFeaturedProducts(list.slice(0, 4));
+        }
+      } catch (err) {
+        console.error('Failed to load featured products', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadFeatured();
+  }, []);
 
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<FaStarSolid key={`full-${i}`} className="text-yellow-500" />);
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsletterEmail.trim() || !newsletterEmail.includes('@')) {
+      toast.error('Please enter a valid email address');
+      return;
     }
-    if (hasHalfStar) {
-      stars.push(<FaStarHalfAlt key="half" className="text-yellow-500" />);
-    }
-    const emptyStars = 5 - stars.length;
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(<FaRegStar key={`empty-${i}`} className="text-yellow-300" />);
-    }
-    return stars;
+
+    setIsSubscribing(true);
+    setTimeout(() => {
+      setIsSubscribing(false);
+      toast.success('Thank you for subscribing!', {
+        description: 'You will receive authentic craft stories and exclusive offers.',
+      });
+      setNewsletterEmail('');
+    }, 400);
   };
 
   return (
-    <main className="bg-[#f5efe7] font-sans text-[#2d1a16]">
+    <main className="bg-[#f5efe7] font-sans text-[#2d1a16] min-h-screen">
       {/* HERO SECTION */}
-      <section className="relative w-[calc(100%-70px)] h-[500px] mx-[35px] my-[55px] rounded-[28px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.08)]">
+      <section className="relative w-[calc(100%-70px)] min-h-[520px] mx-[35px] my-[45px] rounded-[28px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.08)] bg-cover bg-center" style={{ backgroundImage: "url('/images/heritage.png')" }}>
         <div 
-          className="absolute inset-0 bg-gradient-to-r from-[#f5efe7]/96 via-[#f5efe7]/70 to-transparent z-10"
+          className="absolute inset-0 bg-gradient-to-r from-[#f5efe7]/98 via-[#f5efe7]/85 to-transparent z-10"
         />
-        <div className="relative z-10 h-full flex items-center pl-[50px]">
-          <div className="max-w-[430px]">
-            <h1 className="font-serif text-[72px] leading-[0.95] font-medium text-[#2c1612]">
+        <div className="relative z-10 h-full min-h-[520px] flex items-center pl-[50px] py-12">
+          <div className="max-w-[460px]">
+            <span className="text-[#7d1d1d] text-xs font-bold tracking-[0.25em] uppercase mb-3 block">
+              Direct from the Himalayas
+            </span>
+            <h1 className="font-serif text-[64px] md:text-[72px] leading-[0.95] font-medium text-[#2c1612]">
               Discover <br />
               Authentic <br />
               <span className="text-[#7d1d1d] italic">Nepali <br />Handicrafts</span>
             </h1>
 
-            <div className="flex items-center gap-2.5 my-[26px]">
+            <div className="flex items-center gap-2.5 my-[22px]">
               <div className="w-[45px] h-[2px] bg-secondary-500" />
               <span className="text-secondary-500">✦</span>
               <div className="w-[45px] h-[2px] bg-secondary-500" />
             </div>
 
-            <p className="text-[#5f4f47] leading-relaxed text-base mb-[30px]">
-              Connecting local artisans with the world — every
-              piece tells a story of Himalayan heritage.
+            <p className="text-[#5f4f47] leading-relaxed text-base mb-[28px]">
+              Connecting master artisans with the world — every piece carries centuries of living Nepalese heritage and devotion.
             </p>
 
-            <div className="flex gap-3.5">
-              <button className="bg-primary-700 text-white border-none px-7 py-4 rounded-[10px] text-sm font-semibold cursor-pointer hover:bg-primary-800 transition-colors">
-                SHOP NOW
-              </button>
-              <button className="bg-transparent border-2 border-primary-700 text-primary-700 px-7 py-[15px] rounded-[10px] text-sm tracking-[1px] cursor-pointer hover:bg-primary-700/10 transition-colors">
+            <div className="flex flex-wrap gap-3.5">
+              <Link 
+                href="/shop" 
+                className="bg-[#7d1d1d] text-white border-none px-8 py-4 rounded-[12px] text-sm font-semibold cursor-pointer hover:bg-[#5c1515] transition-all shadow-md hover:shadow-lg inline-flex items-center gap-2"
+              >
+                SHOP NOW →
+              </Link>
+              <Link 
+                href="/categories" 
+                className="bg-transparent border-2 border-[#7d1d1d] text-[#7d1d1d] px-7 py-[14px] rounded-[12px] text-sm font-semibold tracking-[0.5px] cursor-pointer hover:bg-[#7d1d1d]/10 transition-colors inline-flex items-center"
+              >
                 EXPLORE CATEGORIES
-              </button>
+              </Link>
             </div>
           </div>
         </div>
 
-        <div className="w-[22px] h-[6px] bg-primary-700 rounded-[30px] absolute left-1/2 bottom-[18px] -translate-x-1/2" />
+        <div className="w-[22px] h-[6px] bg-[#7d1d1d] rounded-[30px] absolute left-1/2 bottom-[18px] -translate-x-1/2" />
       </section>
 
       {/* CATEGORIES SECTION */}
-      <section className="py-20 px-[60px] bg-[#f7f2ea] relative">
+      <section className="py-20 px-6 sm:px-[60px] bg-[#f7f2ea] relative">
         <div className="absolute inset-0 bg-[radial-gradient(#d9c8b3_0.7px,transparent_0.7px)] bg-[length:22px_22px] opacity-35 pointer-events-none" />
 
-        <div className="relative z-10 text-center mb-[60px]">
-          <h2 className="font-serif text-[62px] font-medium text-primary-700">
+        <div className="relative z-10 text-center mb-[50px]">
+          <h2 className="font-serif text-[44px] md:text-[56px] font-medium text-primary-700">
             Shop by Categories
           </h2>
           <div className="flex justify-center items-center gap-2.5 mt-2.5">
@@ -163,115 +152,107 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative z-10 flex justify-center items-center flex-wrap gap-[42px]">
+        <div className="relative z-10 flex justify-center items-center flex-wrap gap-8 md:gap-[42px]">
           {categories.map((category) => (
-            <div key={category.name} className="text-center">
-              <div className="w-[250px] h-[250px] rounded-full overflow-hidden bg-[#ead7bf] transition-transform duration-300 hover:translate-y-[-8px] hover:scale-105 cursor-pointer">
+            <Link
+              key={category.name}
+              href={`/shop?category=${encodeURIComponent(category.name)}`}
+              className="text-center group no-underline"
+            >
+              <div className="w-[200px] h-[200px] md:w-[230px] md:h-[230px] rounded-full overflow-hidden bg-[#ead7bf] border-4 border-white shadow-md transition-all duration-300 group-hover:-translate-y-2 group-hover:scale-105 group-hover:shadow-xl relative">
                 <Image
                   src={category.image}
                   alt={category.name}
-                  width={250}
-                  height={250}
-                  className="w-full h-full object-cover"
+                  width={230}
+                  height={230}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               </div>
-              <p className="mt-[18px] text-lg text-[#2b1713]">• {category.name}</p>
-            </div>
+              <p className="mt-[14px] text-lg font-medium text-[#2b1713] group-hover:text-[#7d1d1d] transition-colors">
+                • {category.name}
+              </p>
+            </Link>
           ))}
         </div>
       </section>
 
       {/* FEATURED PRODUCTS */}
-      <section className="py-[90px] px-[60px] bg-[#f8f3eb] relative">
+      <section className="py-14 px-6 sm:px-14 bg-[#f8f3eb] relative">
         <div className="absolute inset-0 bg-[radial-gradient(#d9c8b3_0.7px,transparent_0.7px)] bg-[length:22px_22px] opacity-35 pointer-events-none" />
 
-        <div className="relative z-10 flex justify-between items-center mb-[55px]">
-          <div className="text-center flex-1">
-            <h2 className="font-serif text-[60px] font-medium text-primary-700">
+        {/* Section header */}
+        <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-3">
+          <div>
+            <p className="text-[#7d1d1d] text-xs font-bold tracking-[0.2em] uppercase mb-1">— HANDPICKED FOR YOU —</p>
+            <h2 className="font-serif text-[32px] md:text-[40px] font-semibold text-[#2c1612] leading-tight">
               Featured Handicrafts
             </h2>
-            <div className="flex justify-center items-center gap-2.5 mt-2.5">
-              <div className="w-[45px] h-[2px] bg-secondary-500" />
-              <span className="text-secondary-500">✦</span>
-              <div className="w-[45px] h-[2px] bg-secondary-500" />
-            </div>
+            <p className="text-sm text-[#7a5b3d] mt-1">
+              Curated masterworks of living Nepali heritage
+            </p>
           </div>
-          <Link href="/shop" className="text-primary-700 text-sm hover:underline">
+          <Link 
+            href="/shop" 
+            className="text-[#7d1d1d] text-sm font-semibold bg-white px-5 py-2.5 rounded-full border border-[#ead9c6] shadow-sm transition-all hover:bg-[#7d1d1d] hover:text-white hover:border-[#7d1d1d] flex-shrink-0"
+          >
             View All Products →
           </Link>
         </div>
 
-        <div className="relative z-10 grid grid-cols-4 gap-7">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="bg-[#fdf9f4] rounded-[22px] overflow-hidden border border-[#e7ddd1] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_25px_rgba(0,0,0,0.08)]"
-            >
-              <div className="h-[320px] relative bg-[#efe4d3]">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  width={300}
-                  height={320}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-3.5 right-3.5 w-[38px] h-[38px] rounded-full bg-white/90 flex justify-center items-center text-[#6e2b22] cursor-pointer hover:bg-red-50 transition-colors">
-                  <FaRegHeart />
-                </div>
-              </div>
-
-              <div className="p-[18px_18px_20px]">
-                <div className="text-[13px] text-[#7a5b3d] mb-2.5 flex items-center gap-1">
-                  {renderStars(product.rating)} {product.rating} ({product.reviews})
-                </div>
-                <h3 className="font-serif text-[34px] leading-[1.05] text-[#2d1a16] mb-1.5">
-                  {product.name}
-                </h3>
-                <p className="text-[#7d6d66] text-sm mb-[18px]">{product.location}</p>
-
-                <div className="flex justify-between items-center">
-                  <span className="text-[34px] font-serif font-bold text-primary-700">
-                    {product.price}
-                  </span>
-                  <button className="bg-primary-700 text-white border-none px-[18px] py-[11px] rounded-full text-xs font-medium flex items-center gap-2 cursor-pointer hover:bg-primary-800 transition-colors">
-                    <FaBagShopping /> Add
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="animate-pulse bg-[#f2e6d8] rounded-2xl h-[370px]" />
+            ))}
+          </div>
+        ) : featuredProducts.length > 0 ? (
+          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {featuredProducts.map((product: any) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="relative z-10 text-center py-16 text-[#7d6d66]">
+            <p className="text-lg font-serif">No featured products yet.</p>
+            <Link href="/shop" className="text-[#7d1d1d] text-sm mt-2 inline-block hover:underline">Browse all crafts →</Link>
+          </div>
+        )}
       </section>
 
       {/* SUPPORT ARTISANS */}
-      <section className="py-5 px-[42px] pb-[90px] bg-[#f8f3eb] relative">
+      <section className="py-5 px-6 sm:px-[42px] pb-[80px] bg-[#f8f3eb] relative">
         <div className="absolute inset-0 bg-[radial-gradient(#d9c8b3_0.7px,transparent_0.7px)] bg-[length:22px_22px] opacity-35 pointer-events-none" />
 
         {/* Banner */}
-        <div className="relative h-[325px] rounded-[28px] overflow-hidden border border-[#d8cdbf] flex items-center pl-[65px]">
+        <div className="relative min-h-[340px] rounded-[28px] overflow-hidden border border-[#d8cdbf] flex items-center pl-8 md:pl-[65px] py-8">
           <div 
-            className="absolute inset-0 bg-gradient-to-r from-[#f7f0e6]/92 via-[#f7f0e6]/78 to-transparent z-10"
+            className="absolute inset-0 bg-gradient-to-r from-[#f7f0e6]/96 via-[#f7f0e6]/80 to-transparent z-10"
           />
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: "url('/images/artisan.jpg')" }}
           />
-          <div className="relative z-20 max-w-[420px]">
-            <h2 className="font-serif text-[58px] leading-[1] text-primary-700 mb-[18px]">
+          <div className="relative z-20 max-w-[460px]">
+            <span className="text-[#7d1d1d] text-xs font-bold tracking-[0.2em] uppercase mb-2 block">
+              Empowerment Through Art
+            </span>
+            <h2 className="font-serif text-[46px] md:text-[54px] leading-[1] text-primary-700 mb-[16px]">
               Support Local Artisans
             </h2>
-            <p className="text-[17px] leading-relaxed text-[#5f4f47] mb-7">
-              Every purchase helps preserve our rich cultural
-              heritage and empowers Nepali craftspeople.
+            <p className="text-[16px] leading-relaxed text-[#5f4f47] mb-6">
+              Every purchase directly sustains local artisan families, protects endangered traditional crafts, and brings living history to your home.
             </p>
-            <button className="bg-primary-700 text-white border-none px-6 py-3.5 rounded-xl text-sm font-semibold tracking-[0.5px] cursor-pointer hover:bg-primary-800 transition-colors">
-              EXPLORE NOW
-            </button>
+            <Link 
+              href="/shop" 
+              className="bg-[#7d1d1d] text-white border-none px-7 py-3.5 rounded-xl text-sm font-semibold tracking-[0.5px] cursor-pointer hover:bg-[#5c1515] transition-colors inline-block shadow-md"
+            >
+              EXPLORE COLLECTION
+            </Link>
           </div>
         </div>
 
         {/* Features */}
-        <div className="relative z-10 mt-[42px] grid grid-cols-4 gap-[18px]">
+        <div className="relative z-10 mt-[36px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[18px]">
           {features.map((feature) => (
             <div
               key={feature.title}
@@ -281,7 +262,7 @@ export default function Home() {
                 {feature.icon}
               </div>
               <div>
-                <h4 className="font-serif text-[28px] text-[#2d1a16] mb-1.5">
+                <h4 className="font-serif text-[22px] text-[#2d1a16] mb-1 font-medium">
                   {feature.title}
                 </h4>
                 <p className="text-sm leading-relaxed text-[#6d5c55]">
@@ -294,64 +275,74 @@ export default function Home() {
       </section>
 
       {/* ARTISAN + NEWSLETTER */}
-      <section className="w-[calc(100%-80px)] mx-auto my-[70px] bg-[#f8f3eb] border-2 border-[#d8cdbf] rounded-[28px] overflow-hidden grid grid-cols-[1.15fr_1fr_1fr] relative">
+      <section className="w-[calc(100%-48px)] sm:w-[calc(100%-80px)] mx-auto my-[60px] bg-[#f8f3eb] border-2 border-[#d8cdbf] rounded-[28px] overflow-hidden grid grid-cols-1 lg:grid-cols-[1.15fr_1fr_1fr] relative shadow-sm">
         <div className="absolute inset-0 bg-[radial-gradient(#d9c8b3_0.7px,transparent_0.7px)] bg-[length:22px_22px] opacity-25 pointer-events-none" />
 
         {/* Image */}
-        <div className="h-full">
+        <div className="h-64 lg:h-full relative min-h-[300px]">
           <Image
             src="/images/artist.jpg"
             alt="Artisan"
-            width={400}
-            height={500}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
         </div>
 
         {/* Content */}
-        <div className="relative z-10 p-[46px_42px] border-r-2 border-[#ddd2c5]">
-          <h2 className="font-serif text-[54px] font-medium text-primary-700 mb-3">
-            Meet Our Artisans
-          </h2>
-          <div className="flex items-center gap-2.5 mb-[26px]">
-            <div className="w-[42px] h-[2px] bg-secondary-500" />
-            <span className="text-secondary-500">✦</span>
-            <div className="w-[42px] h-[2px] bg-secondary-500" />
+        <div className="relative z-10 p-8 lg:p-[46px_42px] border-b lg:border-b-0 lg:border-r-2 border-[#ddd2c5] flex flex-col justify-between">
+          <div>
+            <h2 className="font-serif text-[42px] md:text-[50px] font-medium text-primary-700 mb-2 leading-tight">
+              Meet Our Artisans
+            </h2>
+            <div className="flex items-center gap-2.5 mb-[20px]">
+              <div className="w-[42px] h-[2px] bg-secondary-500" />
+              <span className="text-secondary-500">✦</span>
+              <div className="w-[42px] h-[2px] bg-secondary-500" />
+            </div>
+            <p className="text-sm md:text-base leading-relaxed text-[#5f4f47] mb-[24px]">
+              Our master craftspeople pour their heart and soul into every piece they create. Discover the generations of heritage and sacred technique behind each craft.
+            </p>
           </div>
-          <p className="text-base leading-relaxed text-[#5f4f47] max-w-[430px] mb-[34px]">
-            Our artisans pour their heart and soul into every piece they
-            create. By buying from us, you are supporting their dreams
-            and preserving centuries-old traditions.
-          </p>
-          <button className="bg-primary-700 text-white border-none px-6 py-3.5 rounded-xl text-sm font-semibold tracking-[0.5px] cursor-pointer hover:bg-primary-800 transition-colors">
+          <Link 
+            href="/about" 
+            className="bg-[#7d1d1d] text-white border-none px-6 py-3.5 rounded-xl text-sm font-semibold tracking-[0.5px] cursor-pointer hover:bg-[#5c1515] transition-colors inline-block text-center w-fit shadow-sm"
+          >
             VIEW THEIR STORIES
-          </button>
+          </Link>
         </div>
 
         {/* Newsletter */}
-        <div className="relative z-10 p-[46px_42px]">
-          <h2 className="font-serif text-[54px] font-medium text-primary-700 mb-3">
-            Stay Updated
-          </h2>
-          <div className="flex items-center gap-2.5 mb-[26px]">
-            <div className="w-[42px] h-[2px] bg-secondary-500" />
-            <span className="text-secondary-500">✦</span>
-            <div className="w-[42px] h-[2px] bg-secondary-500" />
+        <div className="relative z-10 p-8 lg:p-[46px_42px] flex flex-col justify-between">
+          <div>
+            <h2 className="font-serif text-[42px] md:text-[50px] font-medium text-primary-700 mb-2 leading-tight">
+              Stay Updated
+            </h2>
+            <div className="flex items-center gap-2.5 mb-[20px]">
+              <div className="w-[42px] h-[2px] bg-secondary-500" />
+              <span className="text-secondary-500">✦</span>
+              <div className="w-[42px] h-[2px] bg-secondary-500" />
+            </div>
+            <p className="text-sm md:text-base leading-relaxed text-[#5f4f47] mb-[24px]">
+              Subscribe to our heritage dispatch for new seasonal masterworks, artisan spotlights, and cultural events.
+            </p>
           </div>
-          <p className="text-base leading-relaxed text-[#5f4f47] max-w-[430px] mb-[34px]">
-            Subscribe to our newsletter for updates on new arrivals,
-            offers and more.
-          </p>
-          <div className="flex items-center gap-3.5">
+          <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3">
             <input
               type="email"
-              placeholder="Enter your email address"
-              className="flex-1 h-14 border-2 border-[#ddd2c5] bg-[#fffaf5] rounded-[14px] px-[18px] text-base outline-none focus:border-primary-400 transition-colors"
+              value={newsletterEmail}
+              onChange={(e) => setNewsletterEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+              className="flex-1 h-12 border-2 border-[#ddd2c5] bg-[#fffaf5] rounded-[12px] px-4 text-sm outline-none focus:border-[#7d1d1d] transition-colors"
             />
-            <button className="h-14 px-[26px] border-none rounded-[14px] bg-primary-700 text-white text-sm font-semibold cursor-pointer hover:bg-primary-800 transition-colors whitespace-nowrap">
-              SUBSCRIBE
+            <button 
+              type="submit" 
+              disabled={isSubscribing}
+              className="h-12 px-6 border-none rounded-[12px] bg-[#7d1d1d] text-white text-sm font-semibold cursor-pointer hover:bg-[#5c1515] transition-colors whitespace-nowrap disabled:opacity-60 shadow-sm"
+            >
+              {isSubscribing ? 'Subscribing...' : 'SUBSCRIBE'}
             </button>
-          </div>
+          </form>
         </div>
       </section>
     </main>

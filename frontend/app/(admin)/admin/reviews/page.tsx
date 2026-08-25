@@ -169,29 +169,35 @@ export default function ReviewsPage() {
       )}
 
       {/* Filters Section */}
-      <div className="flex flex-wrap items-center gap-4 mb-6">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-light" />
-          <Input
-            placeholder="Search reviews by product, customer, or keyword…"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 border border-border rounded-full bg-white focus-visible:ring-primary-400"
-          />
-        </div>
-        <Select value={sortBy} onValueChange={(val) => setSortBy(val || 'newest')}>
-          <SelectTrigger className="w-[180px] border border-border rounded-full bg-white text-sm focus:ring-primary-400">
-            <ChevronDown className="w-4 h-4 mr-2" />
-            <SelectValue placeholder="Sort by" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="newest">Newest First</SelectItem>
-            <SelectItem value="oldest">Oldest First</SelectItem>
-            <SelectItem value="highest">Highest Rating</SelectItem>
-            <SelectItem value="lowest">Lowest Rating</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <Card className="border-amber-200/50 bg-white/80 backdrop-blur-sm mb-6">
+        <CardContent className="pt-6">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Input
+                placeholder="Search reviews by product, user, or comment..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 border-amber-200/50 focus-visible:ring-amber-500"
+              />
+            </div>
+            <div className="flex gap-3">
+              <Select value={sortBy} onValueChange={(val) => setSortBy(val || 'newest')}>
+                <SelectTrigger className="w-[160px] border-amber-200/50 focus:ring-amber-500">
+                  <ChevronDown className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Newest First</SelectItem>
+                  <SelectItem value="oldest">Oldest First</SelectItem>
+                  <SelectItem value="highest">Highest Rated</SelectItem>
+                  <SelectItem value="lowest">Lowest Rated</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Reviews Table Card */}
       <Card className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
@@ -235,10 +241,10 @@ export default function ReviewsPage() {
                       key={review._id}
                       className="border-t border-black/5 hover:bg-black/5/5 transition-colors"
                     >
-                      <td className="py-4 pl-6 text-text-dark text-sm font-medium">
-                        {review.product_id?.name || 'Deleted Product'}
-                      </td>
-                      <td className="py-4 text-text-dark text-sm">
+                      <TableCell className="py-4 pl-6 text-text-dark text-sm font-medium">
+                        {review.product_id?.name || 'Craft Product'}
+                      </TableCell>
+                      <TableCell className="py-4 text-text-dark text-sm">
                         <div className="flex items-center gap-2.5">
                           <Avatar className="w-8 h-8 bg-primary-100">
                             <AvatarFallback className="text-primary-700 text-xs font-semibold">
@@ -246,57 +252,45 @@ export default function ReviewsPage() {
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <div className="font-medium">{review.user_id?.name || 'Unknown User'}</div>
+                            <div className="font-medium">{review.user_id?.name || 'Customer'}</div>
                             <div className="text-text-light text-xs">{review.user_id?.email || ''}</div>
                           </div>
                         </div>
-                      </td>
-                      <td className="py-4 text-text-dark text-sm">
+                      </TableCell>
+                      <TableCell className="py-4">
                         <div className="flex items-center gap-1">
                           {renderStars(review.rating)}
-                          <span className="text-xs text-text-mid ml-1">({review.rating})</span>
+                          <span className="text-xs text-text-light ml-1 font-semibold">({review.rating})</span>
                         </div>
-                      </td>
-                      <td className="py-4 text-text-mid text-sm max-w-xs truncate" title={review.comment}>
+                      </TableCell>
+                      <TableCell className="py-4 text-sm text-text-mid max-w-xs truncate">
                         {review.comment}
-                      </td>
-                      <td className="py-4 text-text-dark text-sm">
-                        <div className="flex items-center gap-1 text-text-mid">
+                      </TableCell>
+                      <TableCell className="py-4 text-sm text-text-light">
+                        <div className="flex items-center gap-1">
                           <Calendar className="w-3.5 h-3.5" />
-                          {new Date(review.createdAt).toLocaleDateString('en-US', {
-                            year: 'numeric', month: 'short', day: 'numeric',
-                          })}
+                          {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : 'Recent'}
                         </div>
-                      </td>
-                      <td className="py-4 pr-6 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger
-                              render={
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 hover:bg-primary-100 hover:text-primary-700 transition-colors"
-                                >
-                                  <MoreHorizontal className="w-4 h-4" />
-                                </Button>
-                              }
-                            />
-                            <DropdownMenuContent align="end" className="w-48 bg-white border border-border rounded-xl shadow-lg">
-                              <DropdownMenuLabel className="text-text-mid">Moderate Review</DropdownMenuLabel>
-                              <DropdownMenuSeparator className="bg-border/60" />
-                              <DropdownMenuItem
-                                onClick={() => handleDelete(review._id)}
-                                disabled={deletingId === review._id}
-                                className="gap-2 text-red-600 focus:text-red-700 cursor-pointer"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                                Delete Review
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </td>
+                      </TableCell>
+                      <TableCell className="py-4 text-right pr-6">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger className="h-8 w-8 inline-flex items-center justify-center rounded-md hover:bg-black/5 transition-colors cursor-pointer">
+                            <MoreHorizontal className="w-4 h-4 text-text-mid" />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-44">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => handleDelete(review._id)}
+                              disabled={deletingId === review._id}
+                              className="gap-2 text-red-600 focus:text-red-600 cursor-pointer"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Delete Review
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
                     </TableRow>
                   ))
                 )}

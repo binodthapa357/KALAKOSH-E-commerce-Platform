@@ -55,7 +55,7 @@ function SignInContent() {
             } else if (role === "admin") {
                 router.push("/admin");
             } else {
-                const redirect = searchParams.get("redirect") || "/";
+                const redirect = searchParams?.get("redirect") || "/";
                 router.push(redirect);
             }
         } catch (err) {
@@ -165,7 +165,7 @@ function SignInContent() {
 
                 <p className="mt-8 text-center text-sm text-stone-500">
                     New to Kalakosh?{" "}
-                    <Link href={`/signup?redirect=${searchParams.get("redirect") || "/"}`} className="font-semibold text-[#8B3232] hover:text-[#5C1A1A] hover:underline">
+                    <Link href={`/signup?redirect=${searchParams?.get("redirect") || "/"}`} className="font-semibold text-[#8B3232] hover:text-[#5C1A1A] hover:underline">
                         Create an account
                     </Link>
                 </p>

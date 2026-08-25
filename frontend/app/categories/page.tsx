@@ -14,18 +14,11 @@ interface Category {
   status: "active" | "inactive";
 }
 
+import { fetchApi } from "@/lib/api";
+
 async function getCategories(): Promise<Category[]> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`, {
-      // Categories can change from the admin panel, so don't cache stale data.
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch categories: ${res.status}`);
-    }
-
-    const data = await res.json();
+    const data = await fetchApi('/categories', { cache: 'no-store' });
     return data.categories ?? [];
   } catch (error) {
     console.error("Error fetching categories:", error);

@@ -24,10 +24,10 @@ export const getProducts = async (filters?: { status?: string }): Promise<AdminP
   if (filters?.status) params.set('status', filters.status);
   const query = params.toString() ? `?${params.toString()}` : '';
   const data = await fetchApi(`/admin/products${query}`);
-  return data.products;
+  return data?.products || [];
 };
 
 export const toggleProductFeatured = async (id: string): Promise<AdminProduct> => {
-  const data = await fetchApi(`/admin/products/${id}/toggle-featured`, { method: 'PATCH' });
-  return data.product;
+  const data = await fetchApi(`/products/${id}/featured`, { method: 'PATCH' });
+  return data?.product || data;
 };

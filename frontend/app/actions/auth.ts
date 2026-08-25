@@ -8,10 +8,10 @@ export async function login(formData: FormData) {
   const password = formData.get('password') as string;
   const remember = formData.get('remember') === 'on';
 
+  const cookieStore = await cookies();
+
   // Validate credentials
   if (email === 'admin@kalakosh.com' && password === 'admin123') {
-    const cookieStore = await cookies();
-
     const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -20,20 +20,16 @@ export async function login(formData: FormData) {
     };
 
     if (remember) {
-      // Remember for 7 days
       cookieStore.set('adminAuth', 'true', {
         ...cookieOptions,
         maxAge: 60 * 60 * 24 * 7, // 7 days
       });
     } else {
-      // Session cookie (expires when browser closes)
       cookieStore.set('adminAuth', 'true', cookieOptions);
     }
 
-    // Redirect to dashboard
     redirect('/admin');
   } else {
-    // Return error - redirect back with error parameter
     redirect('/admin/login?error=Invalid credentials');
   }
 }

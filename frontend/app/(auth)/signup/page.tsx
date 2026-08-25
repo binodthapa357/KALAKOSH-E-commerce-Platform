@@ -127,7 +127,7 @@ function SignUpContent() {
       if (role === 'vendor') {
         router.push('/vendor/dashboard');
       } else {
-        const redirect = searchParams.get("redirect") || "/";
+        const redirect = searchParams?.get("redirect") || "/";
         router.push(redirect);
       }
     } catch (err: any) {
@@ -447,7 +447,7 @@ function SignUpContent() {
 
         <p className="mt-6 text-center text-sm text-stone-500">
           Already have an account?{' '}
-          <Link href={`/signin?redirect=${searchParams.get("redirect") || "/"}`} className="font-semibold text-[#8B3232] hover:underline">
+          <Link href={`/signin?redirect=${searchParams?.get("redirect") || "/"}`} className="font-semibold text-[#8B3232] hover:underline">
             Sign In
           </Link>
         </p>

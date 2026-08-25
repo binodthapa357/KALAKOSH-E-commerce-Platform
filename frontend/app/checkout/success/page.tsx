@@ -11,9 +11,9 @@ function SuccessPageContent() {
   const router = useRouter();
   const { user } = useApp();
 
-  const orderNumber = searchParams.get("orderNumber") || "KLK-XXXX";
-  const refId = searchParams.get("refId");
-  const paidAmount = searchParams.get("paidAmount");
+  const orderNumber = searchParams?.get("orderNumber") || "KLK-XXXX";
+  const refId = searchParams?.get("refId");
+  const paidAmount = searchParams?.get("paidAmount");
 
   return (
     <div className="min-h-screen bg-[#FBF8F3] py-16 flex items-center justify-center">

@@ -9,8 +9,8 @@ function EsewaPayContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  const orderNumber = searchParams.get("orderNumber");
-  const amountStr = searchParams.get("amount");
+  const orderNumber = searchParams?.get("orderNumber");
+  const amountStr = searchParams?.get("amount");
   const amount = Number(amountStr) || 0;
 
   const [step, setStep] = useState<1 | 2 | 3>(1); // 1: Login, 2: OTP, 3: Success animation/redirecting

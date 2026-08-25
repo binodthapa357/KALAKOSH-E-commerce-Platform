@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FaArrowLeft, FaUpload } from 'react-icons/fa6';
+import Image from 'next/image';
+import { FaArrowLeft, FaUpload, FaTrash } from 'react-icons/fa6';
 import { Button } from '@/components/ui/button';
 import { fetchApi } from '@/lib/api';
 import { toast } from 'sonner';
@@ -19,48 +20,30 @@ export default function CreateProductPage() {
     stock: '',
     description: '',
     region: 'Kathmandu',
-    material: 'Cotton Canvas',
+    material: 'Handmade',
     craft_type: 'Nepalese Handicraft',
     status: 'active',
   });
   const [categories, setCategories] = useState<{ _id: string; name: string }[]>([]);
-  const [vendors, setVendors] = useState<{ _id: string; shop_name: string }[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  const [loadingCats, setLoadingCats] = useState(true);
-  const [loadingVendors, setLoadingVendors] = useState(true);
 
   useEffect(() => {
-    const fetchCats = async () => {
+    const loadCategories = async () => {
       try {
-        const data = await fetchApi('/categories');
-        if (data && data.categories) {
-          setCategories(data.categories);
+        const catData = await fetchApi('/categories');
+        if (catData?.categories) {
+          setCategories(catData.categories);
+          if (catData.categories.length > 0) {
+            setFormData(prev => ({ ...prev, category: catData.categories[0]._id }));
+          }
         }
-      } catch (err: any) {
+      } catch (err) {
         console.error('Failed to load categories', err);
-        toast.error('Could not load categories: ' + (err.message || 'unknown error'));
-      } finally {
-        setLoadingCats(false);
       }
     };
-    const fetchVendors = async () => {
-      try {
-        const data = await fetchApi('/admin/vendors');
-        if (data && data.vendors) {
-          const activeVendors = data.vendors.filter((v: any) => v.status === 'active');
-          setVendors(activeVendors);
-        }
-      } catch (err: any) {
-        console.error('Failed to load vendors', err);
-        toast.error('Could not load vendors: ' + (err.message || 'unknown error'));
-      } finally {
-        setLoadingVendors(false);
-      }
-    };
-    fetchCats();
-    fetchVendors();
+    loadCategories();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -96,79 +79,46 @@ export default function CreateProductPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (imageFiles.length === 0) {
-      toast.error('Please upload at least one product image.');
-      return;
-    }
-    if (!formData.category) {
-      toast.error('Please select a category.');
-      return;
-    }
-    if (!formData.vendor_id) {
-      toast.error('Please select a vendor.');
+    if (!formData.name || !formData.price || !formData.stock) {
+      toast.error('Please fill in all required fields');
       return;
     }
 
     setSubmitting(true);
     try {
-      const imageUrls: string[] = [];
-
-      for (const file of imageFiles) {
-        const formDataUpload = new FormData();
-        formDataUpload.append('image', file);
-
-        let uploadRes;
-        try {
-          uploadRes = await fetchApi('/admin/upload?folder=products', {
-            method: 'POST',
-            body: formDataUpload,
-          });
-        } catch (uploadErr: any) {
-          console.error('Image upload failed for', file.name, uploadErr);
-          toast.error(`Failed to upload ${file.name}: ${uploadErr.message || 'unknown error'}`);
-          throw uploadErr;
-        }
-
-        const url = uploadRes?.url || uploadRes?.data?.url || uploadRes?.imageUrl;
-        if (!url) {
-          console.error('Upload succeeded but response had no recognizable URL field:', uploadRes);
-          toast.error(`Upload for ${file.name} did not return a URL. Check backend response shape.`);
-          throw new Error('Missing image URL in upload response');
-        }
-        imageUrls.push(url);
-      }
-
-      // NOTE: the backend's validation explicitly checks req.body.category
-      // (see the "Missing required fields (name, description, price, stock,
-      // category)" error) even though the Product document itself stores it
-      // as category_id internally. The route must map category -> category_id
-      // when saving. Sending category_id from here left `category` undefined
-      // and failed that check.
-      const body = {
+      const payload: any = {
         name: formData.name,
-        category: formData.category,
-        vendor_id: formData.vendor_id,
+        category: formData.category || (categories[0]?._id ?? 'General'),
         price: Number(formData.price),
-        discount_price: formData.discount_price ? Number(formData.discount_price) : undefined,
         stock: Number(formData.stock),
-        description: formData.description,
+        description: formData.description || formData.name,
         region: formData.region,
         material: formData.material,
         craft_type: formData.craft_type,
         status: formData.status,
-        images: imageUrls,
       };
+
+      if (formData.vendor_id) {
+        payload.vendor_id = formData.vendor_id;
+      }
+
+      if (formData.discount_price && Number(formData.discount_price) < Number(formData.price)) {
+        payload.discount_price = Number(formData.discount_price);
+      }
+
+      if (imagePreviews.length > 0) {
+        payload.images = imagePreviews;
+      }
 
       await fetchApi('/products', {
         method: 'POST',
-        body: JSON.stringify(body),
+        body: JSON.stringify(payload),
       });
 
       toast.success('Product created successfully');
       router.push('/admin/products');
-    } catch (err: any) {
-      console.error('Create product failed:', err);
-      toast.error(err.message || 'Failed to create product');
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Failed to create product');
     } finally {
       setSubmitting(false);
     }
@@ -210,50 +160,40 @@ export default function CreateProductPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-text-dark text-sm font-medium mb-2">Category *</label>
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    required
-                    disabled={loadingCats}
-                    className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
-                  >
-                    <option value="">Select Category</option>
-                    {categories.map((cat) => (
-                      <option key={cat._id} value={cat._id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
+                  {categories.length > 0 ? (
+                    <select
+                      name="category"
+                      value={formData.category}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
+                    >
+                      {categories.map((cat) => (
+                        <option key={cat._id} value={cat._id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      name="category"
+                      value={formData.category}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
+                      placeholder="e.g. Handicraft"
+                    />
+                  )}
                 </div>
                 <div>
-                  <label className="block text-text-dark text-sm font-medium mb-2">Vendor (Artisan) *</label>
-                  <select
-                    name="vendor_id"
-                    value={formData.vendor_id}
-                    onChange={handleChange}
-                    required
-                    disabled={loadingVendors}
-                    className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
-                  >
-                    <option value="">Select Vendor</option>
-                    {vendors.map((v) => (
-                      <option key={v._id} value={v._id}>
-                        {v.shop_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div>
-                  <label className="block text-text-dark text-sm font-medium mb-2">Price *</label>
+                  <label className="block text-text-dark text-sm font-medium mb-2">Price ($) *</label>
                   <input
                     type="number"
+                    step="0.01"
                     name="price"
                     value={formData.price}
                     onChange={handleChange}
@@ -264,9 +204,10 @@ export default function CreateProductPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-text-dark text-sm font-medium mb-2">Discount Price</label>
+                  <label className="block text-text-dark text-sm font-medium mb-2">Discount Price ($)</label>
                   <input
                     type="number"
+                    step="0.01"
                     name="discount_price"
                     value={formData.discount_price}
                     onChange={handleChange}
@@ -275,6 +216,9 @@ export default function CreateProductPage() {
                     placeholder="e.g. 249"
                   />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-text-dark text-sm font-medium mb-2">Stock Quantity *</label>
                   <input
@@ -305,53 +249,37 @@ export default function CreateProductPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-text-dark text-sm font-medium mb-2">Region (Location)</label>
-                  <select
+                  <label className="block text-text-dark text-sm font-medium mb-2">Region</label>
+                  <input
+                    type="text"
                     name="region"
                     value={formData.region}
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
-                  >
-                    <option value="Kathmandu">Kathmandu</option>
-                    <option value="Patan">Patan</option>
-                    <option value="Bhaktapur">Bhaktapur</option>
-                    <option value="Lalitpur">Lalitpur</option>
-                    <option value="Unknown">Unknown</option>
-                  </select>
+                    placeholder="Kathmandu"
+                  />
                 </div>
                 <div>
                   <label className="block text-text-dark text-sm font-medium mb-2">Material</label>
-                  <select
+                  <input
+                    type="text"
                     name="material"
                     value={formData.material}
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
-                  >
-                    <option value="Cotton Canvas">Cotton Canvas</option>
-                    <option value="Brass Alloy">Brass Alloy</option>
-                    <option value="Pashmina Wool">Pashmina Wool</option>
-                    <option value="Sterling Silver">Sterling Silver</option>
-                    <option value="Clay">Clay</option>
-                    <option value="Lokta Paper">Lokta Paper</option>
-                    <option value="Yak Wool">Yak Wool</option>
-                    <option value="Handmade">Handmade</option>
-                  </select>
+                    placeholder="Brass / Wood / Wool"
+                  />
                 </div>
                 <div>
                   <label className="block text-text-dark text-sm font-medium mb-2">Craft Type</label>
-                  <select
+                  <input
+                    type="text"
                     name="craft_type"
                     value={formData.craft_type}
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400"
-                  >
-                    <option value="Nepalese Handicraft">Nepalese Handicraft</option>
-                    <option value="Thangka Painting">Thangka Painting</option>
-                    <option value="Dhaka Weaving">Dhaka Weaving</option>
-                    <option value="Pottery">Pottery</option>
-                    <option value="Jewelry">Jewelry</option>
-                    <option value="Wood Crafts">Wood Crafts</option>
-                  </select>
+                    placeholder="Nepalese Handicraft"
+                  />
                 </div>
               </div>
 
@@ -361,8 +289,7 @@ export default function CreateProductPage() {
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  rows={5}
-                  required
+                  rows={4}
                   className="w-full px-4 py-3 border border-border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none"
                   placeholder="Describe the product..."
                 />
@@ -372,7 +299,7 @@ export default function CreateProductPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors shadow-lg hover:shadow-xl font-semibold disabled:opacity-50"
+                  className="flex-1 bg-primary-700 text-white px-6 py-3 rounded-full hover:bg-primary-800 transition-colors shadow-lg hover:shadow-xl font-semibold disabled:opacity-60 cursor-pointer"
                 >
                   {submitting ? 'Creating...' : 'Create Product'}
                 </button>
@@ -394,20 +321,21 @@ export default function CreateProductPage() {
 
             {imagePreviews.length > 0 && (
               <div className="grid grid-cols-2 gap-3 mb-4">
-                {imagePreviews.map((src, idx) => (
-                  <div key={src} className="relative aspect-square border border-border rounded-xl overflow-hidden group">
-                    <img
-                      src={src}
-                      alt={`Preview ${idx + 1}`}
-                      className="w-full h-full object-cover"
+                {imagePreviews.map((preview, index) => (
+                  <div key={index} className="relative h-28 rounded-xl overflow-hidden border border-border group bg-[#f5efe7]">
+                    <Image
+                      src={preview}
+                      alt={`Product preview ${index + 1}`}
+                      fill
+                      className="object-cover"
                     />
                     <button
                       type="button"
-                      onClick={() => removeImage(idx)}
-                      className="absolute top-1.5 right-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs transition-colors shadow-md z-10"
-                      title="Remove Image"
+                      onClick={() => removeImage(index)}
+                      className="absolute top-1.5 right-1.5 bg-red-600/90 text-white p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700 cursor-pointer"
+                      title="Remove image"
                     >
-                      ✕
+                      <FaTrash className="text-xs" />
                     </button>
                   </div>
                 ))}
@@ -416,7 +344,7 @@ export default function CreateProductPage() {
 
             <label
               htmlFor="product-image-upload"
-              className="block border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors relative hover:border-primary-400 cursor-pointer"
+              className="block border-2 border-dashed border-border rounded-2xl p-8 text-center transition-colors relative hover:border-primary-400 cursor-pointer bg-white"
             >
               <div className="space-y-3 pointer-events-none">
                 <div className="w-12 h-12 mx-auto rounded-full bg-primary-100 flex items-center justify-center">

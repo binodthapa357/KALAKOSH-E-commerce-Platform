@@ -62,7 +62,7 @@ function TrackOrderContent() {
       setEmail(user.email);
     }
 
-    const urlOrderNum = searchParams.get("orderNumber");
+    const urlOrderNum = searchParams?.get("orderNumber");
     if (urlOrderNum) {
       setOrderNumber(urlOrderNum);
       const storedEmail = user?.email || "";
